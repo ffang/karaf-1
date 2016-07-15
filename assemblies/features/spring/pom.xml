@@ -182,7 +182,7 @@
                             <addBundlesToPrimaryFeature>false</addBundlesToPrimaryFeature>
                         </configuration>
                     </execution>
-                    <!--execution>
+                    <execution>
                         <id>verify</id>
                         <phase>process-resources</phase>
                         <goals>
@@ -199,7 +199,7 @@
                                 <feature>framework</feature>
                             </framework>
                         </configuration>
-                    </execution-->
+                    </execution>
                 </executions>
             </plugin>
             <plugin>
