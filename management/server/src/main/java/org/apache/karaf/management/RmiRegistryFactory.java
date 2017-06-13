@@ -20,7 +20,6 @@ import org.osgi.framework.BundleContext;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.UnknownHostException;
@@ -34,9 +33,6 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
-
-import javax.net.ServerSocketFactory;
-import javax.net.SocketFactory;
 
 public class RmiRegistryFactory {
 
@@ -131,7 +127,7 @@ public class RmiRegistryFactory {
         }
         if (registry != null) {
             // register the registry as an OSGi service
-            Hashtable<String, Object> props = new Hashtable<String, Object>();
+            Hashtable<String, Object> props = new Hashtable<>();
             props.put("port", getPort());
             props.put("host", getHost());
             bundleContext.registerService(Registry.class, registry, props);

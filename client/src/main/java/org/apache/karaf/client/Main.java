@@ -27,8 +27,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.Reader;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -57,7 +55,6 @@ import org.apache.sshd.common.FactoryManager;
 import org.apache.sshd.common.RuntimeSshException;
 import org.apache.sshd.common.channel.PtyMode;
 import org.apache.sshd.common.config.keys.FilePasswordProvider;
-import org.apache.sshd.common.keyprovider.AbstractKeyPairProvider;
 import org.apache.sshd.common.keyprovider.FileKeyPairProvider;
 import org.apache.sshd.common.util.io.NoCloseInputStream;
 import org.jline.terminal.Attributes;
@@ -103,12 +100,9 @@ public class Main {
             FilePasswordProvider passwordProvider = null;
             final Console console = System.console();
             if (console != null) {
-                passwordProvider = new FilePasswordProvider() {
-                    @Override
-                    public String getPassword(String resourceKey) throws IOException {
-                        char[] pwd = console.readPassword("Enter password for " + resourceKey + ": ");
-                        return new String(pwd);
-                    }
+                passwordProvider = resourceKey -> {
+                    char[] pwd = console.readPassword("Enter password for " + resourceKey + ": ");
+                    return new String(pwd);
                 };
                 client.setFilePasswordProvider(passwordProvider);
                 client.setUserInteraction(new UserInteraction() {
@@ -278,7 +272,7 @@ public class Main {
         client.getProperties().put(SshAgent.SSH_AUTHSOCKET_ENV_NAME, "local");
     }
 
-    private static ClientSession connectWithRetries(SshClient client, ClientConfig config) throws Exception, InterruptedException {
+    private static ClientSession connectWithRetries(SshClient client, ClientConfig config) throws Exception {
         ClientSession session = null;
         int retries = 0;
         do {
@@ -338,12 +332,10 @@ public class Main {
             Class<?> signalHandlerClass = Class.forName("sun.misc.SignalHandler");
             // Implement signal handler
             Object signalHandler = Proxy.newProxyInstance(Main.class.getClassLoader(),
-                    new Class<?>[]{signalHandlerClass}, new InvocationHandler() {
-                        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                            Size size = terminal.getSize();
-                            channel.sendWindowChange(size.getColumns(), size.getRows());
-                            return null;
-                        }
+                    new Class<?>[]{signalHandlerClass}, (proxy, method, args) -> {
+                        Size size = terminal.getSize();
+                        channel.sendWindowChange(size.getColumns(), size.getRows());
+                        return null;
                     }
             );
             // Register the signal handler, this code is equivalent to:

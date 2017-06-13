@@ -33,7 +33,7 @@ service:get = { $.context getService ($.context getServiceReference $args) };
 
 env = { shell:set $args }
 edit = { shell:nano $args }
-more = { shell:less $args }
+more = { shell:less -F $args }
 
 prompt = "[1m${USER}[0m@${APPLICATION}(${SUBSHELL})> "
 
@@ -50,7 +50,10 @@ if { %(max_colors >= 256) } {
 }
 
 setopt group
+setopt auto-fresh-line
 keymap "^[OA" up-line-or-search
+keymap "^[[A" up-line-or-search
 keymap "^[OB" down-line-or-search
+keymap "^[[B" down-line-or-search
 
 

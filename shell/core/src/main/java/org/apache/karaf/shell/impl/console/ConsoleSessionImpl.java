@@ -57,6 +57,7 @@ import org.apache.karaf.shell.support.ShellUtil;
 import org.apache.karaf.shell.support.completers.FileCompleter;
 import org.apache.karaf.shell.support.completers.FileOrUriCompleter;
 import org.apache.karaf.shell.support.completers.UriCompleter;
+import org.apache.karaf.util.filesstream.FilesStream;
 import org.jline.builtins.Completers;
 import org.jline.reader.Completer;
 import org.jline.reader.EndOfFileException;
@@ -82,6 +83,8 @@ public class ConsoleSessionImpl implements Session {
 
     // Input stream
     volatile boolean running;
+
+    private AtomicBoolean closed = new AtomicBoolean(false);
 
     final SessionFactory factory;
     final ThreadIO threadIO;
@@ -271,8 +274,14 @@ public class ConsoleSessionImpl implements Session {
     }
 
     public void close() {
-        if (running) {
-            reader.getHistory().save();
+        if (closed.compareAndSet(false, true)) {
+            if (running) {
+                try {
+                    reader.getHistory().save();
+                } catch (IOException e) {
+                    // ignore
+                }
+            }
 
             running = false;
             if (thread != Thread.currentThread()) {
@@ -288,9 +297,9 @@ public class ConsoleSessionImpl implements Session {
                     // Ignore
                 }
             }
+            if (session != null)
+                session.close();
         }
-        if (session != null)
-            session.close();
     }
 
     public void run() {

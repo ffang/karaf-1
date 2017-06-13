@@ -25,7 +25,6 @@ import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
-import java.security.Principal;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -106,7 +105,7 @@ public class LDAPLoginModule extends AbstractKarafLoginModule {
             tmpPassword = new char[0];
         }
         String password = new String(tmpPassword);
-        principals = new HashSet<Principal>();
+        principals = new HashSet<>();
 
         LDAPCache cache = LDAPCache.getCache(options);
 

@@ -53,7 +53,6 @@ import java.util.zip.ZipInputStream;
 
 import org.apache.felix.resolver.ResolverImpl;
 import org.apache.felix.utils.manifest.Clause;
-import org.apache.felix.utils.properties.InterpolationHelper;
 import org.apache.felix.utils.properties.Properties;
 import org.apache.felix.utils.version.VersionRange;
 import org.apache.felix.utils.version.VersionTable;
@@ -1401,7 +1400,7 @@ public class Builder {
                     Collection<String> optionals) throws Exception {
         BundleRevision systemBundle = getSystemBundle();
         AssemblyDeployCallback callback = new AssemblyDeployCallback(manager, this, systemBundle, repositories);
-        Deployer deployer = new Deployer(manager, resolver, callback);
+        Deployer deployer = new Deployer(manager, resolver, callback, callback);
 
         // Install framework
         Deployer.DeploymentRequest request = createDeploymentRequest();

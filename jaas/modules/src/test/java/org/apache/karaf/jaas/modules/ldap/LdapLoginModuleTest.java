@@ -26,13 +26,13 @@ import org.apache.directory.server.core.annotations.CreatePartition;
 import org.apache.felix.utils.properties.Properties;
 import org.apache.karaf.jaas.boot.principal.RolePrincipal;
 import org.apache.karaf.jaas.boot.principal.UserPrincipal;
+import org.apache.karaf.jaas.modules.NamePasswordCallbackHandler;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.security.auth.Subject;
-import javax.security.auth.callback.*;
 import javax.security.auth.login.LoginException;
 
 import java.io.File;
@@ -74,7 +74,7 @@ public class LdapLoginModuleTest extends AbstractLdapTestUnit {
             FileInputStream inputStream = new FileInputStream(f);
             String content = IOUtils.toString(inputStream, "UTF-8");
             inputStream.close();
-            content = content.replaceAll("portno", "" + super.getLdapServer().getPort());
+            content = content.replaceAll("portno", "" + getLdapServer().getPort());
 
             File f2 = new File(basedir + "/target/test-classes/org/apache/karaf/jaas/modules/ldap/ldap.properties");
             FileOutputStream outputStream = new FileOutputStream(f2);
@@ -93,19 +93,8 @@ public class LdapLoginModuleTest extends AbstractLdapTestUnit {
     public void testAdminLogin() throws Exception {
         Properties options = ldapLoginModuleOptions();
         LDAPLoginModule module = new LDAPLoginModule();
-        CallbackHandler cb = new CallbackHandler() {
-            public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
-                for (Callback cb : callbacks) {
-                    if (cb instanceof NameCallback) {
-                        ((NameCallback) cb).setName("admin");
-                    } else if (cb instanceof PasswordCallback) {
-                        ((PasswordCallback) cb).setPassword("admin123".toCharArray());
-                    }
-                }
-            }
-        };
         Subject subject = new Subject();
-        module.initialize(subject, cb, null, options);
+        module.initialize(subject, new NamePasswordCallbackHandler("admin", "admin123"), null, options);
 
         assertEquals("Precondition", 0, subject.getPrincipals().size());
         assertTrue(module.login());
@@ -144,19 +133,8 @@ public class LdapLoginModuleTest extends AbstractLdapTestUnit {
     public void testNonAdminLogin() throws Exception {
         Properties options = ldapLoginModuleOptions();
         LDAPLoginModule module = new LDAPLoginModule();
-        CallbackHandler cb = new CallbackHandler() {
-            public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
-                for (Callback cb : callbacks) {
-                    if (cb instanceof NameCallback) {
-                        ((NameCallback) cb).setName("cheese");
-                    } else if (cb instanceof PasswordCallback) {
-                        ((PasswordCallback) cb).setPassword("foodie".toCharArray());
-                    }
-                }
-            }
-        };
         Subject subject = new Subject();
-        module.initialize(subject, cb, null, options);
+        module.initialize(subject, new NamePasswordCallbackHandler("cheese", "foodie"), null, options);
 
         assertEquals("Precondition", 0, subject.getPrincipals().size());
         assertTrue(module.login());
@@ -188,19 +166,8 @@ public class LdapLoginModuleTest extends AbstractLdapTestUnit {
         Properties options = ldapLoginModuleOptions();
         options.put("usernames.trim", "true");
         LDAPLoginModule module = new LDAPLoginModule();
-        CallbackHandler cb = new CallbackHandler() {
-            public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
-                for (Callback cb : callbacks) {
-                    if (cb instanceof NameCallback) {
-                        ((NameCallback) cb).setName("cheese   ");
-                    } else if (cb instanceof PasswordCallback) {
-                        ((PasswordCallback) cb).setPassword("foodie".toCharArray());
-                    }
-                }
-            }
-        };
         Subject subject = new Subject();
-        module.initialize(subject, cb, null, options);
+        module.initialize(subject, new NamePasswordCallbackHandler("cheese   ", "foodie"), null, options);
 
         assertEquals("Precondition", 0, subject.getPrincipals().size());
         assertTrue(module.login());
@@ -231,19 +198,8 @@ public class LdapLoginModuleTest extends AbstractLdapTestUnit {
     public void testBadPassword() throws Exception {
         Properties options = ldapLoginModuleOptions();
         LDAPLoginModule module = new LDAPLoginModule();
-        CallbackHandler cb = new CallbackHandler() {
-            public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
-                for (Callback cb : callbacks) {
-                    if (cb instanceof NameCallback) {
-                        ((NameCallback) cb).setName("admin");
-                    } else if (cb instanceof PasswordCallback) {
-                        ((PasswordCallback) cb).setPassword("blahblah".toCharArray());
-                    }
-                }
-            }
-        };
         Subject subject = new Subject();
-        module.initialize(subject, cb, null, options);
+        module.initialize(subject, new NamePasswordCallbackHandler("admin", "blahblah"), null, options);
 
         assertEquals("Precondition", 0, subject.getPrincipals().size());
         try {
@@ -258,19 +214,8 @@ public class LdapLoginModuleTest extends AbstractLdapTestUnit {
     public void testUserNotFound() throws Exception {
         Properties options = ldapLoginModuleOptions();
         LDAPLoginModule module = new LDAPLoginModule();
-        CallbackHandler cb = new CallbackHandler() {
-            public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
-                for (Callback cb : callbacks) {
-                    if (cb instanceof NameCallback) {
-                        ((NameCallback) cb).setName("imnothere");
-                    } else if (cb instanceof PasswordCallback) {
-                        ((PasswordCallback) cb).setPassword("admin123".toCharArray());
-                    }
-                }
-            }
-        };
         Subject subject = new Subject();
-        module.initialize(subject, cb, null, options);
+        module.initialize(subject, new NamePasswordCallbackHandler("imnothere", "admin123"), null, options);
 
         assertEquals("Precondition", 0, subject.getPrincipals().size());
         assertFalse(module.login());
@@ -280,19 +225,8 @@ public class LdapLoginModuleTest extends AbstractLdapTestUnit {
     public void testEmptyPassword() throws Exception {
         Properties options = ldapLoginModuleOptions();
         LDAPLoginModule module = new LDAPLoginModule();
-        CallbackHandler cb = new CallbackHandler() {
-            public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
-                for (Callback cb : callbacks) {
-                    if (cb instanceof NameCallback) {
-                        ((NameCallback) cb).setName("imnothere");
-                    } else if (cb instanceof PasswordCallback) {
-                        ((PasswordCallback) cb).setPassword("".toCharArray());
-                    }
-                }
-            }
-        };
         Subject subject = new Subject();
-        module.initialize(subject, cb, null, options);
+        module.initialize(subject, new NamePasswordCallbackHandler("imnothere", ""), null, options);
 
         assertEquals("Precondition", 0, subject.getPrincipals().size());
         try {
@@ -308,20 +242,8 @@ public class LdapLoginModuleTest extends AbstractLdapTestUnit {
         Properties options = ldapLoginModuleOptions();
         options.put(LDAPOptions.ROLE_MAPPING, "admin=karaf");
         LDAPLoginModule module = new LDAPLoginModule();
-        CallbackHandler cb = new CallbackHandler() {
-            @Override
-            public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
-                for (Callback cb : callbacks) {
-                    if (cb instanceof NameCallback) {
-                        ((NameCallback) cb).setName("admin");
-                    } else if (cb instanceof PasswordCallback) {
-                        ((PasswordCallback) cb).setPassword("admin123".toCharArray());
-                    }
-                }
-            }
-        };
         Subject subject = new Subject();
-        module.initialize(subject, cb, null, options);
+        module.initialize(subject, new NamePasswordCallbackHandler("admin", "admin123"), null, options);
 
         assertEquals("Precondition", 0, subject.getPrincipals().size());
         assertTrue(module.login());
@@ -352,19 +274,8 @@ public class LdapLoginModuleTest extends AbstractLdapTestUnit {
         Properties options = ldapLoginModuleOptions();
         options.put(LDAPOptions.ROLE_MAPPING, "admin=karaf,test;admin=another");
         LDAPLoginModule module = new LDAPLoginModule();
-        CallbackHandler cb = new CallbackHandler() {
-            public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
-                for (Callback cb : callbacks) {
-                    if (cb instanceof NameCallback) {
-                        ((NameCallback) cb).setName("admin");
-                    } else if (cb instanceof PasswordCallback) {
-                        ((PasswordCallback) cb).setPassword("admin123".toCharArray());
-                    }
-                }
-            }
-        };
         Subject subject = new Subject();
-        module.initialize(subject, cb, null, options);
+        module.initialize(subject, new NamePasswordCallbackHandler("admin", "admin123"), null, options);
 
         assertEquals("Precondition", 0, subject.getPrincipals().size());
         assertTrue(module.login());
@@ -372,7 +283,7 @@ public class LdapLoginModuleTest extends AbstractLdapTestUnit {
 
         assertEquals(4, subject.getPrincipals().size());
 
-        final List<String> roles = new ArrayList<String>(Arrays.asList("karaf", "test", "another"));
+        final List<String> roles = new ArrayList<>(Arrays.asList("karaf", "test", "another"));
 
         boolean foundUser = false;
         boolean foundRole = false;
@@ -398,19 +309,8 @@ public class LdapLoginModuleTest extends AbstractLdapTestUnit {
         Properties options = ldapLoginModuleOptions();
         options.put(LDAPOptions.ROLE_MAPPING, "admin = karaf, test; admin = another");
         LDAPLoginModule module = new LDAPLoginModule();
-        CallbackHandler cb = new CallbackHandler() {
-            public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
-                for (Callback cb : callbacks) {
-                    if (cb instanceof NameCallback) {
-                        ((NameCallback) cb).setName("admin");
-                    } else if (cb instanceof PasswordCallback) {
-                        ((PasswordCallback) cb).setPassword("admin123".toCharArray());
-                    }
-                }
-            }
-        };
         Subject subject = new Subject();
-        module.initialize(subject, cb, null, options);
+        module.initialize(subject, new NamePasswordCallbackHandler("admin", "admin123"), null, options);
 
         assertEquals("Precondition", 0, subject.getPrincipals().size());
         assertTrue(module.login());
@@ -418,7 +318,7 @@ public class LdapLoginModuleTest extends AbstractLdapTestUnit {
 
         assertEquals(4, subject.getPrincipals().size());
 
-        final List<String> roles = new ArrayList<String>(Arrays.asList("karaf", "test", "another"));
+        final List<String> roles = new ArrayList<>(Arrays.asList("karaf", "test", "another"));
 
         boolean foundUser = false;
         boolean foundRole = false;
@@ -448,19 +348,8 @@ public class LdapLoginModuleTest extends AbstractLdapTestUnit {
         options.put(LDAPOptions.ROLE_FILTER, "(member=%fqdn)");
         options.put(LDAPOptions.ROLE_NAME_ATTRIBUTE, "description");
         LDAPLoginModule module = new LDAPLoginModule();
-        CallbackHandler cb = new CallbackHandler() {
-            public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
-                for (Callback cb : callbacks) {
-                    if (cb instanceof NameCallback) {
-                        ((NameCallback) cb).setName("admin");
-                    } else if (cb instanceof PasswordCallback) {
-                        ((PasswordCallback) cb).setPassword("admin123".toCharArray());
-                    }
-                }
-            }
-        };
         Subject subject = new Subject();
-        module.initialize(subject, cb, null, options);
+        module.initialize(subject, new NamePasswordCallbackHandler("admin", "admin123"), null, options);
 
         assertEquals("Precondition", 0, subject.getPrincipals().size());
         assertTrue(module.login());
@@ -468,7 +357,7 @@ public class LdapLoginModuleTest extends AbstractLdapTestUnit {
 
         assertEquals(2, subject.getPrincipals().size());
 
-        final List<String> roles = new ArrayList<String>(Arrays.asList("karaf"));
+        final List<String> roles = new ArrayList<>(Arrays.asList("karaf"));
 
         boolean foundUser = false;
         boolean foundRole = false;

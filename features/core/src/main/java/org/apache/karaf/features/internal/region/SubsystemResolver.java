@@ -37,7 +37,7 @@ import org.apache.karaf.features.internal.resolver.ResolverUtil;
 import org.apache.karaf.features.internal.resolver.ResourceBuilder;
 import org.apache.karaf.features.internal.resolver.ResourceImpl;
 import org.apache.karaf.features.internal.resolver.SimpleFilter;
-import org.apache.karaf.features.internal.util.JsonWriter;
+import org.apache.karaf.util.json.JsonWriter;
 import org.eclipse.equinox.internal.region.StandardRegionDigraph;
 import org.eclipse.equinox.region.Region;
 import org.eclipse.equinox.region.RegionDigraph;
@@ -168,7 +168,7 @@ public class SubsystemResolver {
         if (root != null) {
             return root.collectPrerequisites();
         }
-        return new HashSet<String>();
+        return new HashSet<>();
     }
 
     public Map<Resource, List<Wire>> resolve(
@@ -222,12 +222,7 @@ public class SubsystemResolver {
         // Remove wiring to the fake environment resource
         if (environmentResource != null) {
             for (List<Wire> wires : wiring.values()) {
-                for (Iterator<Wire> iterator = wires.iterator(); iterator.hasNext();) {
-                    Wire wire = iterator.next();
-                    if (wire.getProvider() == environmentResource) {
-                        iterator.remove();
-                    }
-                }
+                wires.removeIf(wire -> wire.getProvider() == environmentResource);
             }
         }
         // Fragments are always wired to their host only, so create fake wiring to
@@ -272,8 +267,8 @@ public class SubsystemResolver {
         Requirement req = new RequirementImpl(
                 null,
                 IDENTITY_NAMESPACE,
-                Collections.<String, String>emptyMap(),
-                Collections.<String, Object>emptyMap(),
+                Collections.emptyMap(),
+                Collections.emptyMap(),
                 new SimpleFilter(null, null, SimpleFilter.MATCH_ALL));
         Collection<Capability> identities = repository.findProviders(Collections.singleton(req)).get(req);
         List<Object> resources = new ArrayList<>();
@@ -310,12 +305,7 @@ public class SubsystemResolver {
     private void addBundleInfos(Subsystem subsystem) {
         if (subsystem != null) {
             String region = getFlatSubsystemsMap().get(subsystem.getName());
-            Map<String, BundleInfo> bis = bundleInfos.get(region);
-            if (bis == null) {
-                bis = new HashMap<>();
-                bundleInfos.put(region, bis);
-            }
-            bis.putAll(subsystem.getBundleInfos());
+            bundleInfos.computeIfAbsent(region, k -> new HashMap<>()).putAll(subsystem.getBundleInfos());
             for (Subsystem child : subsystem.getChildren()) {
                 addBundleInfos(child);
             }
@@ -475,7 +465,7 @@ public class SubsystemResolver {
         }
     }
 
-    private Requirement getSubsystemRequirement(Resource resource) {
+    static Requirement getSubsystemRequirement(Resource resource) {
         for (Requirement requirement : resource.getRequirements(null)) {
             if (IDENTITY_NAMESPACE.equals(requirement.getNamespace())
                     && TYPE_SUBSYSTEM.equals(requirement.getAttributes().get(CAPABILITY_TYPE_ATTRIBUTE))) {

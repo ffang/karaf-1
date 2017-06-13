@@ -15,6 +15,8 @@ package org.apache.karaf.itests;
 
 import static org.junit.Assert.assertTrue;
 import static org.ops4j.pax.exam.CoreOptions.maven;
+import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
+import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.configureConsole;
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.configureSecurity;
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.editConfigurationFilePut;
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.karafDistributionConfiguration;
@@ -70,7 +72,6 @@ import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.ProbeBuilder;
 import org.ops4j.pax.exam.RerunTestException;
 import org.ops4j.pax.exam.TestProbeBuilder;
-import org.ops4j.pax.exam.karaf.options.KarafDistributionOption;
 import org.ops4j.pax.exam.karaf.options.LogLevelOption.LogLevel;
 import org.ops4j.pax.exam.options.MavenArtifactUrlReference;
 import org.osgi.framework.Bundle;
@@ -141,8 +142,6 @@ public class KarafTestSupport {
             return new Statement() {
                 @Override
                 public void evaluate() throws Throwable {
-                    Throwable caughtThrowable = null;
-                    
                     // implement retry logic here
                     // retry once to honor the FeatureService refresh
                     try {
@@ -194,8 +193,11 @@ public class KarafTestSupport {
             karafDistributionConfiguration().frameworkUrl(karafUrl).name("Apache Karaf").unpackDirectory(new File("target/exam")),
             // enable JMX RBAC security, thanks to the KarafMBeanServerBuilder
             configureSecurity().disableKarafMBeanServerBuilder(),
+            configureConsole().ignoreLocalConsole(),
             keepRuntimeFolder(),
             logLevel(LogLevel.INFO),
+            mavenBundle().groupId("org.awaitility").artifactId("awaitility").versionAsInProject(),
+            mavenBundle().groupId("org.apache.servicemix.bundles").artifactId("org.apache.servicemix.bundles.hamcrest").versionAsInProject(),
             replaceConfigurationFile("etc/org.ops4j.pax.logging.cfg", getConfigFile("/etc/org.ops4j.pax.logging.cfg")),
             editConfigurationFilePut("etc/org.apache.karaf.features.cfg", "updateSnapshots", "none"),
             editConfigurationFilePut("etc/org.ops4j.pax.web.cfg", "org.osgi.service.http.port", httpPort),
@@ -211,10 +213,9 @@ public class KarafTestSupport {
         };
     }
 
-    protected int getAvailablePort(int min, int max) {
+    public static int getAvailablePort(int min, int max) {
         for (int i = min; i <= max; i++) {
-            try {
-                ServerSocket socket = new ServerSocket(i);
+            try (ServerSocket socket = new ServerSocket(i)) {
                 return socket.getLocalPort();
             } catch (Exception e) {
                 System.err.println("Port " + i + " not available, trying next one");
@@ -255,39 +256,28 @@ public class KarafTestSupport {
         final SessionFactory sessionFactory = getOsgiService(SessionFactory.class);
         final Session session = sessionFactory.create(System.in, printStream, System.err);
 
-        final Callable<String> commandCallable = new Callable<String>() {
-            @Override
-            public String call() throws Exception {
-                try {
-                    if (!silent) {
-                        System.err.println(command);
-                    }
-                    session.execute(command);
-                } catch (Exception e) {
-                    throw new RuntimeException(e.getMessage(), e);
+        final Callable<String> commandCallable = () -> {
+            try {
+                if (!silent) {
+                    System.err.println(command);
                 }
-                printStream.flush();
-                return byteArrayOutputStream.toString();
+                session.execute(command);
+            } catch (Exception e) {
+                throw new RuntimeException(e.getMessage(), e);
             }
+            printStream.flush();
+            return byteArrayOutputStream.toString();
         };
 
         FutureTask<String> commandFuture;
         if (principals.length == 0) {
-            commandFuture = new FutureTask<String>(commandCallable);
+            commandFuture = new FutureTask<>(commandCallable);
         } else {
             // If principals are defined, run the command callable via Subject.doAs()
-            commandFuture = new FutureTask<String>(new Callable<String>() {
-                @Override
-                public String call() throws Exception {
-                    Subject subject = new Subject();
-                    subject.getPrincipals().addAll(Arrays.asList(principals));
-                    return Subject.doAs(subject, new PrivilegedExceptionAction<String>() {
-                        @Override
-                        public String run() throws Exception {
-                            return commandCallable.call();
-                        }
-                    });
-                }
+            commandFuture = new FutureTask<>(() -> {
+                Subject subject = new Subject();
+                subject.getPrincipals().addAll(Arrays.asList(principals));
+                return Subject.doAs(subject, (PrivilegedExceptionAction<String>) commandCallable::call);
             });
         }
 
@@ -389,7 +379,7 @@ public class KarafTestSupport {
     }
 
     protected void waitForService(String filter, long timeout) throws InvalidSyntaxException, InterruptedException {
-        ServiceTracker<Object, Object> st = new ServiceTracker<Object, Object>(bundleContext, bundleContext.createFilter(filter), null);
+        ServiceTracker<Object, Object> st = new ServiceTracker<>(bundleContext, bundleContext.createFilter(filter), null);
         try {
             st.open();
             st.waitForService(timeout);
@@ -437,7 +427,7 @@ public class KarafTestSupport {
      */
     @SuppressWarnings("rawtypes")
     private static Collection<ServiceReference> asCollection(ServiceReference[] references) {
-        return references != null ? Arrays.asList(references) : Collections.<ServiceReference>emptyList();
+        return references != null ? Arrays.asList(references) : Collections.emptyList();
     }
 
     public JMXConnector getJMXConnector() throws Exception {
@@ -446,7 +436,7 @@ public class KarafTestSupport {
 
     public JMXConnector getJMXConnector(String userName, String passWord) throws Exception {
         JMXServiceURL url = new JMXServiceURL(getJmxServiceUrl());
-        Hashtable<String, Object> env = new Hashtable<String, Object>();
+        Hashtable<String, Object> env = new Hashtable<>();
         String[] credentials = new String[]{ userName, passWord };
         env.put("jmx.remote.credentials", credentials);
         JMXConnector connector = JMXConnectorFactory.connect(url, env);
@@ -495,9 +485,9 @@ public class KarafTestSupport {
     }
 
     public void assertFeaturesInstalled(String ... expectedFeatures) throws Exception {
-        Set<String> expectedFeaturesSet = new HashSet<String>(Arrays.asList(expectedFeatures));
+        Set<String> expectedFeaturesSet = new HashSet<>(Arrays.asList(expectedFeatures));
         Feature[] features = featureService.listInstalledFeatures();
-        Set<String> installedFeatures = new HashSet<String>();
+        Set<String> installedFeatures = new HashSet<>();
         for (Feature feature : features) {
             installedFeatures.add(feature.getName());
         }

@@ -99,6 +99,7 @@ set LOCAL_CLASSPATH=%CLASSPATH%
 
 set CLASSPATH=%LOCAL_CLASSPATH%;%KARAF_BASE%\conf
 set DEFAULT_JAVA_DEBUG_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005
+set DEFAULT_JAVA_DEBUGS_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005
 
 if "%LOCAL_CLASSPATH%" == "" goto :KARAF_CLASSPATH_EMPTY
     set CLASSPATH=%LOCAL_CLASSPATH%;%KARAF_BASE%\conf
@@ -236,7 +237,7 @@ if not exist "%JAVA_HOME%\bin\server\jvm.dll" (
         echo For more details see http://java.sun.com/products/hotspot/whitepaper.html#client
     )
 )
-set DEFAULT_JAVA_OPTS=-Xms%JAVA_MIN_MEM% -Xmx%JAVA_MAX_MEM% -Dcom.sun.management.jmxremote  -XX:+UnlockDiagnosticVMOptions -XX:+UnsyncloadClass
+set DEFAULT_JAVA_OPTS=-Xms%JAVA_MIN_MEM% -Xmx%JAVA_MAX_MEM% -Dcom.sun.management.jmxremote  -XX:+UnlockDiagnosticVMOptions
 
 rem Check some easily accessible MIN/MAX params for JVM mem usage
 if not "%JAVA_PERM_MEM%" == "" (
@@ -308,6 +309,7 @@ if "%KARAF_PROFILER%" == "" goto :RUN
     if "%1" == "client" goto :EXECUTE_CLIENT
     if "%1" == "clean" goto :EXECUTE_CLEAN
     if "%1" == "debug" goto :EXECUTE_DEBUG
+    if "%1" == "debugs" goto :EXECUTE_DEBUGS
     goto :EXECUTE
 
 :EXECUTE_STOP
@@ -360,6 +362,12 @@ if "%KARAF_PROFILER%" == "" goto :RUN
     shift
     goto :RUN_LOOP
 
+:EXECUTE_DEBUGS
+    if "%JAVA_DEBUG_OPTS%" == "" set JAVA_DEBUG_OPTS=%DEFAULT_JAVA_DEBUGS_OPTS%
+    set JAVA_OPTS=%JAVA_DEBUG_OPTS% %JAVA_OPTS%
+    shift
+    goto :RUN_LOOP
+
 :EXECUTE
     SET ARGS=%1 %2 %3 %4 %5 %6 %7 %8
     rem Execute the Java Virtual Machine
@@ -406,13 +414,14 @@ if "%KARAF_PROFILER%" == "" goto :RUN
                 echo Restarting ...
                 %KARAF_DAEMON% restart!
             )
-        ) else (
-            if ERRORLEVEL 10 (
-                echo Restarting JVM...
-                goto EXECUTE
-            )
+        )
+    ) else (
+        if ERRORLEVEL 10 (
+            echo Restarting JVM...
+            goto EXECUTE
         )
     )
+
 
 rem # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 

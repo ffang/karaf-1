@@ -29,7 +29,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -61,9 +60,9 @@ public class DefaultActionPreparator {
     public boolean prepare(Action action, Session session, List<Object> params) throws Exception {
 
         Command command = action.getClass().getAnnotation(Command.class);
-        Map<Option, Field> options = new HashMap<Option, Field>();
-        Map<Argument, Field> arguments = new HashMap<Argument, Field>();
-        List<Argument> orderedArguments = new ArrayList<Argument>();
+        Map<Option, Field> options = new HashMap<>();
+        Map<Argument, Field> arguments = new HashMap<>();
+        List<Argument> orderedArguments = new ArrayList<>();
 
         for (Class<?> type = action.getClass(); type != null; type = type.getSuperclass()) {
             for (Field field : type.getDeclaredFields()) {
@@ -90,8 +89,7 @@ public class DefaultActionPreparator {
         assertIndexesAreCorrect(action.getClass(), orderedArguments);
 
         String commandErrorSt = COLOR_RED + "Error executing command " + command.scope() + ":" + INTENSITY_BOLD + command.name() + INTENSITY_NORMAL + COLOR_DEFAULT + ": ";
-        for (Iterator<Object> it = params.iterator(); it.hasNext(); ) {
-            Object param = it.next();
+        for (Object param : params) {
             if (HelpOption.HELP.name().equals(param)) {
                 int termWidth = session.getTerminal() != null ? session.getTerminal().getWidth() : 80;
                 boolean globalScope = NameScoping.isGlobalScope(session, command.scope());
@@ -113,7 +111,7 @@ public class DefaultActionPreparator {
                 paramValue = (String)param;
             }
             if (param instanceof Token) {
-                paramValue = ((Token)param).toString();
+                paramValue = param.toString();
             }
 
             if (processOptions
@@ -302,11 +300,7 @@ public class DefaultActionPreparator {
         Command command = action.getClass().getAnnotation(Command.class);
         if (command != null) {
             List<Argument> argumentsSet = new ArrayList<Argument>(arguments.keySet());
-            Collections.sort(argumentsSet, new Comparator<Argument>() {
-                public int compare(Argument o1, Argument o2) {
-                    return Integer.valueOf(o1.index()).compareTo(Integer.valueOf(o2.index()));
-                }
-            });
+            argumentsSet.sort(Comparator.comparing(Argument::index));
             Set<Option> optionsSet = new HashSet<Option>(options.keySet());
             optionsSet.add(HelpOption.HELP);
             if (command != null && (command.description() != null || command.name() != null)) {

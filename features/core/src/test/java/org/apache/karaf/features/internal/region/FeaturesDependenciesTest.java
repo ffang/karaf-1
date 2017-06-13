@@ -32,7 +32,6 @@ import org.apache.karaf.features.internal.service.RepositoryImpl;
 import org.apache.karaf.features.internal.support.TestDownloadManager;
 import org.junit.Test;
 import org.osgi.framework.namespace.IdentityNamespace;
-import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Resource;
 import org.osgi.resource.Wire;
@@ -45,7 +44,7 @@ import static org.junit.Assert.assertEquals;
 
 public class FeaturesDependenciesTest {
 
-    Logger logger = LoggerFactory.getLogger(FeaturesDependenciesTest.class);;
+    Logger logger = LoggerFactory.getLogger(FeaturesDependenciesTest.class);
     Resolver resolver = new ResolverImpl(new Slf4jResolverLog(logger));
 
     @Test
@@ -131,12 +130,12 @@ public class FeaturesDependenciesTest {
     private void doTestFeatureDependency(String[] features, String[] bundles) throws Exception {
         RepositoryImpl repo = new RepositoryImpl(getClass().getResource("data8/features.xml").toURI());
 
-        Map<String, Set<String>> requirements = new HashMap<String, Set<String>>();
+        Map<String, Set<String>> requirements = new HashMap<>();
         for (String feature : features) {
             addToMapSet(requirements, "root", feature);
         }
 
-        Map<String, Set<String>> expected = new HashMap<String, Set<String>>();
+        Map<String, Set<String>> expected = new HashMap<>();
         for (String bundle : bundles) {
             addToMapSet(expected, "root", bundle);
         }
@@ -144,8 +143,8 @@ public class FeaturesDependenciesTest {
         SubsystemResolver resolver = new SubsystemResolver(this.resolver, new TestDownloadManager(getClass(), "data8"));
         resolver.prepare(Arrays.asList(repo.getFeatures()),
                 requirements,
-                Collections.<String, Set<BundleRevision>>emptyMap());
-        resolver.resolve(Collections.<String>emptySet(),
+                Collections.emptyMap());
+        resolver.resolve(Collections.emptySet(),
                 FeaturesService.DEFAULT_FEATURE_RESOLUTION_RANGE,
                 null, null, null);
 
@@ -173,7 +172,7 @@ public class FeaturesDependenciesTest {
     }
 
     private Map<String, Set<String>> getBundleNamesPerRegions(SubsystemResolver resolver) {
-        Map<String, Set<String>> mapping = new HashMap<String, Set<String>>();
+        Map<String, Set<String>> mapping = new HashMap<>();
         Map<String, Set<Resource>> bundles = resolver.getBundlesPerRegions();
         for (Map.Entry<String,Set<Resource>> entry : bundles.entrySet()) {
             for (Resource r : entry.getValue()) {
@@ -187,13 +186,8 @@ public class FeaturesDependenciesTest {
     private void dumpWiring(SubsystemResolver resolver) {
         System.out.println("Wiring");
         Map<Resource, List<Wire>> wiring = resolver.getWiring();
-        List<Resource> resources = new ArrayList<Resource>(wiring.keySet());
-        Collections.sort(resources, new Comparator<Resource>() {
-            @Override
-            public int compare(Resource o1, Resource o2) {
-                return getName(o1).compareTo(getName(o2));
-            }
-        });
+        List<Resource> resources = new ArrayList<>(wiring.keySet());
+        resources.sort(Comparator.comparing(this::getName));
         for (Resource resource : resources) {
             System.out.println("    " + getName(resource));
             for (Wire wire : wiring.get(resource)) {

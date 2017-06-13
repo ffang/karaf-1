@@ -28,7 +28,6 @@ import java.net.URL;
 import java.util.*;
 
 import org.apache.felix.utils.properties.InterpolationHelper;
-import org.apache.felix.utils.properties.InterpolationHelper.SubstitutionCallback;
 import org.apache.felix.utils.properties.TypedProperties;
 import org.apache.karaf.features.ConfigFileInfo;
 import org.apache.karaf.features.ConfigInfo;
@@ -185,7 +184,7 @@ public class FeatureConfigInstaller {
         // Substitute all variables, but keep unknown ones.
         final String dummyKey = "";
         try {
-            finalname = InterpolationHelper.substVars(finalname, dummyKey, null, null, (SubstitutionCallback) null,
+            finalname = InterpolationHelper.substVars(finalname, dummyKey, null, null, null,
                     true, true, false);
         } catch (final IllegalArgumentException ex) {
             LOGGER.info("Substitution failed. Skip substitution of variables of configuration final name ({}).",

@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -168,7 +167,7 @@ public class KarServiceImpl implements KarService {
 
 
     private List<URI> readFromFile(File repoListFile) {
-        ArrayList<URI> uriList = new ArrayList<URI>();
+        ArrayList<URI> uriList = new ArrayList<>();
         FileReader fr = null;
         try {
             fr = new FileReader(repoListFile);
@@ -237,7 +236,7 @@ public class KarServiceImpl implements KarService {
     
     @Override
     public List<String> list() throws Exception {
-        List<String> kars = new ArrayList<String>();
+        List<String> kars = new ArrayList<>();
         for (File kar : storage.listFiles()) {
             if (kar.isDirectory()) {
                 kars.add(kar.getName());
@@ -275,15 +274,19 @@ public class KarServiceImpl implements KarService {
                 if (repository.getURI().equals(karFeatureRepoUri)) {
                     try {
                         for (Feature feature : repository.getFeatures()) {
-                            try {
-                                LOGGER.debug("noAutoRefreshBundles is " + isNoAutoRefreshBundles());
-                                if (isNoAutoRefreshBundles()) {
-                                    featuresService.installFeature(feature, EnumSet.of(FeaturesService.Option.NoAutoRefreshBundles));
-                                } else {
-                                    featuresService.installFeature(feature, EnumSet.noneOf(FeaturesService.Option.class));
+                            if (feature.getInstall() == null || !feature.getInstall().equals("manual")) {
+                                try {
+                                    LOGGER.debug("noAutoRefreshBundles is " + isNoAutoRefreshBundles());
+                                    if (isNoAutoRefreshBundles()) {
+                                        featuresService.installFeature(feature, EnumSet.of(FeaturesService.Option.NoAutoRefreshBundles));
+                                    } else {
+                                        featuresService.installFeature(feature, EnumSet.noneOf(FeaturesService.Option.class));
+                                    }
+                                } catch (Exception e) {
+                                    LOGGER.warn("Unable to install Kar feature {}", feature.getName() + "/" + feature.getVersion(), e);
                                 }
-                            } catch (Exception e) {
-                                LOGGER.warn("Unable to install Kar feature {}", feature.getName() + "/" + feature.getVersion(), e);
+                            } else {
+                                LOGGER.warn("Feature " + feature.getName() + "/" + feature.getVersion() + " has install flag set to \"manual\", so it's not automatically installed");
                             }
                         }
                     } catch (Exception e) {
@@ -310,10 +313,10 @@ public class KarServiceImpl implements KarService {
             Manifest manifest = createNonAutoStartManifest(repo.getURI());
             jos = new JarOutputStream(new BufferedOutputStream(fos, 100000), manifest);
             
-            Map<URI, Integer> locationMap = new HashMap<URI, Integer>();
+            Map<URI, Integer> locationMap = new HashMap<>();
             copyResourceToJar(jos, repo.getURI(), locationMap);
         
-            Map<String, Feature> featureMap = new HashMap<String, Feature>();
+            Map<String, Feature> featureMap = new HashMap<>();
             for (Feature feature : repo.getFeatures()) {
                 featureMap.put(feature.getName(), feature);
             }
@@ -338,7 +341,7 @@ public class KarServiceImpl implements KarService {
     }
 
     private Set<Feature> getFeatures(Map<String, Feature> featureMap, List<String> features, int depth) {
-        Set<Feature> featureSet = new HashSet<Feature>();
+        Set<Feature> featureSet = new HashSet<>();
         if (depth > 5) {
             // Break after some recursions to avoid endless loops 
             return featureSet;
@@ -355,7 +358,7 @@ public class KarServiceImpl implements KarService {
             } else {
                 featureSet.add(feature);
                 List<Dependency> deps = feature.getDependencies();
-                List<String> depNames = new ArrayList<String>();
+                List<String> depNames = new ArrayList<>();
                 for (Dependency dependency : deps) {
                     depNames.add(dependency.getName());
                 }
@@ -365,7 +368,7 @@ public class KarServiceImpl implements KarService {
         return featureSet;
     }
 
-    private Manifest createNonAutoStartManifest(URI repoUri) throws UnsupportedEncodingException, IOException {
+    private Manifest createNonAutoStartManifest(URI repoUri) throws IOException {
         String manifestSt = "Manifest-Version: 1.0\n" +
             Kar.MANIFEST_ATTR_KARAF_FEATURE_START +": false\n" +
             Kar.MANIFEST_ATTR_KARAF_FEATURE_REPOS + ": " + repoUri.toString() + "\n";
@@ -427,10 +430,12 @@ public class KarServiceImpl implements KarService {
                 if (repository.getURI().equals(karFeatureRepoUri)) {
                     try {
                         for (Feature feature : repository.getFeatures()) {
-                            try {
-                                featuresService.uninstallFeature(feature.getName(), feature.getVersion());
-                            } catch (Exception e) {
-                                LOGGER.warn("Unable to uninstall Kar feature {}", feature.getName() + "/" + feature.getVersion(), e);
+                            if (feature.getInstall() == null || !feature.getInstall().equals("manual")) {
+                                try {
+                                    featuresService.uninstallFeature(feature.getName(), feature.getVersion());
+                                } catch (Exception e) {
+                                    LOGGER.warn("Unable to uninstall Kar feature {}", feature.getName() + "/" + feature.getVersion(), e);
+                                }
                             }
                         }
                     } catch (Exception e) {

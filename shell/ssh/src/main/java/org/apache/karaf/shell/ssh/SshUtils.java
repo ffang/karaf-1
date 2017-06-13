@@ -25,7 +25,6 @@ import java.util.List;
 import org.apache.sshd.server.ServerBuilder;
 import org.apache.sshd.server.SshServer;
 import org.apache.sshd.common.NamedFactory;
-import org.apache.sshd.common.cipher.BuiltinCiphers;
 import org.apache.sshd.common.cipher.Cipher;
 import org.apache.sshd.common.compression.Compression;
 import org.apache.sshd.common.kex.KeyExchange;
@@ -40,7 +39,7 @@ public class SshUtils {
 
     public static <S> List<NamedFactory<S>> filter(Class<S> type,
             Collection<NamedFactory<S>> factories, String[] names) {
-        List<NamedFactory<S>> list = new ArrayList<NamedFactory<S>>();
+        List<NamedFactory<S>> list = new ArrayList<>();
         for (String name : names) {
             name = name.trim();
             boolean found = false;

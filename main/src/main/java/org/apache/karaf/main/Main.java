@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -203,7 +202,7 @@ public class Main {
                 System.err.println("Error occurred shutting down framework: " + ex);
                 ex.printStackTrace();
             } finally {
-                if (restartJvm) {
+                if (restartJvm && restart) {
                     System.exit(10);
                 } else if (!restart) {
                     System.exit(main.getExitCode());
@@ -345,12 +344,10 @@ public class Main {
                 new Class<?>[] {
                     signalHandlerClass
                 },
-                new InvocationHandler() {
-                    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                    (proxy, method, args) -> {
                         Main.this.destroy();
                         return null;
                     }
-                }
             );
 
             signalClass.getMethod("handle", signalClass, signalHandlerClass).invoke(
@@ -443,7 +440,7 @@ public class Main {
     }
 
     private ClassLoader createClassLoader(ArtifactResolver resolver) throws Exception {
-        List<URL> urls = new ArrayList<URL>();
+        List<URL> urls = new ArrayList<>();
         urls.add(resolver.resolve(config.frameworkBundle).toURL());
         File[] libs = new File(config.karafHome, "lib").listFiles();
         if (libs != null) {
@@ -494,7 +491,7 @@ public class Main {
     
     public List<BundleInfo> readBundlesFromStartupProperties(File startupPropsFile) {
         Properties startupProps = PropertiesLoader.loadPropertiesOrFail(startupPropsFile);
-        List<BundleInfo> bundeList = new ArrayList<BundleInfo>();
+        List<BundleInfo> bundeList = new ArrayList<>();
         for (String key : startupProps.keySet()) {
             try {
                 BundleInfo bi = new BundleInfo();
@@ -534,12 +531,12 @@ public class Main {
     }
 
     private boolean isNotFragment(Bundle b) {
-        String fragmentHostHeader = (String) b.getHeaders().get(Constants.FRAGMENT_HOST);
+        String fragmentHostHeader = b.getHeaders().get(Constants.FRAGMENT_HOST);
         return fragmentHostHeader == null || fragmentHostHeader.trim().length() == 0;
     }
 
     private List<File> getBundleRepos() {
-        List<File> bundleDirs = new ArrayList<File>();
+        List<File> bundleDirs = new ArrayList<>();
         File homeSystemRepo = new File(config.karafHome, config.defaultRepo);
         if (!homeSystemRepo.isDirectory()) {
             throw new RuntimeException("system repo folder not found: " + homeSystemRepo.getAbsolutePath());
@@ -650,15 +647,13 @@ public class Main {
             exiting = true;
 
             if (framework.getState() == Bundle.ACTIVE || framework.getState() == Bundle.STARTING) {
-                new Thread() {
-                    public void run() {
-                        try {
-                            framework.stop();
-                        } catch (BundleException e) {
-                            System.err.println("Error stopping karaf: " + e.getMessage());
-                        }
+                new Thread(() -> {
+                    try {
+                        framework.stop();
+                    } catch (BundleException e) {
+                        System.err.println("Error stopping karaf: " + e.getMessage());
                     }
-                }.start();
+                }).start();
             }
 
             int step = 5000;      

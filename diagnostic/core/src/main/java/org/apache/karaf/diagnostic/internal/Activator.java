@@ -25,7 +25,6 @@ import org.apache.karaf.diagnostic.management.internal.DiagnosticDumpMBeanImpl;
 import org.apache.karaf.diagnostic.common.FeaturesDumpProvider;
 import org.apache.karaf.diagnostic.common.LogDumpProvider;
 import org.apache.karaf.features.FeaturesService;
-import org.apache.karaf.features.internal.model.Features;
 import org.apache.karaf.util.tracker.SingleServiceTracker;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -42,10 +41,10 @@ public class Activator implements BundleActivator {
 
     @Override
     public void start(final BundleContext context) throws Exception {
-        registrations = new ArrayList<ServiceRegistration<DumpProvider>>();
+        registrations = new ArrayList<>();
         registrations.add(context.registerService(DumpProvider.class, new LogDumpProvider(context), null));
 
-        featuresServiceTracker = new SingleServiceTracker<FeaturesService>(context, FeaturesService.class, (oldFs, newFs) -> {
+        featuresServiceTracker = new SingleServiceTracker<>(context, FeaturesService.class, (oldFs, newFs) -> {
             if (featuresProviderRegistration != null) {
                 featuresProviderRegistration.unregister();
                 featuresProviderRegistration = null;
@@ -62,7 +61,7 @@ public class Activator implements BundleActivator {
         final DiagnosticDumpMBeanImpl diagnostic = new DiagnosticDumpMBeanImpl();
         diagnostic.setBundleContext(context);
 
-        Hashtable<String, Object> props = new Hashtable<String, Object>();
+        Hashtable<String, Object> props = new Hashtable<>();
         props.put("jmx.objectname", "org.apache.karaf:type=diagnostic,name=" + System.getProperty("karaf.name"));
         mbeanRegistration = context.registerService(
                 getInterfaceNames(diagnostic),
@@ -81,7 +80,7 @@ public class Activator implements BundleActivator {
     }
 
     private String[] getInterfaceNames(Object object) {
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
         for (Class cl = object.getClass(); cl != Object.class; cl = cl.getSuperclass()) {
             addSuperInterfaces(names, cl);
         }

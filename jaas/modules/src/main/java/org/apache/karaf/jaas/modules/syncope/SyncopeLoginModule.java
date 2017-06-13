@@ -32,7 +32,6 @@ import javax.security.auth.Subject;
 import javax.security.auth.callback.*;
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
-import java.security.Principal;
 import java.util.*;
 
 /**
@@ -73,7 +72,7 @@ public class SyncopeLoginModule extends AbstractKarafLoginModule {
             tmpPassword = new char[0];
         }
         String password = new String(tmpPassword);
-        principals = new HashSet<Principal>();
+        principals = new HashSet<>();
 
         // authenticate the user on Syncope
         LOGGER.debug("Authenticate user {} on Syncope located {}", user, address);
@@ -82,7 +81,7 @@ public class SyncopeLoginModule extends AbstractKarafLoginModule {
         client.getCredentialsProvider().setCredentials(AuthScope.ANY, creds);
         HttpGet get = new HttpGet(address + "/users/self");
         get.setHeader("Content-Type", "application/xml");
-        List<String> roles = new ArrayList<String>();
+        List<String> roles = new ArrayList<>();
         try {
             CloseableHttpResponse response = client.execute(get);
             LOGGER.debug("Syncope HTTP response status code: {}", response.getStatusLine().getStatusCode());
@@ -116,7 +115,7 @@ public class SyncopeLoginModule extends AbstractKarafLoginModule {
      * @throws Exception in case of extraction failure.
      */
     protected List<String> extractingRoles(String response) throws Exception {
-        List<String> roles = new ArrayList<String>();
+        List<String> roles = new ArrayList<>();
         if (response != null && !response.isEmpty()) {
             // extract the <memberships> element if it exists
             int index = response.indexOf("<memberships>");

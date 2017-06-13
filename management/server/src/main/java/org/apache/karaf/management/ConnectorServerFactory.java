@@ -44,7 +44,7 @@ import javax.rmi.ssl.SslRMIClientSocketFactory;
 
 public class ConnectorServerFactory {
 
-    private enum AuthenticatorType {NONE, PASSWORD, CERTIFICATE};
+    private enum AuthenticatorType {NONE, PASSWORD, CERTIFICATE}
 
     private MBeanServer server;
     private KarafMBeanServerGuard guard;
@@ -252,27 +252,25 @@ public class ConnectorServerFactory {
 
         try {
             if (this.threaded) {
-                Thread connectorThread = new Thread() {
-                    public void run() {
-                        try {
-                            Thread.currentThread().setContextClassLoader(ConnectorServerFactory.class.getClassLoader());
-                            connectorServer.start();
-                        } catch (IOException ex) {
-                            if (ex.getCause() instanceof BindException){
-                                // we want just the port message
-                                int endIndex = ex.getMessage().indexOf("nested exception is");
-                                // check to make sure we do not get an index out of range
-                                if (endIndex > ex.getMessage().length() || endIndex < 0){
-                                    endIndex = ex.getMessage().length();
-                                }
-                                throw new RuntimeException("\n" + ex.getMessage().substring(0, endIndex) +
-                                                        "\nYou may have started two containers.  If you need to start a second container or the default ports are already in use " +
-                                                        "update the config file etc/org.apache.karaf.management.cfg and change the Registry Port and Server Port to unused ports");
+                Thread connectorThread = new Thread(() -> {
+                    try {
+                        Thread.currentThread().setContextClassLoader(ConnectorServerFactory.class.getClassLoader());
+                        connectorServer.start();
+                    } catch (IOException ex) {
+                        if (ex.getCause() instanceof BindException){
+                            // we want just the port message
+                            int endIndex = ex.getMessage().indexOf("nested exception is");
+                            // check to make sure we do not get an index out of range
+                            if (endIndex > ex.getMessage().length() || endIndex < 0){
+                                endIndex = ex.getMessage().length();
                             }
-                            throw new RuntimeException("Could not start JMX connector server", ex);
+                            throw new RuntimeException("\n" + ex.getMessage().substring(0, endIndex) +
+                                                    "\nYou may have started two containers.  If you need to start a second container or the default ports are already in use " +
+                                                    "update the config file etc/org.apache.karaf.management.cfg and change the Registry Port and Server Port to unused ports");
                         }
+                        throw new RuntimeException("Could not start JMX connector server", ex);
                     }
-                };
+                });
                 connectorThread.setName("JMX Connector Thread [" + this.serviceUrl + "]");
                 connectorThread.setDaemon(this.daemon);
                 connectorThread.start();
@@ -347,7 +345,7 @@ public class ConnectorServerFactory {
         }
 
         public ServerSocket createServerSocket(int port) throws IOException {
-            ServerSocket serverSocket = (ServerSocket) ServerSocketFactory.getDefault().createServerSocket(port, 50, InetAddress.getByName(rmiServerHost));
+            ServerSocket serverSocket = ServerSocketFactory.getDefault().createServerSocket(port, 50, InetAddress.getByName(rmiServerHost));
             return serverSocket;
         }
     }

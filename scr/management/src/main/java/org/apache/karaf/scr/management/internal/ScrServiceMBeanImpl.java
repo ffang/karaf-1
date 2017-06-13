@@ -74,7 +74,7 @@ public class ScrServiceMBeanImpl extends StandardMBean implements ScrServiceMBea
     @Activate
     public void activate() throws Exception {
         LOGGER.info("Activating the " + COMPONENT_LABEL);
-        Map<Object, String> mbeans = new HashMap<Object, String>();
+        Map<Object, String> mbeans = new HashMap<>();
         mbeans.put(this, "org.apache.karaf:type=scr,name=${karaf.name}");
         try {
             lock.writeLock().lock();
@@ -128,7 +128,7 @@ public class ScrServiceMBeanImpl extends StandardMBean implements ScrServiceMBea
 
     public boolean isComponentActive(String componentName) throws MBeanException {
         try {
-            return (componentState(componentName) == Component.STATE_ACTIVE) ? true : false;
+            return componentState(componentName) == Component.STATE_ACTIVE;
         } catch (Exception e) {
             throw new MBeanException(null, e.toString());
         }

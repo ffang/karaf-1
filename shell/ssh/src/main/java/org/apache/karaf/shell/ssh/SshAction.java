@@ -246,9 +246,9 @@ public class SshAction implements Action {
                         if (ctype != null) {
                             channel.setEnv("LC_CTYPE", ctype.toString());
                         }
-                        channel.setIn(new NoCloseInputStream(System.in));
-                        channel.setOut(new NoCloseOutputStream(System.out));
-                        channel.setErr(new NoCloseOutputStream(System.err));
+                        channel.setIn(new NoCloseInputStream(jlineTerminal.input()));
+                        channel.setOut(new NoCloseOutputStream(jlineTerminal.output()));
+                        channel.setErr(new NoCloseOutputStream(jlineTerminal.output()));
                         channel.open().verify();
                         SignalListener signalListener = signal -> {
                             try {
@@ -304,7 +304,7 @@ public class SshAction implements Action {
         return term != null ? term.getHeight() : 25;
     }
 
-    private static ClientSession connectWithRetries(SshClient client, String username, String host, int port, int maxAttempts) throws Exception, InterruptedException {
+    private static ClientSession connectWithRetries(SshClient client, String username, String host, int port, int maxAttempts) throws Exception {
         ClientSession session = null;
         int retries = 0;
         do {

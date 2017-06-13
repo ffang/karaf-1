@@ -22,7 +22,6 @@ import javax.security.auth.login.AppConfigurationEntry;
 
 import org.apache.karaf.jaas.boot.ProxyLoginModule;
 import org.apache.karaf.jaas.config.JaasRealm;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
 public class KarafRealm implements JaasRealm {
@@ -61,7 +60,7 @@ public class KarafRealm implements JaasRealm {
 
     @Override
     public AppConfigurationEntry[] getEntries() {
-        Map<String, Object> propertiesOptions = new HashMap<String, Object>();
+        Map<String, Object> propertiesOptions = new HashMap<>();
         propertiesOptions.put(BundleContext.class.getName(), bundleContext);
         propertiesOptions.put(ProxyLoginModule.PROPERTY_MODULE, PROPERTIES_MODULE);
         propertiesOptions.put(ProxyLoginModule.PROPERTY_BUNDLE, Long.toString(bundleContext.getBundle().getBundleId()));
@@ -74,7 +73,7 @@ public class KarafRealm implements JaasRealm {
         propertiesOptions.put("encryption.algorithm", properties.get("encryption.algorithm"));
         propertiesOptions.put("encryption.encoding", properties.get("encryption.encoding"));
 
-        Map<String, Object> publicKeyOptions = new HashMap<String, Object>();
+        Map<String, Object> publicKeyOptions = new HashMap<>();
         publicKeyOptions.put(BundleContext.class.getName(), bundleContext);
         publicKeyOptions.put(ProxyLoginModule.PROPERTY_MODULE, PUBLIC_KEY_MODULE);
         publicKeyOptions.put(ProxyLoginModule.PROPERTY_BUNDLE, Long.toString(bundleContext.getBundle().getBundleId()));

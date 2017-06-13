@@ -120,7 +120,7 @@ public class LDAPOptions {
     }
 
     private Map<String, Set<String>> parseRoleMapping(String option) {
-        Map<String, Set<String>> roleMapping = new HashMap<String, Set<String>>();
+        Map<String, Set<String>> roleMapping = new HashMap<>();
         if (option != null) {
             LOGGER.debug("Parse role mapping {}", option);
             String[] mappings = option.split(";");
@@ -128,10 +128,7 @@ public class LDAPOptions {
                 int index = mapping.lastIndexOf("=");
                 String ldapRole = mapping.substring(0,index).trim();
                 String[] karafRoles = mapping.substring(index+1).split(",");
-                if (roleMapping.get(ldapRole) == null) {
-                    roleMapping.put(ldapRole, new HashSet<String>());
-                }
-                final Set<String> karafRolesSet = roleMapping.get(ldapRole);
+                final Set<String> karafRolesSet = roleMapping.computeIfAbsent(ldapRole, k -> new HashSet<>());
                 for (String karafRole : karafRoles) {
                     karafRolesSet.add(karafRole.trim());
                 }
@@ -269,7 +266,7 @@ public class LDAPOptions {
 
     public boolean getDisableCache() {
         final Object object = options.get(DISABLE_CACHE);
-        return object == null ? true : Boolean.parseBoolean((String) object);
+        return object == null || Boolean.parseBoolean((String) object);
     }
 
 }

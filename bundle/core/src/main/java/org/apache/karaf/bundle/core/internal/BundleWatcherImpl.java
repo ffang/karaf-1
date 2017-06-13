@@ -54,7 +54,7 @@ public class BundleWatcherImpl implements Runnable, BundleListener, BundleWatche
 
     private AtomicBoolean running = new AtomicBoolean(false);
     private long interval = 1000L;
-    private List<String> watchURLs = new CopyOnWriteArrayList<String>();
+    private List<String> watchURLs = new CopyOnWriteArrayList<>();
     private AtomicInteger counter = new AtomicInteger(0);
 
     public BundleWatcherImpl(BundleContext bundleContext, MavenConfigService mavenConfigService, BundleService bundleService) {
@@ -76,7 +76,7 @@ public class BundleWatcherImpl implements Runnable, BundleListener, BundleWatche
     public void run() {
         logger.debug("Bundle watcher thread started");
         int oldCounter = -1;
-        Set<Bundle> watchedBundles = new HashSet<Bundle>();
+        Set<Bundle> watchedBundles = new HashSet<>();
         while (running.get() && watchURLs.size() > 0) {
             if (oldCounter != counter.get()) {
                 oldCounter = counter.get();
@@ -95,7 +95,7 @@ public class BundleWatcherImpl implements Runnable, BundleListener, BundleWatche
                 // Get the wiring before any in case of a refresh of a dependency
                 FrameworkWiring wiring = bundleContext.getBundle(0).adapt(FrameworkWiring.class);
                 File localRepository = this.localRepoDetector.getLocalRepository();
-                List<Bundle> updated = new ArrayList<Bundle>();
+                List<Bundle> updated = new ArrayList<>();
                 for (Bundle bundle : watchedBundles) {
                     try {
                         updateBundleIfNecessary(localRepository, updated, bundle);
@@ -108,11 +108,7 @@ public class BundleWatcherImpl implements Runnable, BundleListener, BundleWatche
                 if (!updated.isEmpty()) {
                     try {
                         final CountDownLatch latch = new CountDownLatch(1);
-                        wiring.refreshBundles(updated, new FrameworkListener() {
-                            public void frameworkEvent(FrameworkEvent event) {
-                                latch.countDown();
-                            }
-                        });
+                        wiring.refreshBundles(updated, (FrameworkListener) event -> latch.countDown());
                         latch.await();
                     } catch (InterruptedException e) {
                         running.set(false);
@@ -155,8 +151,7 @@ public class BundleWatcherImpl implements Runnable, BundleListener, BundleWatche
         throws BundleException, IOException {
         File location = getBundleExternalLocation(localRepository, bundle);
         if (location != null && location.exists() && location.lastModified() > bundle.getLastModified()) {
-            InputStream is = new FileInputStream(location);
-            try {
+            try (InputStream is = new FileInputStream(location)) {
                 logger.info("[Watch] Updating watched bundle: {} ({})", bundle.getSymbolicName(), bundle.getVersion());
                 if (bundle.getHeaders().get(Constants.FRAGMENT_HOST) != null) {
                     logger.info("[Watch] Bundle {} is a fragment, so it's not stopped", bundle.getSymbolicName());
@@ -175,8 +170,6 @@ public class BundleWatcherImpl implements Runnable, BundleListener, BundleWatche
                     bundle.update(is);
                 }
                 updated.add(bundle);
-            } finally {
-                is.close();
             }
         }
     }

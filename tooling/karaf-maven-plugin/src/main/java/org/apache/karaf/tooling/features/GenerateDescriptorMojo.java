@@ -33,7 +33,6 @@ import java.io.PrintStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -130,7 +129,7 @@ public class GenerateDescriptorMojo extends MojoSupport {
      *
      */
     @Parameter
-    private List<String> excludedArtifactIds = new ArrayList<String>();
+    private List<String> excludedArtifactIds = new ArrayList<>();
 
     /**
      * The resolver to use for the feature.  Normally null or "OBR" or "(OBR)"
@@ -339,11 +338,8 @@ public class GenerateDescriptorMojo extends MojoSupport {
             this.treeListing = dependencyHelper.getTreeListing();
             File dir = outputFile.getParentFile();
             if (dir.isDirectory() || dir.mkdirs()) {
-                PrintStream out = new PrintStream(new FileOutputStream(outputFile));
-                try {
+                try (PrintStream out = new PrintStream(new FileOutputStream(outputFile))) {
                     writeFeatures(out);
-                } finally {
-                    out.close();
                 }
                 // now lets attach it
                 projectHelper.attachArtifact(project, attachmentArtifactType, attachmentArtifactClassifier, outputFile);
@@ -459,7 +455,7 @@ public class GenerateDescriptorMojo extends MojoSupport {
         // the feature's Maven artifact to allow for multi-feature repositories)
         // TODO Initialise the repositories from the existing feature file if any
         Map<Dependency, Feature> otherFeatures = new HashMap<>();
-        Map<Feature, String> featureRepositories = new HashMap<Feature, String>();
+        Map<Feature, String> featureRepositories = new HashMap<>();
         for (final LocalDependency entry : localDependencies) {
             Object artifact = entry.getArtifact();
 
@@ -754,7 +750,7 @@ public class GenerateDescriptorMojo extends MojoSupport {
     @Parameter
     protected Map<String, String> systemProperties;
 
-    private void checkChanges(Features newFeatures, ObjectFactory objectFactory) throws Exception, IOException, JAXBException, XMLStreamException {
+    private void checkChanges(Features newFeatures, ObjectFactory objectFactory) throws Exception {
         if (checkDependencyChange) {
             //combine all the dependencies to one feature and strip out versions
             Features features = objectFactory.createFeaturesRoot();
@@ -774,17 +770,8 @@ public class GenerateDescriptorMojo extends MojoSupport {
                 }
             }
 
-            Collections.sort(feature.getBundle(), new Comparator<Bundle>() {
-
-                public int compare(Bundle bundle, Bundle bundle1) {
-                    return bundle.getLocation().compareTo(bundle1.getLocation());
-                }
-            });
-            Collections.sort(feature.getFeature(), new Comparator<Dependency>() {
-                public int compare(Dependency dependency, Dependency dependency1) {
-                    return dependency.getName().compareTo(dependency1.getName());
-                }
-            });
+            feature.getBundle().sort(Comparator.comparing(Bundle::getLocation));
+            feature.getFeature().sort(Comparator.comparing(Dependency::getName));
 
             if (dependencyCache.exists()) {
                 //filter dependencies file
@@ -793,8 +780,8 @@ public class GenerateDescriptorMojo extends MojoSupport {
                 Features oldfeatures = readFeaturesFile(filteredDependencyCache);
                 Feature oldFeature = oldfeatures.getFeature().get(0);
 
-                List<Bundle> addedBundles = new ArrayList<Bundle>(feature.getBundle());
-                List<Bundle> removedBundles = new ArrayList<Bundle>();
+                List<Bundle> addedBundles = new ArrayList<>(feature.getBundle());
+                List<Bundle> removedBundles = new ArrayList<>();
                 for (Bundle test : oldFeature.getBundle()) {
                     boolean t1 = addedBundles.contains(test);
                     int s1 = addedBundles.size();
@@ -811,8 +798,8 @@ public class GenerateDescriptorMojo extends MojoSupport {
                     }
                 }
 
-                List<Dependency> addedDependencys = new ArrayList<Dependency>(feature.getFeature());
-                List<Dependency> removedDependencys = new ArrayList<Dependency>();
+                List<Dependency> addedDependencys = new ArrayList<>(feature.getFeature());
+                List<Dependency> removedDependencys = new ArrayList<>();
                 for (Dependency test : oldFeature.getFeature()) {
                     boolean t1 = addedDependencys.contains(test);
                     int s1 = addedDependencys.size();
@@ -894,11 +881,8 @@ public class GenerateDescriptorMojo extends MojoSupport {
         if (!file.getParentFile().exists() || !file.getParentFile().isDirectory()) {
             throw new IOException("Cannot create directory at " + file.getParent());
         }
-        FileOutputStream out = new FileOutputStream(file);
-        try {
+        try (OutputStream out = new FileOutputStream(file)) {
             JaxbUtil.marshal(features, out);
-        } finally {
-            out.close();
         }
     }
 
@@ -932,12 +916,9 @@ public class GenerateDescriptorMojo extends MojoSupport {
 
     protected String saveTreeListing() throws IOException {
         File treeListFile = new File(filteredDependencyCache.getParentFile(), "treeListing.txt");
-        OutputStream os = new FileOutputStream(treeListFile);
-        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os));
-        try {
+        try (OutputStream os = new FileOutputStream(treeListFile);
+             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os))) {
             writer.write(treeListing);
-        } finally {
-            writer.close();
         }
         return "\tTree listing is saved here: " + treeListFile.getAbsolutePath() + "\n";
     }

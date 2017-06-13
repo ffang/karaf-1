@@ -24,10 +24,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.Reader;
-import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -108,14 +106,11 @@ public class Main {
         }
 
         if (file != null) {
-            Reader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
-            try {
+            try (Reader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
                 sb.setLength(0);
                 for (int c = reader.read(); c >= 0; c = reader.read()) {
                     sb.append((char) c);
                 }
-            } finally {
-                reader.close();
             }
         } else if (batch) {
             Reader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -244,7 +239,7 @@ public class Main {
     }
 
     private static List<URL> getFiles(File base) throws MalformedURLException {
-        List<URL> urls = new ArrayList<URL>();
+        List<URL> urls = new ArrayList<>();
         getFiles(base, urls);
         return urls;
     }

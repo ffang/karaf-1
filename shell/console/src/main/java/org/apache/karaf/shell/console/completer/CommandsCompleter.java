@@ -39,7 +39,6 @@ import org.apache.karaf.shell.console.Completer;
 import org.apache.karaf.shell.console.SessionProperties;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,9 +55,9 @@ public class CommandsCompleter implements Completer {
     private static final Logger LOGGER = LoggerFactory.getLogger(CommandsCompleter.class);
 
     private CommandSession session;
-    private final Map<String, Completer> globalCompleters = new HashMap<String, Completer>();
-    private final Map<String, Completer> localCompleters = new HashMap<String, Completer>();
-    private final Set<String> commands = new HashSet<String>();
+    private final Map<String, Completer> globalCompleters = new HashMap<>();
+    private final Map<String, Completer> localCompleters = new HashMap<>();
+    private final Set<String> commands = new HashSet<>();
     private CommandTracker tracker;
 
     public CommandsCompleter() {
@@ -97,7 +96,7 @@ public class CommandsCompleter implements Completer {
             if (subShell.isEmpty()) {
                 subShell = "*";
             }
-            List<Completer> completers = new ArrayList<Completer>();
+            List<Completer> completers = new ArrayList<>();
             for (String name : allCompleters[1].keySet()) {
                 if (name.startsWith(subShell + ":")) {
                     completers.add(allCompleters[1].get(name));
@@ -113,7 +112,7 @@ public class CommandsCompleter implements Completer {
 
         if ("FIRST".equalsIgnoreCase(completion)) {
             if (!subShell.isEmpty()) {
-                List<Completer> completers = new ArrayList<Completer>();
+                List<Completer> completers = new ArrayList<>();
                 for (String name : allCompleters[1].keySet()) {
                     if (name.startsWith(subShell + ":")) {
                         completers.add(allCompleters[1].get(name));
@@ -125,7 +124,7 @@ public class CommandsCompleter implements Completer {
                     return res;
                 }
             }
-            List<Completer> compl = new ArrayList<Completer>();
+            List<Completer> compl = new ArrayList<>();
             compl.add(new StringsCompleter(getAliases()));
             compl.addAll(allCompleters[0].values());
             int res = new AggregateCompleter(compl).complete(buffer, cursor, candidates);
@@ -133,7 +132,7 @@ public class CommandsCompleter implements Completer {
             return res;
         }
 
-        List<Completer> compl = new ArrayList<Completer>();
+        List<Completer> compl = new ArrayList<>();
         compl.add(new StringsCompleter(getAliases()));
         compl.addAll(allCompleters[0].values());
         int res = new AggregateCompleter(compl).complete(buffer, cursor, candidates);
@@ -144,7 +143,7 @@ public class CommandsCompleter implements Completer {
     protected void sort(Map<String, Completer>[] completers, List<String> scopes) {
         ScopeComparator comparator = new ScopeComparator(scopes);
         for (int i = 0; i < completers.length; i++) {
-            Map<String, Completer> map = new TreeMap<String, Completer>(comparator);
+            Map<String, Completer> map = new TreeMap<>(comparator);
             map.putAll(completers[i]);
             completers[i] = map;
         }
@@ -223,14 +222,14 @@ public class CommandsCompleter implements Completer {
         Set<String> names;
         boolean update;
         synchronized (this) {
-            names = new HashSet<String>((Set<String>) session.get(COMMANDS));
+            names = new HashSet<>((Set<String>) session.get(COMMANDS));
             update = !names.equals(commands);
         }
         if (update) {
             // get command aliases
-            Set<String> commands = new HashSet<String>();
-            Map<String, Completer> global = new HashMap<String, Completer>();
-            Map<String, Completer> local = new HashMap<String, Completer>();
+            Set<String> commands = new HashSet<>();
+            Map<String, Completer> global = new HashMap<>();
+            Map<String, Completer> local = new HashMap<>();
 
             // add argument completers for each command
             for (String command : names) {
@@ -267,8 +266,8 @@ public class CommandsCompleter implements Completer {
         }
         synchronized (this) {
             return new Map[] {
-                    new HashMap<String, Completer>(this.globalCompleters),
-                    new HashMap<String, Completer>(this.localCompleters)
+                    new HashMap<>(this.globalCompleters),
+                    new HashMap<>(this.localCompleters)
             };
         }
     }
@@ -281,7 +280,7 @@ public class CommandsCompleter implements Completer {
     @SuppressWarnings("unchecked")
     private Set<String> getAliases() {
         Set<String> vars = ((Set<String>) session.get(null));
-        Set<String> aliases = new HashSet<String>();
+        Set<String> aliases = new HashSet<>();
         for (String var : vars) {
             Object content = session.get(var);
             if (content != null && "org.apache.felix.gogo.runtime.Closure".equals(content.getClass().getName())) {
@@ -311,11 +310,9 @@ public class CommandsCompleter implements Completer {
             if (context == null) {
                 throw new IllegalStateException("Bundle is stopped");
             }
-            listener = new ServiceListener() {
-                public void serviceChanged(ServiceEvent event) {
-                    synchronized (CommandsCompleter.this) {
-                        commands.clear();
-                    }
+            listener = event -> {
+                synchronized (CommandsCompleter.this) {
+                    commands.clear();
                 }
             };
             context.addServiceListener(listener,
