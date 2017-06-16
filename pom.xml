@@ -250,6 +250,7 @@
         <jansi.version>1.16</jansi.version>
         <javassist.version>3.9.0.GA</javassist.version>
         <jline.version>3.3.0</jline.version>
+        <aesh.readline.version>1.0</aesh.readline.version>
         <jsw.version>3.2.3</jsw.version>
         <log4j.version>1.2.17</log4j.version>
         <maven.version>2.0.9</maven.version>
@@ -391,6 +392,18 @@
             </releases>
         </repository>
         -->
+        <repository>
+            <id>jboss-thirdparty-releases</id>
+            <name>JBoss Thirdparty Releases</name>
+            <url>https://repository.jboss.org/nexus/service/local/repositories/thirdparty-releases/content</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+			
     </repositories>
     <pluginRepositories>
         <!-- Apache snapshots -->
@@ -1175,6 +1188,16 @@
                 <groupId>org.jline</groupId>
                 <artifactId>jline</artifactId>
                 <version>${jline.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.aesh</groupId>
+                <artifactId>aesh-readline</artifactId>
+                <version>${aesh.readline.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.aesh</groupId>
+                <artifactId>aesh-terminal-api</artifactId>
+                <version>${aesh.readline.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven.artifact</groupId>
