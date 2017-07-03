@@ -144,6 +144,7 @@
         <antlr.bundle.version>2.7.7_5</antlr.bundle.version>
         <asm.version>5.2</asm.version>
         <asm.springsource.version>1.5.3</asm.springsource.version>
+        <awaitility.version>3.0.0</awaitility.version>
         <cglib.bundle.version>3.2.4_1</cglib.bundle.version>
         <cglib2.version>2.2.0</cglib2.version>
         
@@ -250,8 +251,8 @@
         <hibernate.validator.version>5.3.4.Final</hibernate.validator.version>
         <jansi.version>1.16</jansi.version>
         <javassist.version>3.9.0.GA</javassist.version>
-        <jline.version>3.3.0</jline.version>
         <aesh.readline.version>1.0</aesh.readline.version>
+        <jline.version>3.3.1</jline.version>
         <jsw.version>3.2.3</jsw.version>
         <log4j.version>1.2.17</log4j.version>
         <maven.version>3.0.3</maven.version>
@@ -1751,7 +1752,17 @@
             <dependency>
                 <groupId>org.awaitility</groupId>
                 <artifactId>awaitility</artifactId>
-                <version>3.0.0</version>
+                <version>${awaitility.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.narayana.osgi</groupId>
+                <artifactId>narayana-osgi-jta</artifactId>
+                <version>${narayana.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-validator</artifactId>
+                <version>${hibernate.validator.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
