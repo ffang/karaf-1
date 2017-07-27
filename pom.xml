@@ -299,7 +299,7 @@
         <xalan-serializer.bundle.version>2.7.2_1</xalan-serializer.bundle.version>
         <javax.mail.version>1.4.7</javax.mail.version>
 
-        <winsw.version>1.18</winsw.version>
+        <winsw.version>1.18.0.redhat-1</winsw.version>
 
 
         <surefire.argLine />
