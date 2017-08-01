@@ -72,6 +72,7 @@ import org.slf4j.LoggerFactory;
 
 public class ConsoleSessionImpl implements Session {
 
+    private static final String SUPPRESS_WELCOME = "karaf.shell.suppress.welcome";
     public static final String SHELL_INIT_SCRIPT = "karaf.shell.init.script";
     public static final String SHELL_HISTORY_MAXSIZE = "karaf.shell.history.maxSize";
     public static final String PROMPT = "PROMPT";
@@ -143,32 +144,12 @@ public class ConsoleSessionImpl implements Session {
                 jlineTerminal.output());
 
         // Completers
-        Completers.CompletionEnvironment env = new Completers.CompletionEnvironment() {
-            @Override
-            public Map<String, List<Completers.CompletionData>> getCompletions() {
-                return Shell.getCompletions(session);
-            }
-            @Override
-            public Set<String> getCommands() {
-                return Shell.getCommands(session);
-            }
-            @Override
-            public String resolveCommand(String command) {
-                return Shell.resolve(session, command);
-            }
-            @Override
-            public String commandName(String command) {
-                int idx = command.indexOf(':');
-                return idx >= 0 ? command.substring(idx + 1) : command;
-            }
-            @Override
-            public Object evaluate(LineReader reader, ParsedLine line, String func) throws Exception {
-                session.put(Shell.VAR_COMMAND_LINE, line);
-                return session.execute(func);
-            }
-        };
-        Completer builtinCompleter = new org.jline.builtins.Completers.Completer(env);
+        Completer builtinCompleter = createBuiltinCompleter();
         CommandsCompleter commandsCompleter = new CommandsCompleter(factory, this);
+        Completer completer =  (rdr, line, candidates) -> {
+            builtinCompleter.complete(rdr, line, candidates);
+            commandsCompleter.complete(rdr, line, candidates);
+        };
 
         // Console reader
         reader = LineReaderBuilder.builder()
@@ -177,10 +158,7 @@ public class ConsoleSessionImpl implements Session {
                     .variables(((CommandSessionImpl) session).getVariables())
                     .highlighter(new org.apache.felix.gogo.jline.Highlighter(session))
                     .parser(new KarafParser(this))
-                    .completer((rdr, line, candidates) -> {
-                        builtinCompleter.complete(rdr, line, candidates);
-                        commandsCompleter.complete(rdr, line, candidates);
-                    })
+                    .completer(completer)
                     .build();
 
         // History
@@ -232,6 +210,34 @@ public class ConsoleSessionImpl implements Session {
         session.currentDir(Paths.get(System.getProperty("user.dir")).toAbsolutePath().normalize());
 
 
+    }
+
+    private Completer createBuiltinCompleter() {
+        Completers.CompletionEnvironment env = new Completers.CompletionEnvironment() {
+            @Override
+            public Map<String, List<Completers.CompletionData>> getCompletions() {
+                return Shell.getCompletions(session);
+            }
+            @Override
+            public Set<String> getCommands() {
+                return Shell.getCommands(session);
+            }
+            @Override
+            public String resolveCommand(String command) {
+                return Shell.resolve(session, command);
+            }
+            @Override
+            public String commandName(String command) {
+                int idx = command.indexOf(':');
+                return idx >= 0 ? command.substring(idx + 1) : command;
+            }
+            @Override
+            public Object evaluate(LineReader reader, ParsedLine line, String func) throws Exception {
+                session.put(Shell.VAR_COMMAND_LINE, line);
+                return session.execute(func);
+            }
+        };
+        return new org.jline.builtins.Completers.Completer(env);
     }
 
     /**
@@ -307,9 +313,7 @@ public class ConsoleSessionImpl implements Session {
             threadIO.setStreams(session.getKeyboard(), out, err);
             thread = Thread.currentThread();
             running = true;
-            Properties brandingProps = Branding.loadBrandingProperties(terminal);
-            welcome(brandingProps);
-            setSessionProperties(brandingProps);
+            welcomeBanner();
 
             AtomicBoolean reading = new AtomicBoolean();
 
@@ -342,37 +346,11 @@ public class ConsoleSessionImpl implements Session {
             String scriptFileName = System.getProperty(SHELL_INIT_SCRIPT);
             executeScript(scriptFileName);
             while (running) {
-                String command = null;
-                reading.set(true);
-                try {
-                    command = reader.readLine(getPrompt(), getRPrompt(), null, null);
-                } catch (EndOfFileException e) {
-                    break;
-                } catch (UserInterruptException e) {
-                    // Ignore, loop again
-                    continue;
-                } catch (Throwable t) {
-                    ShellUtil.logException(this, t);
-                } finally {
-                    reading.set(false);
-                }
+                String command = readCommand(reading);
                 if (command == null) {
                     break;
                 }
-                try {
-                    Object result = session.execute(command);
-                    if (result != null) {
-                        session.getConsole().println(session.format(result, Converter.INSPECT));
-                    }
-                } catch (Throwable t) {
-                    if (!(command.endsWith("logout") && t instanceof InterruptedException)) {
-                        //command logout will interrupt this seesion thread, so this exception
-                        //is expected, don't need log it as a error message
-                        ShellUtil.logException(this, t);
-                    } else {
-                        LOGGER.debug("a console session is closed as the peer just logout");
-                    }
-                }
+                execute(command);
             }
             close();
         } finally {
@@ -381,6 +359,57 @@ public class ConsoleSessionImpl implements Session {
             } catch (Throwable t) {
                 // Ignore
             }
+        }
+    }
+
+    /**
+     * On the local console we only show the welcome banner once. This allows to suppress the banner
+     * on refreshs of the shell core bundle. 
+     * On ssh we show it every time.
+     */
+    private void welcomeBanner() {
+        if (!isLocal() || System.getProperty(SUPPRESS_WELCOME) == null) {
+            Properties brandingProps = Branding.loadBrandingProperties(terminal);
+            welcome(brandingProps);
+            setSessionProperties(brandingProps);
+            if (isLocal()) {
+                System.setProperty(SUPPRESS_WELCOME, "true");
+            }
+        }
+    }
+
+    private boolean isLocal() {
+        Boolean isLocal = (Boolean)session.get(Session.IS_LOCAL);
+        return isLocal != null && isLocal;
+    }
+
+    private String readCommand(AtomicBoolean reading) throws UserInterruptException {
+        String command = null;
+        reading.set(true);
+        try {
+            command = reader.readLine(getPrompt(), getRPrompt(), null, null);
+        } catch (EndOfFileException e) {
+            command = null;
+        } catch (UserInterruptException e) {
+            command = ""; // Do nothing
+        } catch (Throwable t) {
+            ShellUtil.logException(this, t);
+        } finally {
+            reading.set(false);
+        }
+        return command;
+    }
+
+    private void execute(String command) {
+        try {
+            Object result = session.execute(command);
+            if (result != null) {
+                session.getConsole().println(session.format(result, Converter.INSPECT));
+            }
+        } catch (InterruptedException e) {
+            LOGGER.debug("Console session is closed");
+        } catch (Throwable t) {
+            ShellUtil.logException(this, t);
         }
     }
 
@@ -484,8 +513,6 @@ public class ConsoleSessionImpl implements Session {
             System.err.println("Error in initialization script: " + scriptFileName + ": " + e.getMessage());
         }
     }
-
-
 
     protected void welcome(Properties brandingProps) {
         String welcome = brandingProps.getProperty("welcome");
