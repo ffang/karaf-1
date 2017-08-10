@@ -18,8 +18,8 @@
  */
 package org.apache.karaf.shell.ssh;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 
@@ -27,16 +27,16 @@ import org.apache.karaf.shell.api.action.lifecycle.Manager;
 import org.apache.karaf.shell.api.console.CommandLoggingFilter;
 import org.apache.karaf.shell.api.console.Session;
 import org.apache.karaf.shell.api.console.SessionFactory;
+import org.apache.karaf.shell.ssh.keygenerator.OpenSSHKeyPairProvider;
 import org.apache.karaf.shell.support.RegexCommandLoggingFilter;
 import org.apache.karaf.util.tracker.BaseActivator;
 import org.apache.karaf.util.tracker.annotation.Managed;
 import org.apache.karaf.util.tracker.annotation.RequireService;
 import org.apache.karaf.util.tracker.annotation.Services;
 import org.apache.sshd.common.file.virtualfs.VirtualFileSystemFactory;
+import org.apache.sshd.common.keyprovider.KeyPairProvider;
 import org.apache.sshd.server.SshServer;
 import org.apache.sshd.server.forward.AcceptAllForwardingFilter;
-import org.apache.sshd.server.keyprovider.AbstractGeneratorHostKeyProvider;
-import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 import org.apache.sshd.server.scp.ScpCommandFactory;
 import org.apache.sshd.server.subsystem.sftp.SftpSubsystemFactory;
 import org.osgi.framework.ServiceReference;
@@ -106,16 +106,20 @@ public class Activator extends BaseActivator implements ManagedService {
         sessionFactory = sf;
         sessionFactory.getRegistry().getService(Manager.class).register(SshAction.class);
         if (Boolean.parseBoolean(bundleContext.getProperty("karaf.startRemoteShell"))) {
-            server = createSshServer(sessionFactory);
-            this.bundleContext.registerService(SshServer.class, server, null);
-            if (server == null) {
-                return; // can result from bad specification.
-            }
-            try {
-                server.start();
-            } catch (IOException e) {
-                LOGGER.warn("Exception caught while starting SSH server", e);
-            }
+            createAndRunSshServer();
+        }
+    }
+
+    private void createAndRunSshServer() {
+        server = createSshServer(sessionFactory);
+        this.bundleContext.registerService(SshServer.class, server, null);
+        if (server == null) {
+            return; // can result from bad specification.
+        }
+        try {
+            server.start();
+        } catch (IOException e) {
+            LOGGER.warn("Exception caught while starting SSH server", e);
         }
     }
 
@@ -143,37 +147,18 @@ public class Activator extends BaseActivator implements ManagedService {
         int nioWorkers         = getInt("nio-workers", 2);
         String sshRealm        = getString("sshRealm", "karaf");
         String hostKey         = getString("hostKey", System.getProperty("karaf.etc") + "/host.key");
-        String hostKeyFormat   = getString("hostKeyFormat", "simple");
         String[] authMethods   = getStringArray("authMethods", "keyboard-interactive,password,publickey");
-        int keySize            = getInt("keySize", 4096);
+        int keySize            = getInt("keySize", 2048);
         String algorithm       = getString("algorithm", "RSA");
         String[] macs          = getStringArray("macs", "hmac-sha2-512,hmac-sha2-256,hmac-sha1");
         String[] ciphers       = getStringArray("ciphers", "aes128-ctr,arcfour128,aes128-cbc,3des-cbc,blowfish-cbc");
         String[] kexAlgorithms = getStringArray("kexAlgorithms", "diffie-hellman-group-exchange-sha256,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha1,diffie-hellman-group1-sha1");
         String welcomeBanner   = getString("welcomeBanner", null);
         String moduliUrl       = getString("moduli-url", null);
-
-        AbstractGeneratorHostKeyProvider keyPairProvider;
-        if ("simple".equalsIgnoreCase(hostKeyFormat)) {
-            keyPairProvider = new SimpleGeneratorHostKeyProvider();
-        } else if ("PEM".equalsIgnoreCase(hostKeyFormat)) {
-            keyPairProvider = new OpenSSHGeneratorFileKeyProvider();
-        } else {
-            LOGGER.error("Invalid host key format " + hostKeyFormat);
-            return null;
-        }
-
-        keyPairProvider.setPath(Paths.get(hostKey));
-        if (new File(hostKey).exists()) {
-            // do not trash key file if there's something wrong with it.
-            keyPairProvider.setOverwriteAllowed(false);
-        } else {
-            keyPairProvider.setKeySize(keySize);
-            keyPairProvider.setAlgorithm(algorithm);
-        }
-
+        
+        Path serverKeyPath = Paths.get(hostKey);
+        KeyPairProvider keyPairProvider = new OpenSSHKeyPairProvider(serverKeyPath.toFile(), algorithm, keySize);
         KarafJaasAuthenticator authenticator = new KarafJaasAuthenticator(sshRealm);
-
         UserAuthFactoriesFactory authFactoriesFactory = new UserAuthFactoriesFactory();
         authFactoriesFactory.setAuthMethods(authMethods);
 
@@ -203,5 +188,7 @@ public class Activator extends BaseActivator implements ManagedService {
         } 
         return server;
     }
+
+
 
 }

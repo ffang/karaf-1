@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache</groupId>
         <artifactId>apache</artifactId>
-        <version>15</version>
+        <version>18</version>
         <relativePath />
     </parent>
 
@@ -242,9 +242,11 @@
         <aries.transaction.blueprint.version>1.1.1</aries.transaction.blueprint.version>
         <aries.transaction.blueprint.version2>2.1.0</aries.transaction.blueprint.version2>
         <aries.util.version>1.1.3</aries.util.version>
+        <atomikos.version>4.0.4</atomikos.version>
 
+        <geronimo.transaction.manager.version>3.1.3</geronimo.transaction.manager.version>
         <guava.version>20.0</guava.version>
-        <narayana.version>5.6.3.Final</narayana.version>
+        <narayana.version>5.6.4.Final</narayana.version>
         <hibernate.annotations.common.version>3.3.0.ga</hibernate.annotations.common.version>
         <hibernate.annotations.version>3.4.0.GA</hibernate.annotations.version>
         <hibernate.ejb.version>3.4.0.GA</hibernate.ejb.version>
@@ -256,7 +258,7 @@
         <jansi.version>1.16</jansi.version>
         <javassist.version>3.9.0.GA</javassist.version>
         <aesh.readline.version>1.0</aesh.readline.version>
-        <jline.version>3.3.1</jline.version>
+        <jline.version>3.4.0</jline.version>
         <jsw.version>3.2.3</jsw.version>
         <log4j.version>1.2.17</log4j.version>
         <maven.version>3.5.0</maven.version>
@@ -274,7 +276,9 @@
         <pax.url.version>2.5.2</pax.url.version>
         <pax.web.version>6.0.6</pax.web.version>
         <pax.tinybundle.version>2.1.1</pax.tinybundle.version>
-        <pax.jdbc.version>1.1.0</pax.jdbc.version>
+        <pax.jdbc.version>1.2.0-SNAPSHOT</pax.jdbc.version>
+        <pax.jms.version>0.0.1-SNAPSHOT</pax.jms.version>
+        <pax.transx.version>0.2.0</pax.transx.version>
 
         <portlet-api.version>2.0</portlet-api.version>
         <slf4j.version>1.7.12</slf4j.version>
