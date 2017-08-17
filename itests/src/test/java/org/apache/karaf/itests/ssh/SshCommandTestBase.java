@@ -18,12 +18,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
-import java.util.Arrays;
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.karaf.features.Feature;
 import org.apache.karaf.itests.KarafTestSupport;
 import org.apache.sshd.client.SshClient;
 import org.apache.sshd.client.channel.ClientChannel;
@@ -31,8 +28,7 @@ import org.apache.sshd.client.channel.ClientChannelEvent;
 import org.apache.sshd.client.future.ConnectFuture;
 import org.apache.sshd.client.session.ClientSession;
 import org.apache.sshd.client.session.ClientSession.ClientSessionEvent;
-import org.junit.After;
-import org.junit.Before;
+import org.awaitility.Awaitility;
 import org.junit.Assert;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.junit.PaxExam;
@@ -48,18 +44,6 @@ public class SshCommandTestBase extends KarafTestSupport {
     private SshClient client;
     private ClientChannel channel;
     private ClientSession session;
-    private HashSet<Feature> featuresBefore;
-
-    @Before
-    public void installSshFeature() throws Exception {
-        featuresBefore = new HashSet<>(Arrays.asList(featureService.listInstalledFeatures()));
-        installAndAssertFeature("ssh");
-    }
-
-    @After
-    public void uninstallSshFeature() throws Exception {
-        uninstallNewFeatures(featuresBefore);
-    }
 
     void addUsers(String manageruser, String vieweruser) throws Exception {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -123,19 +107,22 @@ public class SshCommandTestBase extends KarafTestSupport {
         client = SshClient.setUpDefaultClient();
         client.start();
         String sshPort = getSshPort();
-        ConnectFuture future = client.connect(username, "localhost", Integer.parseInt(sshPort));
-        future.await();
-        session = future.getSession();
+        Awaitility.await().ignoreExceptions().until(() -> {
+            ConnectFuture future = client.connect(username, "localhost", Integer.parseInt(sshPort));
+            future.await();
+            session = future.getSession();
+            Set<ClientSessionEvent> ret = EnumSet.of(ClientSessionEvent.WAIT_AUTH);
+            while (ret.contains(ClientSessionEvent.WAIT_AUTH)) {
+                session.addPasswordIdentity(password);
+                session.auth().verify();
+                ret = session.waitFor(EnumSet.of(ClientSessionEvent.WAIT_AUTH, ClientSessionEvent.CLOSED, ClientSessionEvent.AUTHED), 0);
+            }
+            if (ret.contains(ClientSessionEvent.CLOSED)) {
+                throw new Exception("Could not open SSH channel");
+            }
+            return true;
+        });
 
-        Set<ClientSessionEvent> ret = EnumSet.of(ClientSessionEvent.WAIT_AUTH);
-        while (ret.contains(ClientSessionEvent.WAIT_AUTH)) {
-            session.addPasswordIdentity(password);
-            session.auth().verify();
-            ret = session.waitFor(EnumSet.of(ClientSessionEvent.WAIT_AUTH, ClientSessionEvent.CLOSED, ClientSessionEvent.AUTHED), 0);
-        }
-        if (ret.contains(ClientSessionEvent.CLOSED)) {
-            throw new Exception("Could not open SSH channel");
-        }
         channel = session.createChannel("shell");
         PipedOutputStream pipe = new PipedOutputStream();
         channel.setIn(new PipedInputStream(pipe));

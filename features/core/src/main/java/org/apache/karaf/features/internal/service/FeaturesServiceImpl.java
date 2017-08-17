@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,12 +42,14 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.felix.utils.manifest.Clause;
 import org.apache.felix.utils.version.VersionCleaner;
 import org.apache.felix.utils.version.VersionRange;
 import org.apache.felix.utils.version.VersionTable;
@@ -70,7 +73,12 @@ import org.apache.karaf.util.collections.CopyOnWriteArrayIdentityList;
 import org.eclipse.equinox.region.RegionDigraph;
 import org.ops4j.pax.url.mvn.MavenResolver;
 import org.ops4j.pax.url.mvn.MavenResolvers;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleException;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.Version;
+import org.osgi.resource.Resource;
+import org.osgi.resource.Wire;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.resolver.Resolver;
@@ -172,7 +180,7 @@ public class FeaturesServiceImpl implements FeaturesService, Deployer.DeployCall
         // Resolve
         try {
             Map<String, Map<String, FeatureState>> stateChanges = Collections.emptyMap();
-            doProvisionInThread(requestedFeatures, stateChanges, copyState(), options);
+            doProvisionInThread(requestedFeatures, stateChanges, copyState(), getFeaturesById(), options);
         } catch (Exception e) {
             LOGGER.warn("Error updating state", e);
         }
@@ -218,7 +226,7 @@ public class FeaturesServiceImpl implements FeaturesService, Deployer.DeployCall
                     state.bundleChecksums.clear();
                 }
                 storage.save(state);
-                installSupport.saveState();
+                installSupport.saveDigraph();
             }
         } catch (IOException e) {
             LOGGER.warn("Error saving FeaturesService state", e);
@@ -639,6 +647,11 @@ public class FeaturesServiceImpl implements FeaturesService, Deployer.DeployCall
         return map;
     }
 
+    protected Map<String, Feature> getFeaturesById() throws Exception {
+        return getFeatureCache().values().stream().flatMap(m -> m.values().stream())
+                .collect(Collectors.toMap(Feature::getId, Function.identity()));
+    }
+
    //
     // Installed features
     //
@@ -852,7 +865,7 @@ public class FeaturesServiceImpl implements FeaturesService, Deployer.DeployCall
         }
         print("Adding features: " + join(featuresToDisplay), options.contains(Option.Verbose));
         Map<String, Map<String, FeatureState>> stateChanges = Collections.emptyMap();
-        doProvisionInThread(required, stateChanges, state, options);
+        doProvisionInThread(required, stateChanges, state, getFeaturesById(), options);
     }
 
     @Override
@@ -878,10 +891,7 @@ public class FeaturesServiceImpl implements FeaturesService, Deployer.DeployCall
                     }
                 }
             } else {
-                // Match on name and version
-                String name = feature.substring(0, feature.indexOf(VERSION_SEPARATOR));
-                String version = feature.substring(feature.indexOf(VERSION_SEPARATOR) + 1);
-                Pattern pattern = getFeaturePattern(name, version);
+                Pattern pattern = getNameAndVersionPattern(feature);
                 for (String f : fl) {
                     Matcher matcher = pattern.matcher(f);
                     if (matcher.matches()) {
@@ -903,13 +913,19 @@ public class FeaturesServiceImpl implements FeaturesService, Deployer.DeployCall
             required.remove(region);
         }
         Map<String, Map<String, FeatureState>> stateChanges = Collections.emptyMap();
-        doProvisionInThread(required, stateChanges, state, options);
+        doProvisionInThread(required, stateChanges, state, getFeaturesById(), options);
+    }
+
+    private Pattern getNameAndVersionPattern(String feature) {
+        String name = feature.substring(0, feature.indexOf(VERSION_SEPARATOR));
+        String version = feature.substring(feature.indexOf(VERSION_SEPARATOR) + 1);
+        return getFeaturePattern(name, version);
     }
 
     @Override
     public void updateFeaturesState(Map<String, Map<String, FeatureState>> stateChanges, EnumSet<Option> options) throws Exception {
         State state = copyState();
-        doProvisionInThread(copy(state.requirements), stateChanges, state, options);
+        doProvisionInThread(copy(state.requirements), stateChanges, state, getFeaturesById(), options);
     }
 
     @Override
@@ -918,7 +934,7 @@ public class FeaturesServiceImpl implements FeaturesService, Deployer.DeployCall
         Map<String, Set<String>> required = copy(state.requirements);
         add(required, requirements);
         Map<String, Map<String, FeatureState>> stateChanges = Collections.emptyMap();
-        doProvisionInThread(required, stateChanges, state, options);
+        doProvisionInThread(required, stateChanges, state, getFeaturesById(), options);
     }
 
     @Override
@@ -927,7 +943,63 @@ public class FeaturesServiceImpl implements FeaturesService, Deployer.DeployCall
         Map<String, Set<String>> required = copy(state.requirements);
         remove(required, requirements);
         Map<String, Map<String, FeatureState>> stateChanges = Collections.emptyMap();
-        doProvisionInThread(required, stateChanges, state, options);
+        doProvisionInThread(required, stateChanges, state, getFeaturesById(), options);
+    }
+
+    @Override
+    public void updateReposAndRequirements(Set<URI> repos, Map<String, Set<String>> requirements, EnumSet<Option> options) throws Exception {
+        State stateCopy;
+        synchronized (lock) {
+            // Remove repo
+            Set<String> reps = repos.stream().map(URI::toString).collect(Collectors.toSet());
+            Set<String> toRemove = diff(state.repositories, reps);
+            Set<String> toAdd = diff(reps, state.repositories);
+            state.repositories.removeAll(toRemove);
+            state.repositories.addAll(toAdd);
+            featureCache = null;
+            for (String uri : toRemove) {
+                repositories.removeRepository(URI.create(uri));
+            }
+            for (String uri : toAdd) {
+                repositories.addRepository(createRepository(URI.create(uri)));
+            }
+            saveState();
+            stateCopy = state.copy();
+        }
+        Map<String, Map<String, FeatureState>> stateChanges = Collections.emptyMap();
+        doProvisionInThread(requirements, stateChanges, stateCopy, getFeaturesById(), options);
+    }
+
+    private <T> Set<T> diff(Set<T> s1, Set<T> s2) {
+        Set<T> s = new HashSet<>(s1);
+        s.removeAll(s2);
+        return s;
+    }
+
+    @Override
+    public Repository createRepository(URI uri) throws Exception {
+        return repositories.create(uri, true, true);
+    }
+
+    private Map<String, Feature> loadAllFeatures(Set<URI> uris) throws Exception {
+        //the outer map's key is feature name, the inner map's key is feature version
+        Map<String, Feature> map = new HashMap<>();
+        // Two phase load:
+        // * first load dependent repositories
+        Set<URI> loaded = new HashSet<>();
+        List<URI> toLoad = new ArrayList<>(uris);
+        Clause[] blacklisted = repositories.getBlacklisted();
+        while (!toLoad.isEmpty()) {
+            URI uri = toLoad.remove(0);
+            if (loaded.add(uri)) {
+                Repository repo = new RepositoryImpl(uri, blacklisted);
+                Collections.addAll(toLoad, repo.getRepositories());
+                for (Feature f : repo.getFeatures()) {
+                    map.put(f.getId(), f);
+                }
+            }
+        }
+        return map;
     }
 
     @Override
@@ -968,12 +1040,13 @@ public class FeaturesServiceImpl implements FeaturesService, Deployer.DeployCall
     private void doProvisionInThread(final Map<String, Set<String>> requirements,
                                     final Map<String, Map<String, FeatureState>> stateChanges,
                                     final State state,
+                                    final Map<String, Feature> featureById,
                                     final EnumSet<Option> options) throws Exception {
         try {
             final String outputFile = this.outputFile.get();
             this.outputFile.set(null);
             executor.submit(() -> {
-                doProvision(requirements, stateChanges, state, options, outputFile);
+                doProvision(requirements, stateChanges, state, featureById, options, outputFile);
                 return null;
             }).get();
         } catch (ExecutionException e) {
@@ -990,7 +1063,7 @@ public class FeaturesServiceImpl implements FeaturesService, Deployer.DeployCall
         }
     }
 
-    private Deployer.DeploymentState getDeploymentState(State state) throws Exception {
+    private Deployer.DeploymentState getDeploymentState(State state, Map<String, Feature> featuresById) throws Exception {
         Deployer.DeploymentState dstate = new Deployer.DeploymentState();
         dstate.state = state;
         FrameworkInfo info = installSupport.getInfo();
@@ -999,13 +1072,7 @@ public class FeaturesServiceImpl implements FeaturesService, Deployer.DeployCall
         dstate.currentStartLevel = info.currentStartLevel;
         dstate.bundles = info.bundles;
         // Features
-        dstate.features = new HashMap<>();
-        for (Map<String, Feature> m : getFeatureCache().values()) {
-            for (Feature feature : m.values()) {
-                String id = feature.getId();
-                dstate.features.put(id, feature);
-            }
-        }
+        dstate.features = featuresById;
         RegionDigraph regionDigraph = installSupport.getDiGraphCopy();
         dstate.bundlesPerRegion = DigraphHelper.getBundlesPerRegion(regionDigraph);
         dstate.filtersPerRegion = DigraphHelper.getPolicies(regionDigraph);
@@ -1028,10 +1095,11 @@ public class FeaturesServiceImpl implements FeaturesService, Deployer.DeployCall
     }
 
     private void doProvision(Map<String, Set<String>> requirements,                // all requirements
-                            Map<String, Map<String, FeatureState>> stateChanges,  // features state changes
-                            State state,                                          // current state
-                            EnumSet<Option> options,                              // installation options
-                            String outputFile                                     // file to store the resolution or null
+                             Map<String, Map<String, FeatureState>> stateChanges,  // features state changes
+                             State state,                                          // current state
+                             Map<String, Feature> featuresById,                    // features by id
+                             EnumSet<Option> options,                              // installation options
+                             String outputFile                                     // file to store the resolution or null
     ) throws Exception {
 
         Dictionary<String, String> props = getMavenConfig();
@@ -1043,9 +1111,9 @@ public class FeaturesServiceImpl implements FeaturesService, Deployer.DeployCall
             Set<String> prereqs = new HashSet<>();
             while (true) {
                 try {
-                    Deployer.DeploymentState dstate = getDeploymentState(state);
+                    Deployer.DeploymentState dstate = getDeploymentState(state, featuresById);
                     Deployer.DeploymentRequest request = getDeploymentRequest(requirements, stateChanges, options, outputFile);
-                    new Deployer(manager, this.resolver, this.installSupport, this).deploy(dstate, request);
+                    new Deployer(manager, this.resolver, this).deploy(dstate, request);
                     break;
                 } catch (Deployer.PartialDeploymentException e) {
                     if (!prereqs.containsAll(e.getMissing())) {
@@ -1102,6 +1170,61 @@ public class FeaturesServiceImpl implements FeaturesService, Deployer.DeployCall
     @Override
     public void persistResolveRequest(Deployer.DeploymentRequest request) throws IOException {
         writeResolve(request.requirements, request.options);
+    }
+
+    @Override
+    public void refreshPackages(Collection<Bundle> bundles) throws InterruptedException {
+        installSupport.refreshPackages(bundles);
+    }
+
+    @Override
+    public Bundle installBundle(String region, String uri, InputStream is) throws BundleException {
+        return installSupport.installBundle(region, uri, is);
+    }
+
+    @Override
+    public void updateBundle(Bundle bundle, String uri, InputStream is) throws BundleException {
+        installSupport.updateBundle(bundle, uri, is);
+    }
+
+    @Override
+    public void uninstall(Bundle bundle) throws BundleException {
+        installSupport.uninstall(bundle);
+    }
+
+    @Override
+    public void startBundle(Bundle bundle) throws BundleException {
+        installSupport.startBundle(bundle);
+    }
+
+    @Override
+    public void stopBundle(Bundle bundle, int options) throws BundleException {
+        installSupport.stopBundle(bundle, options);
+    }
+
+    @Override
+    public void setBundleStartLevel(Bundle bundle, int startLevel) {
+        installSupport.setBundleStartLevel(bundle, startLevel);
+    }
+
+    @Override
+    public void resolveBundles(Set<Bundle> bundles, Map<Resource, List<Wire>> wiring, Map<Resource, Bundle> resToBnd) {
+        installSupport.resolveBundles(bundles, wiring, resToBnd);
+    }
+
+    @Override
+    public void replaceDigraph(Map<String, Map<String, Map<String, Set<String>>>> policies, Map<String, Set<Long>> bundles) throws BundleException, InvalidSyntaxException {
+        installSupport.replaceDigraph(policies, bundles);
+    }
+
+    @Override
+    public void installConfigs(Feature feature) throws IOException, InvalidSyntaxException {
+        installSupport.installConfigs(feature);
+    }
+
+    @Override
+    public void installLibraries(Feature feature) throws IOException {
+        installSupport.installLibraries(feature);
     }
 
     private Pattern getFeaturePattern(String name, String version) {

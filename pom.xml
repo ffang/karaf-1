@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache</groupId>
         <artifactId>apache</artifactId>
-        <version>15</version>
+        <version>18</version>
         <relativePath />
     </parent>
 
@@ -158,8 +158,10 @@
         <commons-fileupload.version>1.3.1</commons-fileupload.version>
         <commons-jexl.version>2.1.1</commons-jexl.version>
         <commons-lang.version>2.6</commons-lang.version>
+        <commons-lang3.version>3.6</commons-lang3.version>
+        <commons-logging.version>1.2</commons-logging.version>
         <commons-pool.version>1.6</commons-pool.version>
-        <commons-io.version>2.4</commons-io.version>
+        <commons-io.version>2.5</commons-io.version>
 
         <dom4j.bundle.version>1.6.1_5</dom4j.bundle.version>
         <eclipselink.version>2.6.4</eclipselink.version>
@@ -175,6 +177,7 @@
         <geronimo.jta-spec.version>1.1.1</geronimo.jta-spec.version>
 
         <easymock.version>3.4</easymock.version>
+        <objenesis.version>2.6</objenesis.version>
         <equinox.groupId>org.eclipse.platform</equinox.groupId>
         <equinox.artifactId>org.eclipse.osgi</equinox.artifactId>
         <equinox.version>3.11.3</equinox.version>
@@ -187,7 +190,7 @@
         <felix.connect.version>0.1.0</felix.connect.version>
         <felix.coordinator.version>1.0.2</felix.coordinator.version>
         <felix.fileinstall.version>3.6.0</felix.fileinstall.version>
-        <felix.framework.version>5.6.4</felix.framework.version>
+        <felix.framework.version>5.6.6</felix.framework.version>
         <felix.framework.security.version>2.6.0</felix.framework.security.version>
         <felix.gogo.runtime.version>1.0.6</felix.gogo.runtime.version>
         <felix.gogo.jline.version>1.0.6</felix.gogo.jline.version>
@@ -201,21 +204,21 @@
         <felix.eventadmin.version>1.4.8</felix.eventadmin.version>
         <felix.eventadmin.webconsole.plugin.version>1.1.6</felix.eventadmin.webconsole.plugin.version>
         <felix.obr.version>1.0.2</felix.obr.version>
-        <felix.scr.version>2.0.10</felix.scr.version>
+        <felix.scr.version>2.0.12</felix.scr.version>
         <felix.scr.compat.version>1.0.4</felix.scr.compat.version>
         <felix.scr.webconsole.plugin.version>2.0.6</felix.scr.webconsole.plugin.version>
         <felix.scr.annotation.version>1.12.0</felix.scr.annotation.version>
-        <felix.resolver.version>1.14.0</felix.resolver.version>
+        <felix.resolver.version>1.12.0</felix.resolver.version>
 
         <aries.application.version>1.0.0</aries.application.version>
         <aries.application.api.version>1.0.0</aries.application.api.version>
         <aries.application.management.version>1.0.0</aries.application.management.version>
         <aries.blueprint.api.version>1.0.1</aries.blueprint.api.version>
-        <aries.blueprint.core.version>1.8.1</aries.blueprint.core.version>
+        <aries.blueprint.core.version>1.8.2</aries.blueprint.core.version>
         <aries.blueprint.core.compatibility.version>1.0.0</aries.blueprint.core.compatibility.version>
         <aries.blueprint.cm.version>1.1.0</aries.blueprint.cm.version>
         <aries.blueprint.web.version>1.0.1</aries.blueprint.web.version>
-        <aries.blueprint.spring.version>0.3.0</aries.blueprint.spring.version>
+        <aries.blueprint.spring.version>0.4.0</aries.blueprint.spring.version>
         <aries.blueprint.spring.extender.version>0.3.0</aries.blueprint.spring.extender.version>
         <aries.jmx.api.version>1.1.5</aries.jmx.api.version>
         <aries.jmx.core.version>1.1.7</aries.jmx.core.version>
@@ -239,8 +242,11 @@
         <aries.transaction.blueprint.version>1.1.1</aries.transaction.blueprint.version>
         <aries.transaction.blueprint.version2>2.1.0</aries.transaction.blueprint.version2>
         <aries.util.version>1.1.3</aries.util.version>
+        <atomikos.version>4.0.4</atomikos.version>
 
-        <narayana.version>5.6.2.Final</narayana.version>
+        <geronimo.transaction.manager.version>3.1.3</geronimo.transaction.manager.version>
+        <guava.version>20.0</guava.version>
+        <narayana.version>5.6.4.Final</narayana.version>
         <hibernate.annotations.common.version>3.3.0.ga</hibernate.annotations.common.version>
         <hibernate.annotations.version>3.4.0.GA</hibernate.annotations.version>
         <hibernate.ejb.version>3.4.0.GA</hibernate.ejb.version>
@@ -252,11 +258,12 @@
         <jansi.version>1.16</jansi.version>
         <javassist.version>3.9.0.GA</javassist.version>
         <aesh.readline.version>1.0</aesh.readline.version>
-        <jline.version>3.3.1</jline.version>
+        <jline.version>3.4.0</jline.version>
         <jsw.version>3.2.3</jsw.version>
         <log4j.version>1.2.17</log4j.version>
-        <maven.version>3.0.3</maven.version>
+        <maven.version>3.5.0</maven.version>
         <maven.wagon.version>2.10</maven.wagon.version>
+        <maven-plugin-annotations.version>3.5</maven-plugin-annotations.version>
         <org.osgi.service.jdbc.version>1.0.0</org.osgi.service.jdbc.version>
         <org.osgi.service.jpa.version>1.0.0</org.osgi.service.jpa.version>
         <osgi.version>6.0.0</osgi.version>
@@ -267,9 +274,11 @@
         <pax.logging.version>1.10.1</pax.logging.version>
         <pax.base.version>1.5.0</pax.base.version>
         <pax.url.version>2.5.2</pax.url.version>
-        <pax.web.version>6.0.5</pax.web.version>
+        <pax.web.version>6.0.6</pax.web.version>
         <pax.tinybundle.version>2.1.1</pax.tinybundle.version>
-        <pax.jdbc.version>1.0.1</pax.jdbc.version>
+        <pax.jdbc.version>1.2.0-SNAPSHOT</pax.jdbc.version>
+        <pax.jms.version>0.0.1-SNAPSHOT</pax.jms.version>
+        <pax.transx.version>0.2.0</pax.transx.version>
 
         <portlet-api.version>2.0</portlet-api.version>
         <slf4j.version>1.7.12</slf4j.version>
@@ -281,10 +290,10 @@
         <spring40.version>4.0.7.RELEASE_3</spring40.version>
         <spring41.version>4.1.9.RELEASE_1</spring41.version>
         <spring42.version>4.2.9.RELEASE_1</spring42.version>
-        <spring43.version>4.3.7.RELEASE_1</spring43.version>
+        <spring43.version>4.3.10.RELEASE_1</spring43.version>
         <spring.security31.version>3.1.4.RELEASE</spring.security31.version>
 
-        <sshd.version>1.4.0</sshd.version>
+        <sshd.version>1.6.0</sshd.version>
         <derby-version>10.12.1.1</derby-version>
         <directory-version>2.0.0-M20</directory-version>
         <struts.bundle.version>1.3.10_1</struts.bundle.version>
@@ -292,9 +301,9 @@
         <xerces.version>2.11.0_1</xerces.version>
         <xalan.bundle.version>2.7.2_3</xalan.bundle.version>
         <xalan-serializer.bundle.version>2.7.2_1</xalan-serializer.bundle.version>
-        <javax.mail.version>1.4.5</javax.mail.version>
+        <javax.mail.version>1.4.7</javax.mail.version>
 
-        <winsw.version>1.18</winsw.version>
+        <winsw.version>1.18.0.redhat-1</winsw.version>
 
 
         <surefire.argLine />
@@ -1393,6 +1402,11 @@
                 <version>${easymock.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.objenesis</groupId>
+                <artifactId>objenesis</artifactId>
+                <version>${objenesis.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.servicemix.specs</groupId>
                 <artifactId>org.apache.servicemix.specs.activation-api-1.1</artifactId>
                 <version>${servicemix.specs.version}</version>
@@ -1731,6 +1745,26 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-compress</artifactId>
                 <version>${commons-compress.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang3.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-collections</groupId>
+                <artifactId>commons-collections</artifactId>
+                <version>${commons-collections.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+                <version>${commons-logging.version}</version>
             </dependency>
 
             <dependency>

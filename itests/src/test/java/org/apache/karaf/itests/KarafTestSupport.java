@@ -187,6 +187,10 @@ public class KarafTestSupport {
         String rmiRegistryPort = Integer.toString(getAvailablePort(Integer.parseInt(MIN_RMI_REG_PORT), Integer.parseInt(MAX_RMI_REG_PORT)));
         String rmiServerPort = Integer.toString(getAvailablePort(Integer.parseInt(MIN_RMI_SERVER_PORT), Integer.parseInt(MAX_RMI_SERVER_PORT)));
         String sshPort = Integer.toString(getAvailablePort(Integer.parseInt(MIN_SSH_PORT), Integer.parseInt(MAX_SSH_PORT)));
+        String localRepository = System.getProperty("org.ops4j.pax.url.mvn.localRepository");
+        if (localRepository == null) {
+            localRepository = "";
+        }
 
         return new Option[]{
             //KarafDistributionOption.debugConfiguration("8889", true),
@@ -199,17 +203,21 @@ public class KarafTestSupport {
             mavenBundle().groupId("org.awaitility").artifactId("awaitility").versionAsInProject(),
             mavenBundle().groupId("org.apache.servicemix.bundles").artifactId("org.apache.servicemix.bundles.hamcrest").versionAsInProject(),
             replaceConfigurationFile("etc/org.ops4j.pax.logging.cfg", getConfigFile("/etc/org.ops4j.pax.logging.cfg")),
+            //replaceConfigurationFile("etc/host.key", getConfigFile("/etc/host.key")),
             editConfigurationFilePut("etc/org.apache.karaf.features.cfg", "updateSnapshots", "none"),
             editConfigurationFilePut("etc/org.ops4j.pax.web.cfg", "org.osgi.service.http.port", httpPort),
             editConfigurationFilePut("etc/org.apache.karaf.management.cfg", "rmiRegistryPort", rmiRegistryPort),
             editConfigurationFilePut("etc/org.apache.karaf.management.cfg", "rmiServerPort", rmiServerPort),
             editConfigurationFilePut("etc/org.apache.karaf.shell.cfg", "sshPort", sshPort),
+            editConfigurationFilePut("etc/org.ops4j.pax.url.mvn.cfg", "org.ops4j.pax.url.mvn.localRepository", localRepository),
             editConfigurationFilePut("etc/system.properties", "spring31.version", System.getProperty("spring31.version")),
             editConfigurationFilePut("etc/system.properties", "spring32.version", System.getProperty("spring32.version")),
             editConfigurationFilePut("etc/system.properties", "spring40.version", System.getProperty("spring40.version")),
             editConfigurationFilePut("etc/system.properties", "spring41.version", System.getProperty("spring41.version")),
             editConfigurationFilePut("etc/system.properties", "spring42.version", System.getProperty("spring42.version")),
-            editConfigurationFilePut("etc/system.properties", "spring43.version", System.getProperty("spring43.version"))
+            editConfigurationFilePut("etc/system.properties", "spring43.version", System.getProperty("spring43.version")),
+            editConfigurationFilePut("etc/branding.properties", "welcome", ""), // No welcome banner
+            editConfigurationFilePut("etc/branding-ssh.properties", "welcome", "")
         };
     }
 

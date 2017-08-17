@@ -18,6 +18,9 @@
  */
 package org.apache.karaf.tooling;
 
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -29,21 +32,30 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
+import java.util.stream.Collectors;
+import java.util.zip.ZipFile;
 
 import org.apache.karaf.profile.assembly.Builder;
 import org.apache.karaf.tooling.utils.IoUtils;
 import org.apache.karaf.tooling.utils.MavenUtil;
 import org.apache.karaf.tooling.utils.MojoSupport;
+import org.apache.karaf.tooling.utils.ReactorMavenResolver;
 import org.apache.karaf.tools.utils.model.KarafPropertyEdits;
 import org.apache.karaf.tools.utils.model.io.stax.KarafPropertyInstructionsModelStaxReader;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.eclipse.aether.repository.WorkspaceReader;
+import org.osgi.framework.Constants;
 
 /**
  * Creates a customized Karaf distribution by installing features and setting up
@@ -256,6 +268,9 @@ public class AssemblyMojo extends MojoSupport {
     @Parameter
     protected Map<String, String> system;
 
+    @Component(role = WorkspaceReader.class, hint = "reactor")
+    protected WorkspaceReader reactor;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
@@ -320,6 +335,7 @@ public class AssemblyMojo extends MojoSupport {
         builder.offline(mavenSession.isOffline());
         builder.localRepository(localRepo.getBasedir());
         builder.mavenRepositories(remote.toString());
+        builder.resolverWrapper((resolver) -> new ReactorMavenResolver(reactor, resolver));
         builder.javase(javase);
 
         // Set up config and system props
@@ -402,22 +418,21 @@ public class AssemblyMojo extends MojoSupport {
             default:
                 continue;
             }
-            if ("kar".equals(artifact.getType())) {
-                String uri = artifactToMvn(artifact);
+            String uri = artifactToMvn(artifact);
+            String type = getType(artifact);
+            if ("kar".equals(type)) {
                 switch (stage) {
                 case Startup:   startupKars.add(uri); break;
                 case Boot:      bootKars.add(uri); break;
                 case Installed: installedKars.add(uri); break;
                 }
-            } else if ("features".equals(artifact.getClassifier()) || "karaf".equals(artifact.getClassifier())) {
-                String uri = artifactToMvn(artifact);
+            } else if ("features".equals(type)) {
                 switch (stage) {
                 case Startup:   startupRepositories.add(uri); break;
                 case Boot:      bootRepositories.add(uri); break;
                 case Installed: installedRepositories.add(uri); break;
                 }
-            } else if ("jar".equals(artifact.getType()) || "bundle".equals(artifact.getType())) {
-                String uri = artifactToMvn(artifact);
+            } else if ("bundle".equals(type)) {
                 switch (stage) {
                 case Startup:   startupBundles.add(uri); break;
                 case Boot:      bootBundles.add(uri); break;
@@ -548,6 +563,59 @@ public class AssemblyMojo extends MojoSupport {
         }
     }
 
+    private String getType(Artifact artifact) {
+        // Identify kars
+        if ("kar".equals(artifact.getType())) {
+            return "kar";
+        }
+        if ("zip".equals(artifact.getType())) {
+            try (ZipFile zip = new ZipFile(artifact.getFile())) {
+                if (zip.getEntry("META-INF/KARAF.MF") != null) {
+                    return "kar";
+                }
+            } catch (IOException e) {
+                // Ignore
+            }
+        }
+        // Identify features
+        if ("features".equals(artifact.getClassifier())) {
+            return "features";
+        }
+        if ("xml".equals(artifact.getType())) {
+            try (InputStream is = new FileInputStream(artifact.getFile())) {
+                XMLInputFactory xif = XMLInputFactory.newFactory();
+                xif.setProperty(XMLInputFactory.IS_NAMESPACE_AWARE, true);
+                XMLStreamReader r = xif.createXMLStreamReader(is);
+                r.nextTag();
+                QName name = r.getName();
+                if (name.getLocalPart().equals("features")
+                        && (name.getNamespaceURI().isEmpty()
+                                || name.getNamespaceURI().startsWith("http://karaf.apache.org/xmlns/features/"))) {
+                    return "features";
+                }
+
+            } catch (Exception e) {
+                // Ignore
+            }
+        }
+        // Identify bundles
+        if ("bundle".equals(artifact.getType())) {
+            return "bundle";
+        }
+        if ("jar".equals(artifact.getType())) {
+            try (JarFile jar = new JarFile(artifact.getFile())) {
+                Manifest manifest = jar.getManifest();
+                if (manifest != null
+                        && manifest.getMainAttributes().getValue(Constants.BUNDLE_SYMBOLICNAME) != null) {
+                    return "bundle";
+                }
+            } catch (Exception e) {
+                // Ignore
+            }
+        }
+        return "unknown";
+    }
+
     private String artifactToMvn(Artifact artifact) throws MojoExecutionException {
         String uri;
 
@@ -574,7 +642,8 @@ public class AssemblyMojo extends MojoSupport {
     }
 
     private List<String> nonNullList(List<String> list) {
-        return list == null ? new ArrayList<>() : list;
+        final List<String> nonNullList = list == null ? new ArrayList<>() : list;
+        return nonNullList.stream().filter(Objects::nonNull).collect(Collectors.toList());
     }
 
 }

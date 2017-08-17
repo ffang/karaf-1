@@ -45,6 +45,7 @@ import java.util.TreeSet;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.function.Function;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.regex.Pattern;
@@ -174,6 +175,8 @@ public class Builder {
     private Map<String, Profile> allProfiles;
     private KarafPropertyEdits propertyEdits;
     private Map<String, String> translatedUrls;
+
+    private Function<MavenResolver, MavenResolver> resolverWrapper = null;
 
     public static Builder newInstance() {
         return new Builder();
@@ -336,6 +339,11 @@ public class Builder {
         return this;
     }
 
+    public Builder resolverWrapper(Function<MavenResolver, MavenResolver> wrapper) {
+        this.resolverWrapper = wrapper;
+        return this;
+    }
+
     public Builder staticFramework() {
         // TODO: load this from resources
         return staticFramework("4.0.0-SNAPSHOT");
@@ -471,6 +479,9 @@ public class Builder {
             props.put(Builder.ORG_OPS4J_PAX_URL_MVN_PID + ".repositories", mavenRepositories);
         }
         MavenResolver resolver = MavenResolvers.createMavenResolver(props, ORG_OPS4J_PAX_URL_MVN_PID);
+        if (resolverWrapper != null) {
+            resolver = resolverWrapper.apply(resolver);
+        }
         executor = Executors.newScheduledThreadPool(8);
         manager = new CustomDownloadManager(resolver, executor, null, translatedUrls);
         this.resolver = new ResolverImpl(new Slf4jResolverLog(LOGGER));
@@ -497,6 +508,7 @@ public class Builder {
         //
         // Propagate feature installation from repositories
         //
+        LOGGER.info("   Loading repositories");
         Map<String, Stage> features = new LinkedHashMap<>(this.features);
         Map<String, Features> karRepositories = loadRepositories(manager, repositories.keySet(), false);
         for (String repo : repositories.keySet()) {
@@ -787,6 +799,7 @@ public class Builder {
         Downloader downloader = manager.createDownloader();
 
         // Load startup repositories
+        LOGGER.info("   Loading repositories");
         Map<String, Features> installedRepositories = loadRepositories(manager, installedEffective.getRepositories(), true);
         // Compute startup feature dependencies
         Set<Feature> allInstalledFeatures = new HashSet<>();
@@ -832,6 +845,7 @@ public class Builder {
         Profile bootOverlay = Profiles.getOverlay(bootProfile, allProfiles, environment);
         Profile bootEffective = Profiles.getEffective(bootOverlay, false);
         // Load startup repositories
+        LOGGER.info("   Loading repositories");
         Map<String, Features> bootRepositories = loadRepositories(manager, bootEffective.getRepositories(), true);
         // Compute startup feature dependencies
         Set<Feature> allBootFeatures = new HashSet<>();
@@ -1354,6 +1368,7 @@ public class Builder {
                 public void downloaded(final StreamProvider provider) throws Exception {
                     String url = provider.getUrl();
                     if (Blacklist.isBlacklisted(clausesRepos, url, TYPE_REPOSITORY)) {
+                        LOGGER.info("      feature repository " + url + " is blacklisted");
                         return;
                     }
                     synchronized (loaded) {
@@ -1362,6 +1377,7 @@ public class Builder {
                                 synchronized (provider) {
                                     Path path = pathFromProviderUrl(url);
                                     Files.createDirectories(path.getParent());
+                                    LOGGER.info("      adding feature repository: " + url);
                                     Files.copy(provider.getFile().toPath(), path, StandardCopyOption.REPLACE_EXISTING);
                                 }
                             }
@@ -1405,7 +1421,7 @@ public class Builder {
                     Collection<String> optionals) throws Exception {
         BundleRevision systemBundle = getSystemBundle();
         AssemblyDeployCallback callback = new AssemblyDeployCallback(manager, this, systemBundle, repositories);
-        Deployer deployer = new Deployer(manager, resolver, callback, callback);
+        Deployer deployer = new Deployer(manager, resolver, callback);
 
         // Install framework
         Deployer.DeploymentRequest request = createDeploymentRequest();

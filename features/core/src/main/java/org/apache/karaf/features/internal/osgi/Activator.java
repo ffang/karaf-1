@@ -139,7 +139,7 @@ public class Activator extends BaseActivator {
                     systemBundleContext,
                     configInstaller,
                     dg);
-        register(RegionDigraphPersistence.class, () -> installSupport.saveState());
+        register(RegionDigraphPersistence.class, () -> installSupport.saveDigraph());
 
         FeatureRepoFinder featureFinder = new FeatureRepoFinder();
         register(ManagedService.class, featureFinder, FeatureRepoFinder.getServiceProperties());
@@ -213,17 +213,16 @@ public class Activator extends BaseActivator {
     }
 
     private FeaturesServiceConfig getConfig() {
-        FeaturesServiceConfig cfg = new FeaturesServiceConfig();
-        cfg.overrides = getString("overrides", new File(System.getProperty("karaf.etc"), "overrides.properties").toURI().toString());
-        cfg.featureResolutionRange = getString("featureResolutionRange", FeaturesService.DEFAULT_FEATURE_RESOLUTION_RANGE);
-        cfg.bundleUpdateRange = getString("bundleUpdateRange", FeaturesService.DEFAULT_BUNDLE_UPDATE_RANGE);
-        cfg.updateSnapshots = getString("updateSnapshots", FeaturesService.DEFAULT_UPDATE_SNAPSHOTS);
-        cfg.downloadThreads = getInt("downloadThreads", FeaturesService.DEFAULT_DOWNLOAD_THREADS);
-        cfg.scheduleDelay = getLong("scheduleDelay", FeaturesService.DEFAULT_SCHEDULE_DELAY);
-        cfg.scheduleMaxRun = getInt("scheduleMaxRun", FeaturesService.DEFAULT_SCHEDULE_MAX_RUN);
-        cfg.blacklisted = getString("blacklisted", new File(System.getProperty("karaf.etc"), "blacklisted.properties").toURI().toString());
-        cfg.serviceRequirements = getString("serviceRequirements", FeaturesService.SERVICE_REQUIREMENTS_DEFAULT);
-        return cfg;
+        return new FeaturesServiceConfig(
+            getString("overrides", new File(System.getProperty("karaf.etc"), "overrides.properties").toURI().toString()),
+            getString("featureResolutionRange", FeaturesService.DEFAULT_FEATURE_RESOLUTION_RANGE),
+            getString("bundleUpdateRange", FeaturesService.DEFAULT_BUNDLE_UPDATE_RANGE),
+            getString("updateSnapshots", FeaturesService.DEFAULT_UPDATE_SNAPSHOTS),
+            getInt("downloadThreads", FeaturesService.DEFAULT_DOWNLOAD_THREADS),
+            getLong("scheduleDelay", FeaturesService.DEFAULT_SCHEDULE_DELAY),
+            getInt("scheduleMaxRun", FeaturesService.DEFAULT_SCHEDULE_MAX_RUN),
+            getString("blacklisted", new File(System.getProperty("karaf.etc"), "blacklisted.properties").toURI().toString()),
+            getString("serviceRequirements", FeaturesService.SERVICE_REQUIREMENTS_DEFAULT));
     }
 
     private StateStorage createStateStorage() {
@@ -303,7 +302,7 @@ public class Activator extends BaseActivator {
             featuresService = null;
         }
         if (installSupport != null) {
-            installSupport.saveState();
+            installSupport.saveDigraph();
         }
     }
 
