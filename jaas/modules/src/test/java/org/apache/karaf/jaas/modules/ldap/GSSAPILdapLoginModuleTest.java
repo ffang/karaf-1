@@ -14,14 +14,25 @@
  */
 package org.apache.karaf.jaas.modules.ldap;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.SystemUtils;
+import static org.apache.karaf.jaas.modules.ldap.LdapPropsUpdater.ldapProps;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.io.IOException;
+import java.security.Principal;
+import java.util.Collections;
+
+import javax.security.auth.Subject;
+import javax.security.auth.kerberos.KerberosPrincipal;
+import javax.security.auth.kerberos.KerberosTicket;
+import javax.security.auth.login.LoginException;
+
 import org.apache.directory.api.ldap.model.constants.SupportedSaslMechanisms;
 import org.apache.directory.api.ldap.model.entry.DefaultEntry;
 import org.apache.directory.api.ldap.model.entry.Entry;
 import org.apache.directory.api.ldap.model.exception.LdapException;
-import org.apache.directory.api.util.Strings;
 import org.apache.directory.server.annotations.CreateKdcServer;
 import org.apache.directory.server.annotations.CreateLdapServer;
 import org.apache.directory.server.annotations.CreateTransport;
@@ -33,7 +44,6 @@ import org.apache.directory.server.core.annotations.CreateIndex;
 import org.apache.directory.server.core.annotations.CreatePartition;
 import org.apache.directory.server.core.integ.FrameworkRunner;
 import org.apache.directory.server.core.kerberos.KeyDerivationInterceptor;
-import org.apache.directory.server.kerberos.kdc.AbstractKerberosITest;
 import org.apache.directory.server.kerberos.kdc.KerberosTestUtils;
 import org.apache.directory.server.ldap.handlers.sasl.cramMD5.CramMd5MechanismHandler;
 import org.apache.directory.server.ldap.handlers.sasl.digestMD5.DigestMd5MechanismHandler;
@@ -48,25 +58,11 @@ import org.apache.felix.utils.properties.Properties;
 import org.apache.karaf.jaas.boot.principal.RolePrincipal;
 import org.apache.karaf.jaas.boot.principal.UserPrincipal;
 import org.apache.karaf.jaas.modules.NamePasswordCallbackHandler;
+import org.apache.karaf.jaas.modules.krb5.KarafKerberosITest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import javax.security.auth.Subject;
-import javax.security.auth.kerberos.KerberosPrincipal;
-import javax.security.auth.kerberos.KerberosTicket;
-import javax.security.auth.login.LoginException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.security.Principal;
-import java.util.Collections;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 @RunWith(FrameworkRunner.class)
 @CreateDS(name = "GSSAPILdapLoginModuleTest-class",
@@ -131,9 +127,7 @@ import static org.junit.Assert.assertTrue;
         "cn: admin",
         "member: uid=hnelson,ou=users,dc=example,dc=com"
 })
-public class GSSAPILdapLoginModuleTest extends AbstractKerberosITest {
-
-    private static boolean loginConfigUpdated;
+public class GSSAPILdapLoginModuleTest extends KarafKerberosITest {
 
     @Before
     public void setUp() throws Exception {
@@ -155,32 +149,13 @@ public class GSSAPILdapLoginModuleTest extends AbstractKerberosITest {
 
         System.setProperty("java.security.auth.login.config", config.toString());
 
-        updatePort();
+        ldapProps("org/apache/karaf/jaas/modules/ldap/gssapi.ldap.properties",
+                  GSSAPILdapLoginModuleTest::replacePortAndAddress);
     }
 
-    public void updatePort() throws Exception {
-        if (!loginConfigUpdated) {
-            String basedir = System.getProperty("basedir");
-            if (basedir == null) {
-                basedir = new File(".").getCanonicalPath();
-            }
-
-            // Read in ldap.properties and substitute in the correct port
-            File f = new File(basedir + "/src/test/resources/org/apache/karaf/jaas/modules/ldap/gssapi.ldap.properties");
-
-            FileInputStream inputStream = new FileInputStream(f);
-            String content = IOUtils.toString(inputStream, "UTF-8");
-            inputStream.close();
-            content = content.replaceAll("portno", "" + getLdapServer().getPort());
-            content = content.replaceAll("address", KerberosTestUtils.getHostName());
-
-            File f2 = new File(basedir + "/target/test-classes/org/apache/karaf/jaas/modules/ldap/gssapi.ldap.properties");
-            FileOutputStream outputStream = new FileOutputStream(f2);
-            IOUtils.write(content, outputStream, "UTF-8");
-            outputStream.close();
-            loginConfigUpdated = true;
-        }
-
+    public static String replacePortAndAddress(String line) {
+        return line.replaceAll("portno", "" + getLdapServer().getPort())
+            .replaceAll("address", KerberosTestUtils.getHostName());
     }
 
     @After
@@ -312,39 +287,6 @@ public class GSSAPILdapLoginModuleTest extends AbstractKerberosITest {
         String servicePrincipal = LDAP_SERVICE_NAME + "/" + HOSTNAME + "@" + REALM;
         createPrincipal("uid=ldap", "Service", "LDAP Service",
                 "ldap", "randall", servicePrincipal);
-    }
-
-    private String createKrb5Conf(ChecksumType checksumType, EncryptionType encryptionType, boolean isTcp) throws IOException {
-        File file = folder.newFile("krb5.conf");
-
-        String data = "";
-
-        data += "[libdefaults]" + SystemUtils.LINE_SEPARATOR;
-        data += "default_realm = " + REALM + SystemUtils.LINE_SEPARATOR;
-        data += "default_tkt_enctypes = " + encryptionType.getName() + SystemUtils.LINE_SEPARATOR;
-        data += "default_tgs_enctypes = " + encryptionType.getName() + SystemUtils.LINE_SEPARATOR;
-        data += "permitted_enctypes = " + encryptionType.getName() + SystemUtils.LINE_SEPARATOR;
-        //        data += "default_checksum = " + checksumType.getName() + SystemUtils.LINE_SEPARATOR;
-        //        data += "ap_req_checksum_type = " + checksumType.getName() + SystemUtils.LINE_SEPARATOR;
-        data += "default-checksum_type = " + checksumType.getName() + SystemUtils.LINE_SEPARATOR;
-
-        if (isTcp) {
-            data += "udp_preference_limit = 1" + SystemUtils.LINE_SEPARATOR;
-        }
-
-
-        data += "[realms]" + SystemUtils.LINE_SEPARATOR;
-        data += REALM + " = {" + SystemUtils.LINE_SEPARATOR;
-        data += "kdc = " + HOSTNAME + ":" + kdcServer.getTransports()[0].getPort() + SystemUtils.LINE_SEPARATOR;
-        data += "}" + SystemUtils.LINE_SEPARATOR;
-
-        data += "[domain_realm]" + SystemUtils.LINE_SEPARATOR;
-        data += "." + Strings.lowerCaseAscii(REALM) + " = " + REALM + SystemUtils.LINE_SEPARATOR;
-        data += Strings.lowerCaseAscii(REALM) + " = " + REALM + SystemUtils.LINE_SEPARATOR;
-
-        FileUtils.writeStringToFile(file, data);
-
-        return file.getAbsolutePath();
     }
 
     private void createPrincipal(String rdn, String sn, String cn,

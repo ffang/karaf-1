@@ -17,7 +17,6 @@ package org.apache.karaf.jaas.modules.ldap;
 
 import org.apache.directory.server.core.integ.AbstractLdapTestUnit;
 import org.apache.directory.server.core.integ.FrameworkRunner;
-import org.apache.commons.io.IOUtils;
 import org.apache.directory.server.annotations.CreateLdapServer;
 import org.apache.directory.server.annotations.CreateTransport;
 import org.apache.directory.server.core.annotations.ApplyLdifFiles;
@@ -27,6 +26,8 @@ import org.apache.felix.utils.properties.Properties;
 import org.apache.karaf.jaas.boot.principal.RolePrincipal;
 import org.apache.karaf.jaas.boot.principal.UserPrincipal;
 import org.apache.karaf.jaas.modules.NamePasswordCallbackHandler;
+import org.apache.log4j.Level;
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,16 +37,14 @@ import javax.security.auth.Subject;
 import javax.security.auth.login.LoginException;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.apache.karaf.jaas.modules.PrincipalHelper.names;
+import static org.apache.karaf.jaas.modules.ldap.LdapPropsUpdater.ldapProps;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -57,33 +56,17 @@ import static org.junit.Assert.fail;
         "org/apache/karaf/jaas/modules/ldap/example.com.ldif"
 )
 public class LdapLoginModuleTest extends AbstractLdapTestUnit {
-    
-    private static boolean portUpdated;
 
     @Before
     public void updatePort() throws Exception {
-        if (!portUpdated) {
-            String basedir = System.getProperty("basedir");
-            if (basedir == null) {
-                basedir = new File(".").getCanonicalPath();
-            }
-
-            // Read in ldap.properties and substitute in the correct port
-            File f = new File(basedir + "/src/test/resources/org/apache/karaf/jaas/modules/ldap/ldap.properties");
-
-            FileInputStream inputStream = new FileInputStream(f);
-            String content = IOUtils.toString(inputStream, "UTF-8");
-            inputStream.close();
-            content = content.replaceAll("portno", "" + getLdapServer().getPort());
-
-            File f2 = new File(basedir + "/target/test-classes/org/apache/karaf/jaas/modules/ldap/ldap.properties");
-            FileOutputStream outputStream = new FileOutputStream(f2);
-            IOUtils.write(content, outputStream, "UTF-8");
-            outputStream.close();
-            portUpdated = true;
-        }
+        ldapProps("org/apache/karaf/jaas/modules/ldap/ldap.properties",
+                                   LdapLoginModuleTest::replacePort);
     }
-            
+
+    public static String replacePort(String line) {
+        return line.replaceAll("portno", "" + getLdapServer().getPort());
+    }
+    
     @After
     public void tearDown() {
         LDAPCache.clear();
@@ -101,20 +84,8 @@ public class LdapLoginModuleTest extends AbstractLdapTestUnit {
         assertTrue(module.commit());
 
         assertEquals(2, subject.getPrincipals().size());
-
-        boolean foundUser = false;
-        boolean foundRole = false;
-        for (Principal pr : subject.getPrincipals()) {
-            if (pr instanceof UserPrincipal) {
-                assertEquals("admin", pr.getName());
-                foundUser = true;
-            } else if (pr instanceof RolePrincipal) {
-                assertEquals("admin", pr.getName());
-                foundRole = true;
-            }
-        }
-        assertTrue(foundUser);
-        assertTrue(foundRole);
+        assertThat(names(subject.getPrincipals(UserPrincipal.class)), containsInAnyOrder("admin"));
+        assertThat(names(subject.getPrincipals(RolePrincipal.class)), containsInAnyOrder("admin"));
 
         assertTrue(module.logout());
         assertEquals("Principals should be gone as the user has logged out", 0, subject.getPrincipals().size());
@@ -141,21 +112,8 @@ public class LdapLoginModuleTest extends AbstractLdapTestUnit {
         assertTrue(module.commit());
 
         assertEquals(1, subject.getPrincipals().size());
-
-        boolean foundUser = false;
-        boolean foundRole = false;
-        for (Principal pr : subject.getPrincipals()) {
-            if (pr instanceof UserPrincipal) {
-                assertEquals("cheese", pr.getName());
-                foundUser = true;
-            } else if (pr instanceof RolePrincipal) {
-                assertEquals("admin", pr.getName());
-                foundRole = true;
-            }
-        }
-        assertTrue(foundUser);
-        // cheese is not an admin so no roles should be returned
-        assertFalse(foundRole);
+        assertThat(names(subject.getPrincipals(UserPrincipal.class)), containsInAnyOrder("cheese"));
+        assertThat(names(subject.getPrincipals(RolePrincipal.class)), Matchers.empty());
 
         assertTrue(module.logout());
         assertEquals("Principals should be gone as the user has logged out", 0, subject.getPrincipals().size());
@@ -174,21 +132,8 @@ public class LdapLoginModuleTest extends AbstractLdapTestUnit {
         assertTrue(module.commit());
 
         assertEquals(1, subject.getPrincipals().size());
-
-        boolean foundUser = false;
-        boolean foundRole = false;
-        for (Principal pr : subject.getPrincipals()) {
-            if (pr instanceof UserPrincipal) {
-                assertEquals("cheese", pr.getName());
-                foundUser = true;
-            } else if (pr instanceof RolePrincipal) {
-                assertEquals("admin", pr.getName());
-                foundRole = true;
-            }
-        }
-        assertTrue(foundUser);
-        // cheese is not an admin so no roles should be returned
-        assertFalse(foundRole);
+        assertThat(names(subject.getPrincipals(UserPrincipal.class)), containsInAnyOrder("cheese"));
+        assertThat(names(subject.getPrincipals(RolePrincipal.class)), Matchers.empty());
 
         assertTrue(module.logout());
         assertEquals("Principals should be gone as the user has logged out", 0, subject.getPrincipals().size());
@@ -202,12 +147,18 @@ public class LdapLoginModuleTest extends AbstractLdapTestUnit {
         module.initialize(subject, new NamePasswordCallbackHandler("admin", "blahblah"), null, options);
 
         assertEquals("Precondition", 0, subject.getPrincipals().size());
+        org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(LDAPLoginModule.class);
+        Level oldLevel = logger.getLevel();
+        logger.setLevel(Level.OFF);
         try {
             module.login();
             fail("Should have thrown LoginException");
         } catch (LoginException e) {
             assertTrue(e.getMessage().startsWith("Authentication failed"));
+        } finally {
+            logger.setLevel(oldLevel);
         }
+        
     }
 
     @Test
@@ -250,20 +201,8 @@ public class LdapLoginModuleTest extends AbstractLdapTestUnit {
         assertTrue(module.commit());
 
         assertEquals(2, subject.getPrincipals().size());
-
-        boolean foundUser = false;
-        boolean foundRole = false;
-        for (Principal principal : subject.getPrincipals()) {
-            if (principal instanceof UserPrincipal) {
-                assertEquals("admin", principal.getName());
-                foundUser = true;
-            } else if (principal instanceof RolePrincipal) {
-                assertEquals("karaf", principal.getName());
-                foundRole = true;
-            }
-        }
-        assertTrue(foundUser);
-        assertTrue(foundRole);
+        assertThat(names(subject.getPrincipals(UserPrincipal.class)), containsInAnyOrder("admin"));
+        assertThat(names(subject.getPrincipals(RolePrincipal.class)), containsInAnyOrder("karaf"));
 
         assertTrue(module.logout());
         assertEquals("Principals should be gone as the user has logged out", 0, subject.getPrincipals().size());
@@ -282,23 +221,8 @@ public class LdapLoginModuleTest extends AbstractLdapTestUnit {
         assertTrue(module.commit());
 
         assertEquals(4, subject.getPrincipals().size());
-
-        final List<String> roles = new ArrayList<>(Arrays.asList("karaf", "test", "another"));
-
-        boolean foundUser = false;
-        boolean foundRole = false;
-        for (Principal principal : subject.getPrincipals()) {
-            if (principal instanceof UserPrincipal) {
-                assertEquals("admin", principal.getName());
-                foundUser = true;
-            } else if (principal instanceof RolePrincipal) {
-                assertTrue(roles.remove(principal.getName()));
-                foundRole = true;
-            }
-        }
-        assertTrue(foundUser);
-        assertTrue(foundRole);
-        assertTrue(roles.isEmpty());
+        assertThat(names(subject.getPrincipals(UserPrincipal.class)), containsInAnyOrder("admin"));
+        assertThat(names(subject.getPrincipals(RolePrincipal.class)), containsInAnyOrder("karaf", "test", "another"));
 
         assertTrue(module.logout());
         assertEquals("Principals should be gone as the user has logged out", 0, subject.getPrincipals().size());
@@ -317,23 +241,8 @@ public class LdapLoginModuleTest extends AbstractLdapTestUnit {
         assertTrue(module.commit());
 
         assertEquals(4, subject.getPrincipals().size());
-
-        final List<String> roles = new ArrayList<>(Arrays.asList("karaf", "test", "another"));
-
-        boolean foundUser = false;
-        boolean foundRole = false;
-        for (Principal pr : subject.getPrincipals()) {
-            if (pr instanceof UserPrincipal) {
-                assertEquals("admin", pr.getName());
-                foundUser = true;
-            } else if (pr instanceof RolePrincipal) {
-                assertTrue(roles.remove(pr.getName()));
-                foundRole = true;
-            }
-        }
-        assertTrue(foundUser);
-        assertTrue(foundRole);
-        assertTrue(roles.isEmpty());
+        assertThat(names(subject.getPrincipals(UserPrincipal.class)), containsInAnyOrder("admin"));
+        assertThat(names(subject.getPrincipals(RolePrincipal.class)), containsInAnyOrder("karaf", "test", "another"));
 
         assertTrue(module.logout());
         assertEquals("Principals should be gone as the user has logged out", 0, subject.getPrincipals().size());
@@ -356,23 +265,8 @@ public class LdapLoginModuleTest extends AbstractLdapTestUnit {
         assertTrue(module.commit());
 
         assertEquals(2, subject.getPrincipals().size());
-
-        final List<String> roles = new ArrayList<>(Arrays.asList("karaf"));
-
-        boolean foundUser = false;
-        boolean foundRole = false;
-        for (Principal principal : subject.getPrincipals()) {
-            if (principal instanceof UserPrincipal) {
-                assertEquals("admin", principal.getName());
-                foundUser = true;
-            } else if (principal instanceof RolePrincipal) {
-                assertTrue(roles.remove(principal.getName()));
-                foundRole = true;
-            }
-        }
-        assertTrue(foundUser);
-        assertTrue(foundRole);
-        assertTrue(roles.isEmpty());
+        assertThat(names(subject.getPrincipals(UserPrincipal.class)), containsInAnyOrder("admin"));
+        assertThat(names(subject.getPrincipals(RolePrincipal.class)), containsInAnyOrder("karaf"));
 
         assertTrue(module.logout());
         assertEquals("Principals should be gone as the user has logged out", 0, subject.getPrincipals().size());
