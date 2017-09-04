@@ -58,7 +58,10 @@ public class DefaultHistory implements History {
 
     private Path getPath() {
         Object obj = reader != null ? reader.getVariables().get(LineReader.HISTORY_FILE) : null;
-        if (obj instanceof Path) {
+        if (obj == null) {
+            String defaultHistoryPath = new File(System.getProperty("user.home"), ".karaf/karaf41.history").toString();
+            return Paths.get(System.getProperty("karaf.history", defaultHistoryPath));
+        } else if (obj instanceof Path) {
             return (Path) obj;
         } else if (obj instanceof File) {
             return ((File) obj).toPath();
