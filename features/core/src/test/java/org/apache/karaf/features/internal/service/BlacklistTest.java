@@ -16,77 +16,55 @@
  */
 package org.apache.karaf.features.internal.service;
 
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import static org.junit.Assert.assertTrue;
 
-import org.apache.karaf.features.internal.model.Bundle;
-import org.apache.karaf.features.internal.model.Feature;
-import org.apache.karaf.features.internal.model.Features;
-import org.apache.karaf.features.internal.model.JaxbUtil;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.stream.Stream;
+
+import org.apache.karaf.features.BundleInfo;
+import org.apache.karaf.features.Feature;
 import org.junit.Test;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 
 public class BlacklistTest {
 
     @Test
     public void testBlacklistFeatureWithRange() {
-        URL url = getClass().getResource("f02.xml");
-        Features features = JaxbUtil.unmarshal(url.toExternalForm(), true);
-
-        List<String> blacklist = new ArrayList<>();
-        blacklist.add("spring;range=\"[2,3)\"");
-
-        Blacklist.blacklist(features, blacklist);
-        for (Feature feature : features.getFeature()) {
-            assertNotEquals("spring/2.5.6.SEC02", feature.getId());
-        }
+        Stream<Feature> features = blacklistWith("spring;range=\"[2,3)\"");
+        assertTrue(features.noneMatch(f -> f.getId().equals("spring/2.5.6.SEC02")));
     }
 
     @Test
     public void testBlacklistFeatureWithVersion() {
-        URL url = getClass().getResource("f02.xml");
-        Features features = JaxbUtil.unmarshal(url.toExternalForm(), true);
-
-        List<String> blacklist = new ArrayList<>();
-        blacklist.add("spring;range=2.5.6.SEC02");
-
-        Blacklist.blacklist(features, blacklist);
-        for (Feature feature : features.getFeature()) {
-            assertNotEquals("spring/2.5.6.SEC02", feature.getId());
-        }
+        Stream<Feature> features = blacklistWith("spring;range=2.5.6.SEC02");
+        assertTrue(features.noneMatch(f -> f.getId().equals("spring/2.5.6.SEC02")));
     }
 
     @Test
     public void testBlacklistFeatureWithoutVersion() {
-        URL url = getClass().getResource("f02.xml");
-        Features features = JaxbUtil.unmarshal(url.toExternalForm(), true);
-
-        List<String> blacklist = new ArrayList<>();
-        blacklist.add("spring");
-
-        Blacklist.blacklist(features, blacklist);
-        for (Feature feature : features.getFeature()) {
-            assertFalse(feature.getId().startsWith("spring/"));
-        }
+        Stream<Feature> features = blacklistWith("spring");
+        assertTrue(features.noneMatch(f -> f.getId().startsWith("spring/")));
     }
 
     @Test
     public void testBlacklistBundle() {
-        URL url = getClass().getResource("f02.xml");
-        Features features = JaxbUtil.unmarshal(url.toExternalForm(), true);
+        String blacklisted = "mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jasypt/1.7_1";
+        Stream<Feature> features = blacklistWith(blacklisted);
+        Stream<BundleInfo> bundles = features.flatMap(f -> f.getBundles().stream());
+        assertTrue(bundles.noneMatch(b -> b.getLocation().equals(blacklisted)));
+    }
 
-        List<String> blacklist = new ArrayList<>();
-        blacklist.add("mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jasypt/1.7_1");
-
-        Blacklist.blacklist(features, blacklist);
-        for (Feature feature : features.getFeature()) {
-            for (Bundle bundle : feature.getBundle()) {
-                assertNotEquals("mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jasypt/1.7_1",
-                                bundle.getLocation());
-            }
+    private Stream<org.apache.karaf.features.Feature> blacklistWith(String blacklistClause) {
+        URI uri;
+        try {
+            uri = getClass().getResource("f02.xml").toURI();
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
         }
+        Blacklist blacklist = new Blacklist(Collections.singletonList(blacklistClause));
+        RepositoryImpl features = new RepositoryImpl(uri, blacklist, true);
+        return Arrays.asList(features.getFeatures()).stream();
     }
 }

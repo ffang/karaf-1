@@ -27,33 +27,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.felix.utils.manifest.Clause;
-import org.apache.felix.utils.manifest.Parser;
 import org.apache.karaf.features.Repository;
 
 public class RepositoryCache {
 
     private final Map<String, Repository> repositoryCache = new HashMap<>();
-    private final Clause[] blacklisted;
+    private final Blacklist blacklist;
     
-    public RepositoryCache(String blacklisted) {
-        this.blacklisted = loadBlacklist(blacklisted);
+    public RepositoryCache(Blacklist blacklist) {
+        this.blacklist = blacklist;
     }
 
-    public Clause[] getBlacklisted() {
-        return blacklisted;
-    }
-
-    private static Clause[] loadBlacklist(String blacklisted) {
-        Set<String> blacklistStrings = Blacklist.loadBlacklist(blacklisted);
-        return Parser.parseClauses(blacklistStrings.toArray(new String[blacklistStrings.size()]));
-    }
-    
-    public Repository create(URI uri, boolean load, boolean validate) throws Exception {
-        RepositoryImpl repo = new RepositoryImpl(uri, blacklisted);
-        if (load)
-            repo.load(validate);
-        return repo;
+    public Repository create(URI uri, boolean validate) throws Exception {
+        return new RepositoryImpl(uri, blacklist, validate);
     }
 
     public void addRepository(Repository repository) throws Exception {
