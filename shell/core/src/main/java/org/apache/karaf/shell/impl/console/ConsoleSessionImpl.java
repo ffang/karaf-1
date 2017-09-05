@@ -35,7 +35,9 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
+import org.apache.felix.gogo.jline.ParsedLineImpl;
 import org.apache.felix.gogo.jline.Shell;
 import org.apache.felix.gogo.runtime.CommandSessionImpl;
 import org.apache.felix.service.command.CommandProcessor;
@@ -69,6 +71,8 @@ import org.jline.terminal.Terminal.Signal;
 import org.jline.terminal.impl.DumbTerminal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.apache.felix.gogo.jline.Shell.VAR_SCOPE;
 
 public class ConsoleSessionImpl implements Session {
 
@@ -220,11 +224,28 @@ public class ConsoleSessionImpl implements Session {
             }
             @Override
             public Set<String> getCommands() {
-                return Shell.getCommands(session);
+                return factory.getRegistry().getCommands().stream()
+                        .map(c -> c.getScope() + ":" + c.getName())
+                        .collect(Collectors.toSet());
             }
             @Override
             public String resolveCommand(String command) {
-                return Shell.resolve(session, command);
+                String resolved = command;
+                if (command.indexOf(':') < 0) {
+                    Set<String> commands = getCommands();
+                    Object path = session.get(VAR_SCOPE);
+                    String scopePath = (null == path ? "*" : path.toString());
+                    for (String scope : scopePath.split(":")) {
+                        for (String entry : commands) {
+                            if ("*".equals(scope) && entry.endsWith(":" + command)
+                                    || entry.equals(scope + ":" + command)) {
+                                resolved = entry;
+                                break;
+                            }
+                        }
+                    }
+                }
+                return resolved;
             }
             @Override
             public String commandName(String command) {
@@ -346,11 +367,11 @@ public class ConsoleSessionImpl implements Session {
             String scriptFileName = System.getProperty(SHELL_INIT_SCRIPT);
             executeScript(scriptFileName);
             while (running) {
-                String command = readCommand(reading);
+                CharSequence command = readCommand(reading);
                 if (command == null) {
                     break;
                 }
-                execute(command);
+                doExecute(command);
             }
             close();
         } finally {
@@ -383,11 +404,17 @@ public class ConsoleSessionImpl implements Session {
         return isLocal != null && isLocal;
     }
 
-    private String readCommand(AtomicBoolean reading) throws UserInterruptException {
-        String command = null;
+    private CharSequence readCommand(AtomicBoolean reading) throws UserInterruptException {
+        CharSequence command = null;
         reading.set(true);
         try {
-            command = reader.readLine(getPrompt(), getRPrompt(), null, null);
+            reader.readLine(getPrompt(), getRPrompt(), null, null);
+            ParsedLine pl = reader.getParsedLine();
+            if (pl instanceof ParsedLineImpl) {
+                command = ((ParsedLineImpl) pl).program();
+            } else {
+                command = pl.line();
+            }
         } catch (EndOfFileException e) {
             command = null;
         } catch (UserInterruptException e) {
@@ -400,7 +427,7 @@ public class ConsoleSessionImpl implements Session {
         return command;
     }
 
-    private void execute(String command) {
+    private void doExecute(CharSequence command) {
         try {
             Object result = session.execute(command);
             if (result != null) {

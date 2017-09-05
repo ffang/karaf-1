@@ -274,7 +274,7 @@
         <pax.logging.version>1.10.1</pax.logging.version>
         <pax.base.version>1.5.0</pax.base.version>
         <pax.url.version>2.5.2</pax.url.version>
-        <pax.web.version>6.0.6</pax.web.version>
+        <pax.web.version>6.0.7</pax.web.version>
         <pax.tinybundle.version>2.1.1</pax.tinybundle.version>
         <pax.jdbc.version>1.2.0-SNAPSHOT</pax.jdbc.version>
         <pax.jms.version>0.0.1-SNAPSHOT</pax.jms.version>
@@ -333,28 +333,28 @@
             </snapshots>
         </repository>
         <!-- ServiceMix repo -->
-        <repository>
-            <id>servicemix</id>
-            <name>Apache ServiceMix Repository</name>
-            <url>http://svn.apache.org/repos/asf/servicemix/m2-repo</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>sonatype</id>
-            <name>sonatype</name>
-            <url>http://repository.sonatype.org/content/groups/sonatype-public-grid</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
+                <repository>
+                    <id>servicemix</id>
+                    <name>Apache ServiceMix Repository</name>
+                    <url>http://svn.apache.org/repos/asf/servicemix/m2-repo</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+                <repository>
+                    <id>sonatype</id>
+                    <name>sonatype</name>
+                    <url>http://repository.sonatype.org/content/groups/sonatype-public-grid</url>
+                    <releases>
+                        <enabled>false</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </repository>
         <!-- OPS4J SNAPSHOT repository -->
         <repository>
             <id>ops4j.sonatype.snapshots.deploy</id>
@@ -414,8 +414,7 @@
             <releases>
                 <enabled>true</enabled>
             </releases>
-        </repository>
-			
+        </repository>			
     </repositories>
     <pluginRepositories>
         <!-- Apache snapshots -->
