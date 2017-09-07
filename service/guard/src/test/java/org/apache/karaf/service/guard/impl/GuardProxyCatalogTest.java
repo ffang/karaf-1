@@ -52,7 +52,6 @@ import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
-import org.osgi.framework.Filter;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
@@ -1167,12 +1166,11 @@ public class GuardProxyCatalogTest {
         return proxyProps;
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings("unchecked")
     public Object testCreateProxy(Class<?> [] objectClasses, Object testService) throws Exception {
         return testCreateProxy(mockConfigAdminBundleContext(), objectClasses, objectClasses, testService, new HashMap<>());
     }
 
-    @SuppressWarnings("rawtypes")
     public Object testCreateProxy(BundleContext bc, Class<?> [] objectClasses, Object testService) throws Exception {
         return testCreateProxy(bc, objectClasses, objectClasses, testService, new HashMap<>());
     }
