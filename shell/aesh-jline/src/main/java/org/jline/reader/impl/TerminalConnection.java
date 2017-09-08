@@ -145,7 +145,8 @@ public class TerminalConnection implements Connection, Device {
                 }
             }
         } catch (IOException ioe) {
-            LOGGER.log(Level.WARNING, "Failed while reading, exiting", ioe);
+            //could be caused by karaf shell shutdown, so use low log level to avoid the noise
+            LOGGER.log(Level.FINE, "Failed while reading, exiting", ioe);
             if (getCloseHandler() != null)
                 getCloseHandler().accept(null);
             close();
