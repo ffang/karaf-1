@@ -473,14 +473,11 @@ public class Deployer {
             if (bundle == null) {
                 // bundle is not present, it's provided by feature
                 // we are using bundleInfo and start flag
-                if (bundleInfo != null && bundleInfo.isStart()) {
+                if (bundleInfo != null && bundleInfo.isStart() && !noStart) {
                     states.put(resource, FeatureState.Started);
                 } else {
                     states.put(resource, FeatureState.Resolved);
                 }
-            } else {
-                // if the bundle is already there, just ignore changing state by feature
-                states.remove(resource);
             }
         }
         // Only keep bundles resources
@@ -1104,22 +1101,12 @@ public class Deployer {
     }
 
     private static void removeFragmentsAndBundlesInState(Collection<Bundle> bundles, int state) {
-        for (Iterator<Bundle> iterator = bundles.iterator(); iterator.hasNext();) {
-            Bundle bundle = iterator.next();
-            if ((bundle.getState() & state) != 0
-                    || bundle.getHeaders().get(Constants.FRAGMENT_HOST) != null) {
-                iterator.remove();
-            }
-        }
+        bundles.removeIf(bundle -> (bundle.getState() & state) != 0
+                || bundle.getHeaders().get(Constants.FRAGMENT_HOST) != null);
     }
 
     private static void removeBundlesInState(Collection<Bundle> bundles, int state) {
-        for (Iterator<Bundle> iterator = bundles.iterator(); iterator.hasNext();) {
-            Bundle bundle = iterator.next();
-            if ((bundle.getState() & state) != 0) {
-                iterator.remove();
-            }
-        }
+        bundles.removeIf(bundle -> (bundle.getState() & state) != 0);
     }
 
     protected void logWiring(Map<Resource, List<Wire>> wiring, boolean onlyFeatures) {

@@ -22,6 +22,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,6 +35,7 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -80,6 +82,8 @@ import org.slf4j.LoggerFactory;
 
 import static java.util.Collections.emptyMap;
 import static java.util.stream.Collectors.toSet;
+import static org.apache.karaf.features.internal.model.Feature.DEFAULT_VERSION;
+import static org.apache.karaf.features.internal.model.Feature.VERSION_SEPARATOR;
 import static org.apache.karaf.features.internal.service.StateStorage.toStringStringSetMap;
 import static org.apache.karaf.features.internal.util.MapUtils.*;
 
@@ -90,7 +94,6 @@ public class FeaturesServiceImpl implements FeaturesService, Deployer.DeployCall
 
     private static final String RESOLVE_FILE = "resolve";
     private static final Logger LOGGER = LoggerFactory.getLogger(FeaturesServiceImpl.class);
-    private static final String VERSION_SEPARATOR = "/";
 
     /**
      * Used to load and save the {@link State} of this service.
@@ -546,9 +549,9 @@ public class FeaturesServiceImpl implements FeaturesService, Deployer.DeployCall
         // Two phase load:
         // * first load dependent repositories
         Set<String> loaded = new HashSet<>();
-        List<String> toLoad = new ArrayList<>(uris);
+        Queue<String> toLoad = new ArrayDeque<>(uris);
         while (!toLoad.isEmpty()) {
-            String uri = toLoad.remove(0);
+            String uri = toLoad.remove();
             Repository repo;
             synchronized (lock) {
                 repo = repositories.getRepository(uri);
@@ -576,13 +579,8 @@ public class FeaturesServiceImpl implements FeaturesService, Deployer.DeployCall
         // * then load all features
         for (Repository repo : repos) {
             for (Feature f : repo.getFeatures()) {
-                if (map.get(f.getName()) == null) {
-                    Map<String, Feature> versionMap = new HashMap<>();
-                    versionMap.put(f.getVersion(), f);
-                    map.put(f.getName(), versionMap);
-                } else {
-                    map.get(f.getName()).put(f.getVersion(), f);
-                }
+                Map<String, Feature> versionMap = map.computeIfAbsent(f.getName(), key -> new HashMap<>());
+                versionMap.put(f.getVersion(), f);
             }
         }
         synchronized (lock) {
@@ -891,10 +889,10 @@ public class FeaturesServiceImpl implements FeaturesService, Deployer.DeployCall
     }
 
     private String normalize(String feature) {
-        if (!feature.contains(VERSION_SEPARATOR)) {
-            feature += "/0.0.0";
-        }
         int idx = feature.indexOf(VERSION_SEPARATOR);
+        if (idx < 0) {
+            return feature + VERSION_SEPARATOR + DEFAULT_VERSION;
+        }
         String name = feature.substring(0, idx);
         String version = feature.substring(idx + 1);
         return name + VERSION_SEPARATOR + VersionCleaner.clean(version);
@@ -976,13 +974,7 @@ public class FeaturesServiceImpl implements FeaturesService, Deployer.DeployCall
                              EnumSet<Option> options,                              // installation options
                              String outputFile                                     // file to store the resolution or null
     ) throws Exception {
-
-        Dictionary<String, String> props = getMavenConfig();
-        MavenResolver resolver = MavenResolvers.createMavenResolver(props, "org.ops4j.pax.url.mvn");
-        ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(cfg.downloadThreads);
-        executor.setMaximumPoolSize(cfg.downloadThreads);
-        DownloadManager manager = DownloadManagers.createDownloadManager(resolver, executor, cfg.scheduleDelay, cfg.scheduleMaxRun);
-        try {
+        try (DownloadManager manager = createDownloadManager()) {
             Set<String> prereqs = new HashSet<>();
             while (true) {
                 try {
@@ -999,9 +991,15 @@ public class FeaturesServiceImpl implements FeaturesService, Deployer.DeployCall
                     }
                 }
             }
-        } finally {
-            executor.shutdown();
         }
+    }
+
+    protected DownloadManager createDownloadManager() throws IOException {
+        Dictionary<String, String> props = getMavenConfig();
+        MavenResolver resolver = MavenResolvers.createMavenResolver(props, "org.ops4j.pax.url.mvn");
+        ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(cfg.downloadThreads);
+        executor.setMaximumPoolSize(cfg.downloadThreads);
+        return DownloadManagers.createDownloadManager(resolver, executor, cfg.scheduleDelay, cfg.scheduleMaxRun);
     }
 
     private Dictionary<String, String> getMavenConfig() throws IOException {

@@ -1,3 +1,4 @@
+
 ################################################################################
 #
 #    Licensed to the Apache Software Foundation (ASF) under one or more
@@ -17,19 +18,4 @@
 #
 ################################################################################
 
-#
-# Enable or disable the refresh of the bundles when installing
-# the features contained in a KAR file
-#
-noAutoRefreshBundles=false
-
-#
-# Enable or disable the automatic start of the bundles when installing
-# the features contained in a KAR file
-#
-noAutoStartBundles=false
-
-#
-# Directory where the kar are stored (when downloaded from Maven for instance)
-#
-#karStorage=${karaf.data}/kar
+spring;range=2.5.6.SEC02
