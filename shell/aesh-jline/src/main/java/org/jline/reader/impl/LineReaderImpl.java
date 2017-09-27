@@ -39,6 +39,7 @@ import org.jline.reader.Expander;
 import org.jline.reader.Highlighter;
 import org.jline.reader.History;
 import org.jline.reader.LineReader;
+import org.jline.reader.MaskingCallback;
 import org.jline.reader.ParsedLine;
 import org.jline.reader.Parser;
 import org.jline.reader.SyntaxError;
@@ -217,7 +218,7 @@ public class LineReaderImpl implements LineReader {
     }
 
     public String readLine() throws UserInterruptException, EndOfFileException {
-        return readLine(null, null, null, null);
+        return readLine(null, null, (Character) null, null);
     }
 
     /**
@@ -229,7 +230,7 @@ public class LineReaderImpl implements LineReader {
     }
 
     public String readLine(String prompt) throws UserInterruptException, EndOfFileException {
-        return readLine(prompt, null, null, null);
+        return readLine(prompt, null, (Character) null, null);
     }
 
     /**
@@ -261,6 +262,14 @@ public class LineReaderImpl implements LineReader {
         // TODO: Right prompt support
         AttributedString s = AttributedString.fromAnsi(prompt);
         this.prompt = new Prompt(s.toString(), s.toAnsi(terminal), character);
+        return readInput(buffer);
+    }
+
+    @Override
+    public String readLine(String prompt, String rightPrompt, MaskingCallback maskingCallback, String buffer) throws UserInterruptException, EndOfFileException {
+        // TODO: Right prompt support
+        AttributedString s = AttributedString.fromAnsi(prompt);
+        this.prompt = new Prompt(s.toString(), s.toAnsi(terminal), null);
         return readInput(buffer);
     }
 
