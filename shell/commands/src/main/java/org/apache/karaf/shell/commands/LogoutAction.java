@@ -50,6 +50,10 @@ public class LogoutAction extends AbstractAction implements BundleContextAware{
         Configuration configuration = admin.getConfiguration("org.apache.karaf.shell");
         Dictionary<String, Object> properties = configuration.getProperties();
         String realm=(String) properties.get("sshRealm");
+        if(realm == null || "".equals(realm.trim())){
+            log.error("Current instance has no configured value for property org.apache.karaf.shell/sshRealm in ConfigAdmin!");
+            return null;
+        }
 
         AccessControlContext context = AccessController.getContext();
         Subject subject = Subject.getSubject(context);
