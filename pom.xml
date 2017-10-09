@@ -206,7 +206,6 @@
         <felix.eventadmin.webconsole.plugin.version>1.1.6</felix.eventadmin.webconsole.plugin.version>
         <felix.obr.version>1.0.2</felix.obr.version>
         <felix.scr.version>2.0.12</felix.scr.version>
-        <felix.scr.compat.version>1.0.4</felix.scr.compat.version>
         <felix.scr.webconsole.plugin.version>2.0.6</felix.scr.webconsole.plugin.version>
         <felix.scr.annotation.version>1.12.0</felix.scr.annotation.version>
         <felix.resolver.version>1.14.0</felix.resolver.version>
@@ -219,7 +218,7 @@
         <aries.blueprint.core.compatibility.version>1.0.0</aries.blueprint.core.compatibility.version>
         <aries.blueprint.cm.version>1.1.0</aries.blueprint.cm.version>
         <aries.blueprint.web.version>1.0.1</aries.blueprint.web.version>
-        <aries.blueprint.spring.version>0.4.0</aries.blueprint.spring.version>
+        <aries.blueprint.spring.version>0.5.0</aries.blueprint.spring.version>
         <aries.blueprint.spring.extender.version>0.3.0</aries.blueprint.spring.extender.version>
         <aries.jmx.api.version>1.1.5</aries.jmx.api.version>
         <aries.jmx.core.version>1.1.7</aries.jmx.core.version>
@@ -773,11 +772,6 @@
 
             <dependency>
                 <groupId>org.apache.karaf.scr</groupId>
-                <artifactId>org.apache.karaf.scr.command</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.karaf.scr</groupId>
                 <artifactId>org.apache.karaf.scr.management</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -1036,11 +1030,6 @@
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.scr</artifactId>
                 <version>${felix.scr.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>org.apache.felix.scr.compat</artifactId>
-                <version>${felix.scr.compat.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.felix</groupId>
@@ -1838,7 +1827,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-enforcer-plugin</artifactId>
-                    <version>1.4.1</version>
+                    <version>3.0.0-M1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -2401,6 +2390,7 @@
         <profile>
             <id>java9</id>
             <properties>
+                <easymock.version>3.5</easymock.version>
                 <surefire.argLine>--add-opens java.base/java.security=ALL-UNNAMED
                                   --add-opens java.base/java.net=ALL-UNNAMED 
                                   --add-opens java.base/java.lang=ALL-UNNAMED
