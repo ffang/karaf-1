@@ -329,8 +329,8 @@ public class GenerateDescriptorMojo extends MojoSupport {
                     }
                     filter(inputFile, outputFile);
                     projectHelper.attachArtifact(project, attachmentArtifactType, attachmentArtifactClassifier, outputFile);
+                    return;
                 }
-                return;
             }
 
             this.dependencyHelper = DependencyHelperFactory.createDependencyHelper(this.container, this.project, this.mavenSession, getLog());
@@ -344,7 +344,6 @@ public class GenerateDescriptorMojo extends MojoSupport {
                 }
                 // now lets attach it
                 projectHelper.attachArtifact(project, attachmentArtifactType, attachmentArtifactClassifier, outputFile);
-
             } else {
                 throw new MojoExecutionException("Could not create directory for features file: " + dir);
             }
@@ -605,7 +604,7 @@ public class GenerateDescriptorMojo extends MojoSupport {
         }
     }
 
-    private static Dependency findMatchingDependency(List<Dependency> dependencies, Dependency reference) {
+    private static Dependency findMatchingDependency(Collection<Dependency> dependencies, Dependency reference) {
         String referenceName = reference.getName();
         for (Dependency dependency : dependencies) {
             if (referenceName.equals(dependency.getName())) {
@@ -630,7 +629,9 @@ public class GenerateDescriptorMojo extends MojoSupport {
     private boolean isBundleIncludedTransitively(Feature feature, Map<Dependency, Feature> otherFeatures,
                                                  Bundle bundle) {
         for (Dependency dependency : feature.getFeature()) {
-            Feature otherFeature = otherFeatures.get(dependency);
+            // Match dependencies “generously” (we might be matching single-version dependencies with version ranges)
+            Dependency otherDependency = findMatchingDependency(otherFeatures.keySet(), dependency);
+            Feature otherFeature = otherDependency != null ? otherFeatures.get(otherDependency) : null;
             if (otherFeature != null) {
                 if (otherFeature.getBundle().contains(bundle) || isBundleIncludedTransitively(otherFeature,
                     otherFeatures, bundle)) {

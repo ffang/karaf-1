@@ -28,6 +28,12 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.felix.resolver.ResolverImpl;
 import org.apache.felix.utils.properties.Properties;
@@ -49,6 +55,7 @@ import org.apache.karaf.features.internal.service.FeaturesServiceImpl;
 import org.apache.karaf.features.internal.service.BundleInstallSupport;
 import org.apache.karaf.features.internal.service.BundleInstallSupportImpl;
 import org.apache.karaf.features.internal.service.StateStorage;
+import org.apache.karaf.util.ThreadUtils;
 import org.apache.karaf.util.tracker.BaseActivator;
 import org.apache.karaf.util.tracker.annotation.ProvideService;
 import org.apache.karaf.util.tracker.annotation.RequireService;
@@ -59,6 +66,7 @@ import org.eclipse.equinox.internal.region.management.StandardManageableRegionDi
 import org.eclipse.equinox.region.RegionDigraph;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
+import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.hooks.bundle.CollisionHook;
 import org.osgi.framework.hooks.resolver.ResolverHookFactory;
@@ -92,6 +100,7 @@ public class Activator extends BaseActivator {
     private FeaturesServiceImpl featuresService;
     private StandardManageableRegionDigraph digraphMBean;
     private BundleInstallSupport installSupport;
+    private ExecutorService executorService;
 
     public Activator() {
         // Special case here, as we don't want the activator to wait for current job to finish,
@@ -123,7 +132,11 @@ public class Activator extends BaseActivator {
         BundleContext systemBundleContext = bundleContext.getBundle(0).getBundleContext();
         ConfigurationAdmin configurationAdmin = getTrackedService(ConfigurationAdmin.class);
         int resolverThreads = getInt("resolverThreads", Runtime.getRuntime().availableProcessors());
-        Resolver resolver = new ResolverImpl(new Slf4jResolverLog(LoggerFactory.getLogger(ResolverImpl.class)), resolverThreads);
+        executorService = new ThreadPoolExecutor(0, resolverThreads,
+                1L, TimeUnit.SECONDS,
+                new LinkedBlockingQueue<>(),
+                ThreadUtils.namedThreadFactory("resolver"));
+        Resolver resolver = new ResolverImpl(new Slf4jResolverLog(LoggerFactory.getLogger(ResolverImpl.class)), executorService);
         URLStreamHandlerService mvnUrlHandler = getTrackedService(URLStreamHandlerService.class);
 
         if (configurationAdmin == null || mvnUrlHandler == null) {
@@ -131,6 +144,7 @@ public class Activator extends BaseActivator {
         }
 
         StandardRegionDigraph dg = DigraphHelper.loadDigraph(bundleContext);
+        DigraphHelper.verifyUnmanagedBundles(bundleContext, dg);
         registerRegionDiGraph(dg);
         boolean configCfgStore = getBoolean("configCfgStore", FeaturesService.DEFAULT_CONFIG_CFG_STORE);
         FeatureConfigInstaller configInstaller = new FeatureConfigInstaller(configurationAdmin, configCfgStore);
@@ -249,12 +263,14 @@ public class Activator extends BaseActivator {
 
     @SuppressWarnings("deprecation")
     private void registerRegionDiGraph(StandardRegionDigraph dg) throws BundleException {
+        Dictionary<String, Object> ranking = new Hashtable<>();
+        ranking.put(Constants.SERVICE_RANKING, 1000);
         register(ResolverHookFactory.class, dg.getResolverHookFactory());
         register(CollisionHook.class, CollisionHookHelper.getCollisionHook(dg));
-        register(org.osgi.framework.hooks.bundle.FindHook.class, dg.getBundleFindHook());
-        register(org.osgi.framework.hooks.bundle.EventHook.class, dg.getBundleEventHook());
-        register(org.osgi.framework.hooks.service.FindHook.class, dg.getServiceFindHook());
-        register(org.osgi.framework.hooks.service.EventHook.class, dg.getServiceEventHook());
+        register(org.osgi.framework.hooks.bundle.FindHook.class, dg.getBundleFindHook(), ranking);
+        register(org.osgi.framework.hooks.bundle.EventHook.class, dg.getBundleEventHook(), ranking);
+        register(org.osgi.framework.hooks.service.FindHook.class, dg.getServiceFindHook(), ranking);
+        register(org.osgi.framework.hooks.service.EventHook.class, dg.getServiceEventHook(), ranking);
         register(RegionDigraph.class, dg);
         
         if (getBoolean("digraphMBean", FeaturesService.DEFAULT_DIGRAPH_MBEAN)) {
@@ -305,6 +321,7 @@ public class Activator extends BaseActivator {
             featuresService = null;
         }
         if (installSupport != null) {
+            installSupport.unregister();
             installSupport.saveDigraph();
         }
     }

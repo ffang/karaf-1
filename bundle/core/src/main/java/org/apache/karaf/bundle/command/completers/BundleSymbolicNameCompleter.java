@@ -14,46 +14,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.karaf.jms.command.completers;
+package org.apache.karaf.bundle.command.completers;
 
-import java.util.List;
-
-import org.apache.karaf.jms.JmsService;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.apache.karaf.shell.api.console.CommandLine;
 import org.apache.karaf.shell.api.console.Completer;
 import org.apache.karaf.shell.api.console.Session;
 import org.apache.karaf.shell.support.completers.StringsCompleter;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 
-/**
- * Completer on the JMS connection factories name.
- */
+import java.util.List;
+
 @Service
-public class ConnectionFactoriesNameCompleter implements Completer {
+public class BundleSymbolicNameCompleter implements Completer {
 
     @Reference
-    private JmsService jmsService;
+    private BundleContext bundleContext;
 
     @Override
     public int complete(Session session, CommandLine commandLine, List<String> candidates) {
         StringsCompleter delegate = new StringsCompleter();
-        try {
-            for (String connectionFactory : jmsService.connectionFactories()) {
-                delegate.getStrings().add(connectionFactory);
-            }
-        } catch (Exception e) {
-            // nothing to do
+        for (Bundle bundle : bundleContext.getBundles()) {
+            delegate.getStrings().add(bundle.getSymbolicName());
         }
         return delegate.complete(session, commandLine, candidates);
-    }
-
-    public JmsService getJmsService() {
-        return jmsService;
-    }
-
-    public void setJmsService(JmsService jmsService) {
-        this.jmsService = jmsService;
     }
 
 }
