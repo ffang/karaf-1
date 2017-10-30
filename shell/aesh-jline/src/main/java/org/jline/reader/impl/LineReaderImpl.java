@@ -153,9 +153,10 @@ public class LineReaderImpl implements LineReader {
         String str = fromCodePoints(consoleBuffer.buffer().multiLine());
 
         parsedLine = null;
+        String exp = null;
         if (!isSet(Option.DISABLE_EVENT_EXPANSION)) {
             try {
-                String exp = expander.expandHistory(getHistory(), str);
+                exp = expander.expandHistory(getHistory(), str);
                 if (!exp.equals(str)) {
                     consoleBuffer.replace(exp);
                     if (isSet(Option.HISTORY_VERIFY)) {
@@ -167,7 +168,7 @@ public class LineReaderImpl implements LineReader {
             }
         }
         try {
-            parsedLine = parser.parse(str, consoleBuffer.buffer().multiCursor(), Parser.ParseContext.ACCEPT_LINE);
+            parsedLine = parser.parse(exp, consoleBuffer.buffer().multiCursor(), Parser.ParseContext.ACCEPT_LINE);
         } catch (EOFError e) {
             consoleBuffer.writeString("\n");
             return;
