@@ -246,6 +246,7 @@ public class DefaultHistory implements History {
         }
         if (isSet(reader, LineReader.Option.HISTORY_IGNORE_DUPS)) {
             if (!items.isEmpty() && line.equals(items.getLast().line())) {
+                this.next();//let the cursor always move to the prev command ENTESB-7410
                 return;
             }
         }
