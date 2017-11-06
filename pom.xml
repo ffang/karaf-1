@@ -56,6 +56,7 @@
         <module>web</module>
         <module>wrapper</module>
         <module>webconsole</module>
+        <module>exception</module>
         <module>scheduler</module>
         <module>scr</module>
         <module>diagnostic</module>
@@ -458,6 +459,11 @@
             <dependency>
                 <groupId>org.apache.karaf</groupId>
                 <artifactId>org.apache.karaf.util</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.karaf</groupId>
+                <artifactId>org.apache.karaf.exception</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
