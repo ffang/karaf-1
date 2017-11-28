@@ -44,16 +44,21 @@ public class SyncopeLoginModule extends AbstractKarafLoginModule {
 
     public final static String ADDRESS = "address";
     public final static String VERSION = "version";
+    public final static String USE_ROLES_FOR_SYNCOPE2 = "useRolesForSyncope2";
     public final static String ADMIN_USER = "admin.user"; // for the backing engine
     public final static String ADMIN_PASSWORD = "admin.password"; // for the backing engine
 
     private String address;
     private String version;
+    private boolean useRolesForSyncope2;
 
     public void initialize(Subject subject, CallbackHandler callbackHandler, Map<String, ?> sharedState, Map<String, ?> options) {
         super.initialize(subject, callbackHandler, options);
         address = (String) options.get(ADDRESS);
         version = (String) options.get(VERSION);
+        if (options.containsKey(USE_ROLES_FOR_SYNCOPE2)) {
+            useRolesForSyncope2 = Boolean.parseBoolean((String) options.get(USE_ROLES_FOR_SYNCOPE2));
+        }
     }
 
     public boolean login() throws LoginException {
@@ -84,7 +89,9 @@ public class SyncopeLoginModule extends AbstractKarafLoginModule {
         Credentials creds = new UsernamePasswordCredentials(user, password);
         client.getCredentialsProvider().setCredentials(AuthScope.ANY, creds);
         HttpGet get = new HttpGet(address + "/users/self");
-        if (version.equals("2.x") || version.equals("2")) {
+
+        boolean version2 = version != null && (version.equals("2.x") || version.equals("2"));
+        if (version2) {
             get.setHeader("Content-Type", "application/json");
         } else {
             get.setHeader("Content-Type", "application/xml");
@@ -102,7 +109,7 @@ public class SyncopeLoginModule extends AbstractKarafLoginModule {
             principals.add(new UserPrincipal(user));
             LOGGER.debug("Retrieving user {} roles", user);
             String responseSt = EntityUtils.toString(response.getEntity());
-            if (version.equals("2.x") || version.equals("2")) {
+            if (version2) {
                 roles = extractingRolesSyncope2(responseSt);
             } else {
                 roles = extractingRolesSyncope1(responseSt);
@@ -136,7 +143,7 @@ public class SyncopeLoginModule extends AbstractKarafLoginModule {
                 response = response.substring(index + "<memberships>".length());
                 index = response.indexOf("</memberships>");
                 response = response.substring(0, index);
-    
+
                 // looking for the roleName elements
                 index = response.indexOf("<roleName>");
                 while (index != -1) {
@@ -161,14 +168,27 @@ public class SyncopeLoginModule extends AbstractKarafLoginModule {
      *
      * @param response the HTTP response from Syncope.
      * @return the list of user roles.
-     * @throws Exception in case of extractiong failure.
+     * @throws Exception in case of extracting failure.
      */
     @SuppressWarnings("unchecked")
     protected List<String> extractingRolesSyncope2(String response) throws Exception {
         List<String> roles = new ArrayList<>();
         if (response != null && !response.isEmpty()) {
             JSONParser parser = new JSONParser(response);
-            return (List<String>) parser.getParsed().get("roles");
+            if (useRolesForSyncope2) {
+                return (List<String>) parser.getParsed().get("roles");
+            } else {
+                // extract the <memberships> element if it exists
+                List<Map<String, String>> memberships =
+                    (List<Map<String, String>>) parser.getParsed().get("memberships");
+                if (memberships != null) {
+                    for (Map<String, String> membership : memberships) {
+                        if (membership.containsKey("groupName")) {
+                            roles.add(membership.get("groupName"));
+                        }
+                    }
+                }
+            }
         }
         return roles;
     }
