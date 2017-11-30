@@ -66,5 +66,103 @@ if { %(jlineReader != null) } {
   #keymap "^[[A" up-line-or-search
   #keymap "^[OB" down-line-or-search
   #keymap "^[[B" down-line-or-search
+  
+// features:* aliases
+    features:addurl = { feature:repo-add $args } ;
+    features:chooseurl = { feature:repo-add $args } ;
+    features:info = { feature:info $args } ;
+    features:install = { feature:install $args } ;
+    features:list = { feature:list $args } ;
+    features:listrepositories = { feature:repo-list $args } ;
+    features:listurl = { feature:repo-list $args } ;
+    features:listversions = { feature:version-list $args } ;
+    features:refreshurl = { feature:repo-refresh $args } ;
+    features:removerepository = { feature:repo-remove $args } ;
+    features:removeurl = { feature:repo-remove $args } ;
+    features:uninstall = { feature:uninstall $args } ;
+
+// osgi:* aliases
+    osgi:bundle-level = { bundle:start-level $args } ;
+    osgi:bundle-services = { bundle:services $args } ;
+    osgi:classes = { bundle:classes $args } ;
+    osgi:find-class = { bundle:find-class $args } ;
+    osgi:headers = { bundle:headers $args } ;
+    osgi:id = { bundle:id $args } ;
+    osgi:list = { bundle:list $args } ;
+    osgi:info = { bundle:info $args } ;
+    osgi:ls = { bundle:services $args } ;
+    osgi:name = { system:name $args } ;
+    osgi:version = { system:version $args } ;
+    osgi:install = { bundle:install $args } ;
+    osgi:refresh = { bundle:refresh $args } ;
+    osgi:restart = { bundle:restart $args } ;
+    osgi:start = { bundle:start $args } ;
+    osgi:stop = { bundle:stop $args } ;
+    osgi:uninstall = { bundle:uninstall $args } ;
+    osgi:update = { bundle:update $args } ;
+    osgi:id = { bundle:id $args } ;
+    osgi:shutdown = { system:shutdown $args } ;
+    osgi:start-level = { system:start-level $args } ;
+
+// config:* aliases
+    config:proplist = { config:property-list $args } ;
+    config:propappend = { config:property-append $args } ;
+    config:propdel = { config:property-delete $args } ;
+    config:propset = { config:property-set $args } ;
+    config:propappend = { config:property-append $args } ;
+
+// admin:* aliases
+    admin:list = { instance:list $args } ;
+    admin:status = { instance:status $args } ;
+    admin:change-opts = { instance:opts-change $args } ;
+    admin:change-rmi-registry-port = { instance:rmi-registry-port-change $args } ;
+    admin:change-rmi-server-port = { instance:rmi-server-port-change $args } ;
+    admin:change-ssh-port = { instance:ssh-port-change $args } ;
+    admin:change-ssh-host = { instance:ssh-host-change $args } ;
+    admin:clone = { instance:clone $args } ;
+    admin:connect = { instance:connect $args } ;
+    admin:create = { instance:create $args } ;
+    admin:destroy = { instance:destroy $args } ;
+    admin:rename = { instance:rename $args } ;
+    admin:start = { instance:start $args } ;
+    admin:stop = { instance:stop $args } ;
+    
+// dev:* aliases
+    dev:dynamic-import = { bundle:dynamic-import $args } ;
+    dev:framework = { system:framework $args } ;
+    dev:load-test = { bundle:load-test $args } ;
+    dev:print-stack-traces = { shell:stack-traces-print $args } ;
+    dev:restart = { system:shutdown $args } ;
+    dev:show-tree = { bundle:tree-show $args } ;
+    dev:system-property = { system:property $args } ;
+    dev:threads = { shell:threads $args } ;
+    dev:wait-for-service = { service:wait $args } ;
+    dev:watch = { bundle:watch $args } ;
+
+// packages:* aliases
+    packages:exports = { package:exports $args } ;
+    packages:imports = { package:imports $args } ;
+
+// jaas:* aliases
+    jaas:realms = { jaas:realm-list $args } ;
+    jaas:manage = { jaas:realm-manage $args } ;
+    jaas:pending = { jaas:pending-list $args } ;
+    jaas:groupadd = { jaas:group-add $args } ;
+    jaas:groupdel = { jaas:group-delete $args } ;
+    jaas:grouproleadd = { jaas:group-role-add $args } ;
+    jaas:grouproledel = { jaas:group-role-delete $args } ;
+    jaas:roleadd = { jaas:role-add $args } ;
+    jaas:roledel = { jaas:role-delete $args } ;
+    jaas:useradd = { jaas:user-add $args } ;
+    jaas:userdel = { jaas:user-delete $args } ;
+    jaas:users = { jaas:user-list $args } ;
+
+// log:* aliases
+    log:display-exception = { log:exception-display $args } ;
+
+// scr:* aliases
+    scr:details = { scr:info $args } ;
+    scr:activate = { scr:enable $args } ;
+    scr:deactivate = { scr:disable $args } ;
 
 }
