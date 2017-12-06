@@ -22,6 +22,7 @@ import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.login.LoginContext;
 import org.apache.felix.fileinstall.ArtifactInstaller;
+import org.apache.karaf.jaas.boot.principal.RolePrincipal;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,7 +38,7 @@ public class JaasTest extends KarafTestSupport {
 
     @Test
     public void realmListCommand() throws Exception {
-        String listRealmsOutput = executeCommand("jaas:realm-list");
+        String listRealmsOutput = executeCommand("jaas:realm-list", new RolePrincipal("viewer"));
         assertContains("PropertiesLoginModule", listRealmsOutput);
         assertContains("PublickeyLoginModule", listRealmsOutput);
     }

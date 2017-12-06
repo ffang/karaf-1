@@ -19,7 +19,7 @@ import static org.junit.Assert.assertTrue;
 import javax.management.Attribute;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
-
+import org.apache.karaf.jaas.boot.principal.RolePrincipal;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.junit.PaxExam;
@@ -39,7 +39,7 @@ public class LogTest extends KarafTestSupport {
     public void setDebugAndDisplay() throws Exception {
         assertSetLevel("DEBUG");
         LOGGER.debug("Making sure there is DEBUG level output");
-        assertContains("DEBUG", executeCommand("log:display -n 200"));
+        assertContains("DEBUG", executeCommand("log:display -n 200", new RolePrincipal("viewer")));
     }
 
     @Test
@@ -57,14 +57,14 @@ public class LogTest extends KarafTestSupport {
     public void setGetDebugAndClear() throws Exception {
         assertSetLevel("DEBUG");
         assertSetLevel("INFO");
-        System.out.println(executeCommand("log:clear"));
-        String displayOutput = executeCommand("log:display").trim();
+        System.out.println(executeCommand("log:clear", new RolePrincipal("manager")));
+        String displayOutput = executeCommand("log:display", new RolePrincipal("viewer")).trim();
         assertTrue("Should be empty but was: " + displayOutput, displayOutput.trim().isEmpty());
     }
     
     public void assertSetLevel(String level) throws InterruptedException {
-        System.out.println(executeCommand("log:set " + level));
-        assertContains(level, executeCommand("log:get"));
+        System.out.println(executeCommand("log:set " + level, new RolePrincipal("manager")));
+        assertContains(level, executeCommand("log:get", new RolePrincipal("viewer")));
         Thread.sleep(100);
     }
 

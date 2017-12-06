@@ -25,7 +25,7 @@ import javax.inject.Inject;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import javax.management.openmbean.TabularData;
-
+import org.apache.karaf.jaas.boot.principal.RolePrincipal;
 import org.apache.karaf.packages.core.PackageService;
 import org.apache.karaf.packages.core.PackageVersion;
 import org.junit.Assert;
@@ -44,7 +44,7 @@ public class PackageTest extends KarafTestSupport {
 
     @Test
     public void exportsCommand() throws Exception {
-        String exportsOutput = executeCommand("package:exports");
+        String exportsOutput = executeCommand("package:exports", new RolePrincipal("viewer"));
         System.out.println(exportsOutput);
         assertFalse(exportsOutput.isEmpty());
     }
@@ -59,7 +59,7 @@ public class PackageTest extends KarafTestSupport {
 
     @Test
     public void importsCommand() throws Exception {
-        String importsOutput = executeCommand("package:imports");
+        String importsOutput = executeCommand("package:imports", new RolePrincipal("viewer"));
         System.out.println(importsOutput);
         assertFalse(importsOutput.isEmpty());
     }

@@ -65,10 +65,10 @@ public class FeatureTest extends KarafTestSupport {
 
     @Test
     public void listCommand() throws Exception {
-        String featureListOutput = executeCommand("feature:list");
+        String featureListOutput = executeCommand("feature:list", new RolePrincipal("viewer"));
         System.out.println(featureListOutput);
         assertFalse(featureListOutput.isEmpty());
-        featureListOutput = executeCommand("feature:list -i");
+        featureListOutput = executeCommand("feature:list -i", new RolePrincipal("viewer"));
         System.out.println(featureListOutput);
         assertFalse(featureListOutput.isEmpty());
     }
@@ -113,18 +113,18 @@ public class FeatureTest extends KarafTestSupport {
 
     @Test
     public void repoAddRemoveCommand() throws Exception {
-        System.out.println(executeCommand("feature:repo-add mvn:org.apache.karaf.cellar/apache-karaf-cellar/3.0.0/xml/features"));
-        assertContains("apache-karaf-cellar", executeCommand("feature:repo-list"));
-        System.out.println(executeCommand("feature:repo-remove mvn:org.apache.karaf.cellar/apache-karaf-cellar/3.0.0/xml/features"));
-        assertContainsNot("apache-karaf-cellar", executeCommand("feature:repo-list"));
+        System.out.println(executeCommand("feature:repo-add mvn:org.apache.karaf.cellar/apache-karaf-cellar/3.0.0/xml/features", new RolePrincipal("admin")));
+        assertContains("apache-karaf-cellar", executeCommand("feature:repo-list", new RolePrincipal("viewer")));
+        System.out.println(executeCommand("feature:repo-remove mvn:org.apache.karaf.cellar/apache-karaf-cellar/3.0.0/xml/features", new RolePrincipal("admin")));
+        assertContainsNot("apache-karaf-cellar", executeCommand("feature:repo-list", new RolePrincipal("viewer")));
     }
 
     @Test
     public void repoAddRemoveCommandWithRegex() throws Exception {
-        System.out.println(executeCommand("feature:repo-add mvn:org.apache.karaf.cellar/apache-karaf-cellar/3.0.0/xml/features"));
-        assertContains("apache-karaf-cellar", executeCommand("feature:repo-list"));
-        System.out.println(executeCommand("feature:repo-remove '.*apache-karaf-cellar.*'"));
-        assertContainsNot("apache-karaf-cellar", executeCommand("feature:repo-list"));
+        System.out.println(executeCommand("feature:repo-add mvn:org.apache.karaf.cellar/apache-karaf-cellar/3.0.0/xml/features", new RolePrincipal("manager")));
+        assertContains("apache-karaf-cellar", executeCommand("feature:repo-list", new RolePrincipal("viewer")));
+        System.out.println(executeCommand("feature:repo-remove '.*apache-karaf-cellar.*'", new RolePrincipal("manager")));
+        assertContainsNot("apache-karaf-cellar", executeCommand("feature:repo-list", new RolePrincipal("viewer")));
     }
 
     @Test
@@ -145,7 +145,7 @@ public class FeatureTest extends KarafTestSupport {
 
     @Test
     public void repoRefreshCommand() throws Exception {
-        String refreshedRepo = executeCommand("feature:repo-refresh '.*org.ops4j.pax.[wc].*'");
+        String refreshedRepo = executeCommand("feature:repo-refresh '.*org.ops4j.pax.[wc].*'", new RolePrincipal("manager"));
         assertContains("pax-cdi", refreshedRepo);
         assertContains("pax-web", refreshedRepo);
     }

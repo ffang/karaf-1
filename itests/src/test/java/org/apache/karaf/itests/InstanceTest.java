@@ -17,7 +17,7 @@ import javax.management.MBeanServer;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import javax.management.openmbean.TabularData;
-
+import org.apache.karaf.jaas.boot.principal.RolePrincipal;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -35,10 +35,10 @@ public class InstanceTest extends KarafTestSupport {
 
     @Test
     public void createDestroyCommand() throws Exception {
-        System.out.println(executeCommand("instance:create itest1"));
-        assertContains("itest1" ,executeCommand("instance:list"));
-        System.out.println(executeCommand("instance:destroy itest1"));
-        assertContainsNot("itest1" ,executeCommand("instance:list"));
+        System.out.println(executeCommand("instance:create itest1", new RolePrincipal("admin")));
+        assertContains("itest1" ,executeCommand("instance:list", new RolePrincipal("admin")));
+        System.out.println(executeCommand("instance:destroy itest1", new RolePrincipal("admin")));
+        assertContainsNot("itest1" ,executeCommand("instance:list", new RolePrincipal("viewer")));
     }
 
     @Test
@@ -92,8 +92,8 @@ public class InstanceTest extends KarafTestSupport {
 
     @Test
     public void cloneCommand() throws Exception {
-        System.out.println(executeCommand("instance:clone root itest3"));
-        assertContains("itest3", executeCommand("instance:list"));
+        System.out.println(executeCommand("instance:clone root itest3", new RolePrincipal("admin")));
+        assertContains("itest3", executeCommand("instance:list", new RolePrincipal("viewer")));
     }
 
     @Test
@@ -108,9 +108,9 @@ public class InstanceTest extends KarafTestSupport {
 
     @Test
     public void renameCommand() throws Exception {
-        executeCommand("instance:create itest777");
-        executeCommand("instance:rename itest777 new_itest");
-        assertContains("new_itest", executeCommand("instance:list"));
+        executeCommand("instance:create itest777", new RolePrincipal("admin"));
+        executeCommand("instance:rename itest777 new_itest", new RolePrincipal("admin"));
+        assertContains("new_itest", executeCommand("instance:list", new RolePrincipal("viewer")));
     }
 
     @Test

@@ -24,7 +24,7 @@ import java.util.Map;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
-
+import org.apache.karaf.jaas.boot.principal.RolePrincipal;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.junit.PaxExam;
@@ -37,10 +37,10 @@ public class ConfigTest extends KarafTestSupport {
 
     @Test
     public void listCommand() throws Exception {
-        String configListOutput = executeCommand("config:list");
+        String configListOutput = executeCommand("config:list", new RolePrincipal("viewer"));
         System.out.println(configListOutput);
         assertFalse(configListOutput.isEmpty());
-        configListOutput = executeCommand("config:list \"(service.pid=org.apache.karaf.features)\"");
+        configListOutput = executeCommand("config:list \"(service.pid=org.apache.karaf.features)\"", new RolePrincipal("viewer"));
         System.out.println(configListOutput);
         assertFalse(configListOutput.isEmpty());
     }

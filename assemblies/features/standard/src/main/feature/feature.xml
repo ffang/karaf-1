@@ -103,11 +103,19 @@
                 #
                 # This configuration file defines the ACLs for commands in the feature subshell
                 #
+                # For an explanation of the syntax of this file, see the file:
+                #   org.apache.karaf.command.acl.bundle.cfg
+                #
+                list = admin, manager, viewer
+                repo-list = admin, manager, viewer
+                info = admin, manager, viewer
+                version-list = admin, manager, viewer
+                repo-add = admin, manager
+                repo-refresh = admin, manager
+                repo-add = admin, manager
+                repo-remove = admin, manager
                 install = admin
                 uninstall = admin
-                start = admin
-                stop = admin
-                update = admin
             </config>
             <bundle start-level="30">mvn:org.apache.karaf.features/org.apache.karaf.features.command/${project.version}</bundle>
         </conditional>
@@ -129,6 +137,13 @@
             exec = admin
             new = admin
             java = admin
+            if = ssh,admin,manager,viewer
+            complete = ssh,admin,manager,viewer
+            setopt = ssh,admin,manager,viewer
+            unsetopt = ssh,admin,manager,viewer
+            .invoke = ssh,admin,manager,viewer
+            stack-traces-print = admin, manager
+            threads = admin, manager, viewer
         </config>
         <config name="org.apache.karaf.command.acl.scope_bundle">
             #
@@ -248,6 +263,57 @@
             # moduli-url = external moduli-url users wanna use
 
         </config>
+        <config name="org.apache.karaf.command.acl.patch">
+            #
+            # This configuration file defines the ACLs for various commands in the patch subshell
+            #
+            # For an explanation of the syntax of this file, see the file:
+            #   org.apache.karaf.command.acl.bundle.cfg
+            #
+            list = admin, manager, viewer
+            add = admin, manager
+            install = admin, manager
+            simulate = admin, manager
+            rollback = admin
+        </config>
+        <config name="org.apache.karaf.command.acl.cxf">
+            #
+            # This configuration file defines the ACLs for commands in the cxf subshell
+            #
+            # For an explanation of the syntax of this file, see the file:
+            #   org.apache.karaf.command.acl.bundle.cfg
+            #
+            list-busses = admin, manager, viewer
+            list-endpoints = admin, manager, viewer
+            start-endpoint = admin
+            stop-endpoint = admin
+        </config>
+        <config name="org.apache.karaf.command.acl.camel">
+            #
+            # This configuration file defines the ACLs for commands in the camel subshell
+            #
+            # For an explanation of the syntax of this file, see the file:
+            #   org.apache.karaf.command.acl.bundle.cfg
+            #
+            backlog-tracer-dump = admin, manager, viewer
+            backlog-tracer-info = admin, manager, viewer
+            backlog-tracer-start = admin, manager
+            backlog-tracer-stop = admin, manager
+            context-info = admin, manager, viewer
+            context-list = admin, manager, viewer
+            context-start = admin, manager
+            context-stop = admin, manager
+            endpoint-list = admin, manager, viewer
+            route-info = admin, manager, viewer
+            route-profile = admin, manager, viewer
+            route-reset-stats = admin, manager
+            route-show = admin, manager, viewer
+            route-list = admin, manager, viewer
+            route-stop = admin, manager
+            route-start = admin, manager
+            route-suspend = admin, manager
+            route-resume = admin, manager
+        </config>
         <bundle start-level="30">mvn:org.fusesource.jansi/jansi/${jansi.version}</bundle>
         <bundle start-level="30">mvn:org.jline/jline-terminal-jansi/${jline.version}</bundle>
         <bundle start-level="30">mvn:org.jline/jline-terminal/${jline.version}</bundle>
@@ -324,31 +390,66 @@
         <conditional>
             <condition>shell</condition>
             <config name="org.apache.karaf.command.acl.bundle">
+                # The format of this file is as follows:
+                # The name of the file corresponds to a Configuration Admin PID. This file is for PID:
+                #    org.apache.karaf.command.acl.bundle
+                # The prefix org.apache.karaf.command.acl. determines that this file defines ACLs for karaf
+                # commands. The last word on the PID declares the scope that it applies to, i.e. this file
+                # is for the 'bundle' scope.
+                # Entries in this file map to commands within the defined scope. The simplest role definition
+                # has the form:
+                #   command = role1, role2, role3
+                # Specific roles can also be declared for certain arguments to the command. This is done using
+                # regular expression matching.
+                # All the arguments to the command are represented as a list using the following syntax:
+                #   [arg1,arg2,arg3]
+                # The matching is done after converting this list into a string. So the line
+                #   start-level[/.*[0-9][0-9][0-9]+.*/] = manager
+                # declares that a manager role is needed to set a start level with 3 digits or more. The .*
+                # wildcards at the beginning and end are used to match the '[' and ']' characters surrounding.
+                # When looking for a match the regular-expression based ACLs are always checked first. If any
+                # of them match the associated roles are used.
                 #
-                # This configuration file defines the ACLs for commands in the bundle subshell
+                # If no match can be found based on reg-exp ACLs, a match is looked for based purely on the
+                # command name.
                 #
-                # For an explanation of the syntax of this file, see the file:
-                #   org.apache.karaf.command.acl.system.cfg
-                #
-                # This configuration relies on the fact that 'system' bundles need to be managed
-                # with the
-                #   -f (--force)
-                # flag. Operations with -f need admin permission. Most of these operations without
-                # the 'force' option can be done by a manager.
-                install = admin
+                # If no command-name match can be found it is assumed that the command does not need a specific
+                # role and can therefore be invoked by any user.
+                start-level = admin, manager
+                start-level[/.*[-][f].*/] = admin, manager
+                services = admin, manager, viewer
+                services[/.*[-][f].*/] = admin
+                classes = admin, manager, viewer
+                classes[/.*[-][f].*/] = admin
+                find-class = admin, manager, viewer
+                find-class[/.*[-][f].*/] = admin
+                headers = admin, manager, viewer
+                headers[/.*[-][f].*/] = admin
+                id = admin, manager, viewer
+                id[/.*[-][f].*/] = admin
+                list = admin, manager, viewer
+                info = admin, manager, viewer
+                info[/.*[-][f].*/] = admin
+                services = admin, manager, viewer
+                services[/.*[-][f].*/] = admin
+                install[/.*[-][f].*/] = admin
+                install = admin, manager
                 refresh[/.*[-][f].*/] = admin
-                refresh = manager
+                refresh = admin, manager
                 restart[/.*[-][f].*/] = admin
-                restart = manager
+                restart = admin, manager
                 start[/.*[-][f].*/] = admin
-                start = manager
+                start = admin, manager
                 stop[/.*[-][f].*/] = admin
-                stop = manager
+                stop = admin, manager
                 uninstall[/.*[-][f].*/] = admin
-                uninstall = manager
+                uninstall = admin, manager
                 update[/.*[-][f].*/] = admin
-                update = manager
+                update = admin, manager
                 watch = admin
+                dynamic-import = admin, manager
+                load-test = admin, manager
+                tree-show = admin, manager, viewer
             </config>
         </conditional>
     </feature>
@@ -400,27 +501,29 @@
                 # This configuration file defines the ACLs for various commands in the config subshell
                 #
                 # For an explanation of the syntax of this file, see the file:
-                #   org.apache.karaf.command.acl.system.cfg
+                #   org.apache.karaf.command.acl.bundle.cfg
                 #
-                cancel = manager
+                list = admin, manager, viewer
+                property-list = admin, manager
+                cancel = admin, manager
                 delete = admin
-                edit = manager
+                edit = admin, manager
                 edit[/.*jmx[.]acl.*/] = admin
                 edit[/.*org[.]apache[.]karaf[.]command[.]acl[.].+/] = admin
                 edit[/.*org[.]apache[.]karaf[.]service[.]acl[.].+/] = admin
-                property-append = manager
+                property-append = admin, manager
                 property-append[/.*jmx[.]acl.*/] = admin
                 property-append[/.*org[.]apache[.]karaf[.]command[.]acl[.].+/] = admin
                 property-append[/.*org[.]apache[.]karaf[.]service[.]acl[.].+/] = admin
-                property-delete = manager
+                property-delete = admin, manager
                 property-delete[/.*jmx[.]acl.*/] = admin
                 property-delete[/.*org[.]apache[.]karaf[.]command[.]acl[.].+/] = admin
                 property-delete[/.*org[.]apache[.]karaf[.]service[.]acl[.].+/] = admin
-                property-set = manager
+                property-set = admin, manager
                 property-set[/.*jmx[.]acl.*/] = admin
                 property-set[/.*org[.]apache[.]karaf[.]command[.]acl[.].+/] = admin
                 property-set[/.*org[.]apache[.]karaf[.]service[.]acl[.].+/] = admin
-                update = manager
+                update = admin, manager
             </config>
         </conditional>
     </feature>
@@ -434,6 +537,28 @@
 
     <feature name="instance" description="Provide Instance support" version="${project.version}">
         <bundle start-level="30">mvn:org.apache.karaf.instance/org.apache.karaf.instance.core/${project.version}</bundle>
+        <config name="org.apache.karaf.command.acl.instance">
+            #
+            # This configuration file defines the ACLs for various commands in the instance subshell
+            #
+            # For an explanation of the syntax of this file, see the file:
+            #   org.apache.karaf.command.acl.bundle.cfg
+            #
+            list = admin, manager, viewer
+            status = admin, manager, viewer
+            opts-change = admin, manager
+            rmi-registry-port-change = admin, manager
+            rmi-server-port-change = admin, manager
+            ssh-port-change = admin, manager
+            ssh-host-change = admin, manager
+            clone = admin
+            connect = admin, manager
+            create = admin
+            destroy = admin
+            rename = admin
+            start = admin, manager
+            stop = admin, manager
+        </config>
     </feature>
 
     <feature name="jaas" description="Provide JAAS support" version="${project.version}">
@@ -493,8 +618,27 @@
             <config name="org.apache.karaf.command.acl.jaas">
                 #
                 # This configuration file defines the ACLs for commands in the jaas subshell
+                #
+                # For an explanation of the syntax of this file, see the file:
+                #   org.apache.karaf.command.acl.bundle.cfg
+                #
                 # Jaas commands commands have no effect until update is called.
+
+                realm-list = admin, manager, viewer
+                realm-manage = admin, manager,viewer
+                pending-list = admin, manager
+                cancel = admin, manager
+                group-add = admin, manager
+                group-delete = admin, manager
+                group-role-add = admin, manager
+                group-role-delete = admin, manager
+                role-add = admin, manager
+                role-delete = admin, manager
+                user-add = admin, manager
+                user-delete = admin, manager
+                user-list = admin, manager, viewer
                 update = admin
+
             </config>
             <bundle start-level="30">mvn:org.apache.karaf.jaas/org.apache.karaf.jaas.command/${project.version}</bundle>
         </conditional>
@@ -526,15 +670,46 @@
             color.trace = "cyan"
             pattern = "\u001b[90m%d{HH:mm:ss.SSS}\u001b[0m %h{%p}{FATAL=${color.fatal}, ERROR=${color.error}, WARN=${color.warn}, INFO=${color.info}, DEBUG=${color.debug}, TRACE=${color.trace}} \u001b[90m[%t]\u001b[0m %m%n"
         </config>
+        <config name="org.apache.karaf.command.acl.log">
+            #
+            # This configuration file defines the ACLs for various commands in the log subshell
+            #
+            # For an explanation of the syntax of this file, see the file:
+            #   org.apache.karaf.command.acl.bundle.cfg
+            #
+            list = admin, manager, viewer
+            display = admin, manager, viewer
+            exception-display = admin, manager, viewer
+            get = admin, manager, viewer
+            tail = admin, manager, viewer
+            set = admin, manager
+            clear = admin, manager
+        </config>
         <bundle start-level="30">mvn:org.apache.karaf.log/org.apache.karaf.log.core/${project.version}</bundle>
     </feature>
 
     <feature name="package" version="${project.version}" description="Package commands and mbeans">
         <bundle start-level="30">mvn:org.apache.karaf.package/org.apache.karaf.package.core/${project.version}</bundle>
+        <config name="org.apache.karaf.command.acl.package">
+            #
+            # This configuration file defines the ACLs for various commands in the package subshell
+            #
+            # For an explanation of the syntax of this file, see the file:
+            #   org.apache.karaf.command.acl.bundle.cfg
+            #
+            exports = admin, manager, viewer
+            imports = admin, manager, viewer
+        </config>
     </feature>
 
     <feature name="service" description="Provide Service support" version="${project.version}">
         <bundle start-level="30">mvn:org.apache.karaf.service/org.apache.karaf.service.core/${project.version}</bundle>
+        <config name="org.apache.karaf.command.acl.service">
+            #
+            # This configuration file defines the ACLs for commands in the service subshell
+            #
+            wait = admin, manager
+        </config>
     </feature>
 
     <feature name="system" description="Provide System support" version="${project.version}">
@@ -547,9 +722,15 @@
                 #
                 property = admin
                 shutdown = admin
-                start-level[/.*[0-9][0-9][0-9]+.*/] = manager # manager can set startlevels above 100
-                start-level[/[^0-9]*/] = viewer               # viewer can obtain the current start level
-                start-level = admin                           # admin can set any start level, including &lt; 100
+                start-level[/.*[0-9][0-9][0-9]+.*/] = admin, manager # manager can set startlevels above 100
+                start-level[/[^0-9]*/] = admin, manager, viewer               # viewer can obtain the current start level
+                start-level = admin                           # admin can set any start level, including less than 100
+                name = admin
+                name[/[^0-9a-zA-Z]*/] = admin, manager, viewer
+                version = admin, manager, viewer
+                framework = admin, manager, viewer
+                framework[/.*[F][e][l][i][x].*/] = admin
+                framework[/.*[E][q][u][i][n][o][x].*/] = admin
             </config>
         </conditional>
     </feature>
@@ -679,6 +860,16 @@
         <bundle start-level="30">mvn:org.apache.sshd/sshd-core/${sshd.version}</bundle>
         <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.not-yet-commons-ssl/0.3.11_1</bundle>
         <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.ssh/${project.version}</bundle>
+        <config name="org.apache.karaf.command.acl.ssh">
+                #
+		# This configuration file defines the ACLs for various commands in the ssh subshell
+		#
+		# For an explanation of the syntax of this file, see the file:
+		#   org.apache.karaf.command.acl.bundle.cfg
+		#
+		ssh = admin, manager, viewer
+		sshd = admin
+         </config>
     </feature>
 
     <feature name="management" description="Provide a JMX MBeanServer and a set of MBeans in Karaf" version="${project.version}">
@@ -945,6 +1136,15 @@
             <condition>spring</condition>
             <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jasypt-spring31/${jasypt.bundle.version}</bundle>
         </conditional>
+        <config name="org.apache.karaf.command.acl.jasypt">
+            #
+            # This configuration file defines the ACLs for various commands in the jasypt subshell
+            #
+            # For an explanation of the syntax of this file, see the file:
+            #   org.apache.karaf.command.acl.bundle.cfg
+            #
+            encrypt = admin, manager, viewer
+        </config>
     </feature>
 
     <feature name="scr" description="Declarative Service support" version="${project.version}">
@@ -967,6 +1167,18 @@
             osgi.service;effective:=active;objectClass=org.apache.felix.scr.ScrService,
             osgi.extender;osgi.extender="osgi.component";uses:="org.osgi.service.component";version:Version="1.2.1"
         </capability>
+        <config name="org.apache.karaf.command.acl.scr">
+            #
+            # This configuration file defines the ACLs for various commands in the scr subshell
+            #
+            # For an explanation of the syntax of this file, see the file:
+            #   org.apache.karaf.command.acl.bundle.cfg
+            #
+            list = admin, manager, viewer
+            info = admin, manager, viewer
+            enable = admin, manager
+            disable = admin, manager
+        </config>
     </feature>
 
     <feature name="blueprint-web" description="Provides an OSGI-aware Servlet ContextListener for bootstrapping

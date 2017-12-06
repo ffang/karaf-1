@@ -85,7 +85,7 @@ public class BundleTest extends KarafTestSupport {
 
     @Test
     public void findClassCommand() throws Exception {
-        String findClassOutput = executeCommand("bundle:find-class jmx");
+        String findClassOutput = executeCommand("bundle:find-class jmx", ADMIN_ROLES);
         System.out.println(findClassOutput);
         assertFalse(findClassOutput.isEmpty());
     }

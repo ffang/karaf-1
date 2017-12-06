@@ -74,7 +74,6 @@ public class BundleSshCommandSecurityTest extends SshCommandTestBase {
         assertCommand("karaf", "bundle:update 999", Result.OK);
 
         assertCommand(vieweruser, "bundle:install xyz", Result.NOT_FOUND);
-        assertCommand(manageruser, "bundle:install xyz", Result.NOT_FOUND);
         assertCommand("karaf", "bundle:install xyz", Result.OK);
     }
 }

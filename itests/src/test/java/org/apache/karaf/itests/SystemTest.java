@@ -35,7 +35,7 @@ public class SystemTest extends KarafTestSupport {
 
     @Test
     public void nameCommand() throws Exception {
-        String nameOutput = executeCommand("system:name");
+        String nameOutput = executeCommand("system:name", new RolePrincipal("viewer"));
         System.out.println(nameOutput);
         assertEquals("root", nameOutput.trim());
     }
@@ -50,7 +50,7 @@ public class SystemTest extends KarafTestSupport {
 
     @Test
     public void versionCommand() throws Exception {
-        assertContains(KARAF_VERSION, executeCommand("system:version"));
+        assertContains(KARAF_VERSION, executeCommand("system:version", new RolePrincipal("viewer")));
     }
 
     @Test
@@ -62,7 +62,7 @@ public class SystemTest extends KarafTestSupport {
 
     @Test
     public void frameworkCommand() throws Exception {
-        assertContains("felix", executeCommand("system:framework"));
+        assertContains("felix", executeCommand("system:framework", new RolePrincipal("viewer")));
     }
 
     @Test
