@@ -79,7 +79,7 @@ public class BundleTest extends KarafTestSupport {
      */
     @Test
     public void diagCommand() throws Exception {
-        String allDiagOutput = executeCommand("bundle:diag");
+        String allDiagOutput = executeCommand("bundle:diag", ADMIN_ROLES);
         assertTrue(allDiagOutput.isEmpty());
     }
 

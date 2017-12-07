@@ -154,7 +154,11 @@ public class JMXSecurityTest extends KarafTestSupport {
         assertInvokeSecEx(connection, systemMBean, "halt");
 
         ObjectName memoryMBean = new ObjectName("java.lang:type=Memory");
+        try {
         assertEquals(false, connection.getAttribute(memoryMBean, "Verbose"));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
         assertSetAttributeSecEx(connection, memoryMBean, new Attribute("Verbose", true));
         assertEquals("Changing the verbosity should have no effect for a viewer",
                 false, connection.getAttribute(memoryMBean, "Verbose"));

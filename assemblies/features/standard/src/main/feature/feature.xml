@@ -137,6 +137,7 @@
             exec = admin
             new = admin
             java = admin
+            date = admin, manager, viewer
             if = ssh,admin,manager,viewer
             complete = ssh,admin,manager,viewer
             setopt = ssh,admin,manager,viewer
@@ -144,6 +145,7 @@
             .invoke = ssh,admin,manager,viewer
             stack-traces-print = admin, manager
             threads = admin, manager, viewer
+            logout = admin, manager, viewer
         </config>
         <config name="org.apache.karaf.command.acl.scope_bundle">
             #
@@ -709,6 +711,8 @@
             # This configuration file defines the ACLs for commands in the service subshell
             #
             wait = admin, manager
+            get = admin, manager, viewer
+            list = admin, manager, viewer
         </config>
     </feature>
 
@@ -828,6 +832,8 @@
                 #
                 install = admin
                 uninstall = admin
+                create = admin
+                list = admin, manager, viewer
             </config>
         </conditional>
     </feature>

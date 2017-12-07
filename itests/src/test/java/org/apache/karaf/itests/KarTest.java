@@ -20,7 +20,7 @@ import java.util.List;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
-
+import org.apache.karaf.jaas.boot.principal.RolePrincipal;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.junit.PaxExam;
@@ -33,7 +33,7 @@ public class KarTest extends KarafTestSupport {
 
     @Test
     public void listCommand() throws Exception {
-        System.out.println(executeCommand("kar:list"));
+        System.out.println(executeCommand("kar:list", new RolePrincipal("viewer")));
     }
 
     @Test

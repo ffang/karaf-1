@@ -19,7 +19,7 @@ import static org.junit.Assert.assertTrue;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import javax.management.openmbean.TabularData;
-
+import org.apache.karaf.jaas.boot.principal.RolePrincipal;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.junit.PaxExam;
@@ -34,7 +34,7 @@ public class ServiceTest extends KarafTestSupport {
 
     @Test
     public void listCommand() throws Exception {
-        String listOutput = executeCommand("service:list");
+        String listOutput = executeCommand("service:list", new RolePrincipal("viewer"));
         System.out.println(listOutput);
         assertFalse(listOutput.isEmpty());
     }
