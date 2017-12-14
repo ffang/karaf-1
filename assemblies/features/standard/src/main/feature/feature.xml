@@ -32,7 +32,11 @@
 
     <feature name="aries-proxy" description="Aries Proxy" version="${project.version}">
         <!-- false to avoid restarts of proxy which cascades badly -->
-        <bundle dependency="false" start-level="20">mvn:org.ow2.asm/asm-all/${asm.version}</bundle>
+        <bundle dependency="false" start-level="20">mvn:org.ow2.asm/asm/${asm.version}</bundle>
+        <bundle dependency="false" start-level="20">mvn:org.ow2.asm/asm-util/${asm.version}</bundle>
+        <bundle dependency="false" start-level="20">mvn:org.ow2.asm/asm-tree/${asm.version}</bundle>
+        <bundle dependency="false" start-level="20">mvn:org.ow2.asm/asm-analysis/${asm.version}</bundle>
+        <bundle dependency="false" start-level="20">mvn:org.ow2.asm/asm-commons/${asm.version}</bundle>
         <bundle start-level="20">mvn:org.apache.aries.proxy/org.apache.aries.proxy/${aries.proxy.version}</bundle>
     </feature>
 
@@ -58,6 +62,25 @@
         <bundle start-level="1">mvn:org.apache.karaf.features/org.apache.karaf.features.extension/${project.version}</bundle>
         <bundle start-level="15">mvn:org.apache.karaf.features/org.apache.karaf.features.core/${project.version}</bundle>
         <config name="org.apache.karaf.features.repos">
+            ################################################################################
+            #
+            #    Licensed to the Apache Software Foundation (ASF) under one or more
+            #    contributor license agreements.  See the NOTICE file distributed with
+            #    this work for additional information regarding copyright ownership.
+            #    The ASF licenses this file to You under the Apache License, Version 2.0
+            #    (the "License"); you may not use this file except in compliance with
+            #    the License.  You may obtain a copy of the License at
+            #
+            #       http://www.apache.org/licenses/LICENSE-2.0
+            #
+            #    Unless required by applicable law or agreed to in writing, software
+            #    distributed under the License is distributed on an "AS IS" BASIS,
+            #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+            #    See the License for the specific language governing permissions and
+            #    limitations under the License.
+            #
+            ################################################################################
+
             #
             # This file describes the features repository URL
             # It could be directly installed using feature:repo-add command
@@ -100,6 +123,25 @@
         <conditional>
             <condition>shell</condition>
             <config name="org.apache.karaf.command.acl.feature">
+                ################################################################################
+                #
+                #    Licensed to the Apache Software Foundation (ASF) under one or more
+                #    contributor license agreements.  See the NOTICE file distributed with
+                #    this work for additional information regarding copyright ownership.
+                #    The ASF licenses this file to You under the Apache License, Version 2.0
+                #    (the "License"); you may not use this file except in compliance with
+                #    the License.  You may obtain a copy of the License at
+                #
+                #       http://www.apache.org/licenses/LICENSE-2.0
+                #
+                #    Unless required by applicable law or agreed to in writing, software
+                #    distributed under the License is distributed on an "AS IS" BASIS,
+                #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+                #    See the License for the specific language governing permissions and
+                #    limitations under the License.
+                #
+                ################################################################################
+
                 #
                 # This configuration file defines the ACLs for commands in the feature subshell
                 #
@@ -130,6 +172,25 @@
     <feature name="shell" description="Karaf Shell" version="${project.version}">
         <feature>jaas-boot</feature>
         <config name="org.apache.karaf.command.acl.shell">
+            ################################################################################
+            #
+            #    Licensed to the Apache Software Foundation (ASF) under one or more
+            #    contributor license agreements.  See the NOTICE file distributed with
+            #    this work for additional information regarding copyright ownership.
+            #    The ASF licenses this file to You under the Apache License, Version 2.0
+            #    (the "License"); you may not use this file except in compliance with
+            #    the License.  You may obtain a copy of the License at
+            #
+            #       http://www.apache.org/licenses/LICENSE-2.0
+            #
+            #    Unless required by applicable law or agreed to in writing, software
+            #    distributed under the License is distributed on an "AS IS" BASIS,
+            #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+            #    See the License for the specific language governing permissions and
+            #    limitations under the License.
+            #
+            ################################################################################
+
             #
             # This configuration file defines the ACLs for commands in the shell subshell
             #
@@ -148,6 +209,25 @@
             logout = admin, manager, viewer
         </config>
         <config name="org.apache.karaf.command.acl.scope_bundle">
+            ################################################################################
+            #
+            #    Licensed to the Apache Software Foundation (ASF) under one or more
+            #    contributor license agreements.  See the NOTICE file distributed with
+            #    this work for additional information regarding copyright ownership.
+            #    The ASF licenses this file to You under the Apache License, Version 2.0
+            #    (the "License"); you may not use this file except in compliance with
+            #    the License.  You may obtain a copy of the License at
+            #
+            #       http://www.apache.org/licenses/LICENSE-2.0
+            #
+            #    Unless required by applicable law or agreed to in writing, software
+            #    distributed under the License is distributed on an "AS IS" BASIS,
+            #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+            #    See the License for the specific language governing permissions and
+            #    limitations under the License.
+            #
+            ################################################################################
+
             #
             # This configuration file defines the ACLs for scope bundles
             # 
@@ -162,6 +242,25 @@
             shell=org.apache.karaf.shell.commands
         </config>
         <config name="org.apache.karaf.shell">
+            ################################################################################
+            #
+            #    Licensed to the Apache Software Foundation (ASF) under one or more
+            #    contributor license agreements.  See the NOTICE file distributed with
+            #    this work for additional information regarding copyright ownership.
+            #    The ASF licenses this file to You under the Apache License, Version 2.0
+            #    (the "License"); you may not use this file except in compliance with
+            #    the License.  You may obtain a copy of the License at
+            #
+            #       http://www.apache.org/licenses/LICENSE-2.0
+            #
+            #    Unless required by applicable law or agreed to in writing, software
+            #    distributed under the License is distributed on an "AS IS" BASIS,
+            #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+            #    See the License for the specific language governing permissions and
+            #    limitations under the License.
+            #
+            ################################################################################
+
             #
             # These properties are used to configure Karaf's ssh shell.
             #
@@ -187,6 +286,11 @@
             # sshRole defines the role required to access the console through ssh
             #
             sshRole = ssh
+
+            #
+            # Defines if the SFTP system is enabled or not in the SSH server
+            #
+            sftpEnabled=true
 
             #
             # The location of the hostKey file defines where the private/public key of the server
@@ -368,6 +472,25 @@
         <conditional>
             <condition>management</condition>
             <config name="jmx.acl.org.apache.karaf.bundle">
+                ################################################################################
+                #
+                #    Licensed to the Apache Software Foundation (ASF) under one or more
+                #    contributor license agreements.  See the NOTICE file distributed with
+                #    this work for additional information regarding copyright ownership.
+                #    The ASF licenses this file to You under the Apache License, Version 2.0
+                #    (the "License"); you may not use this file except in compliance with
+                #    the License.  You may obtain a copy of the License at
+                #
+                #       http://www.apache.org/licenses/LICENSE-2.0
+                #
+                #    Unless required by applicable law or agreed to in writing, software
+                #    distributed under the License is distributed on an "AS IS" BASIS,
+                #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+                #    See the License for the specific language governing permissions and
+                #    limitations under the License.
+                #
+                ################################################################################
+
                 #
                 # JMX ACL specific to the org.apache.karaf:type=bundle,name=* MBean which maps to the Karaf MBean
                 # to control OSGi bundles.
@@ -392,6 +515,25 @@
         <conditional>
             <condition>shell</condition>
             <config name="org.apache.karaf.command.acl.bundle">
+                ################################################################################
+                #
+                #    Licensed to the Apache Software Foundation (ASF) under one or more
+                #    contributor license agreements.  See the NOTICE file distributed with
+                #    this work for additional information regarding copyright ownership.
+                #    The ASF licenses this file to You under the Apache License, Version 2.0
+                #    (the "License"); you may not use this file except in compliance with
+                #    the License.  You may obtain a copy of the License at
+                #
+                #       http://www.apache.org/licenses/LICENSE-2.0
+                #
+                #    Unless required by applicable law or agreed to in writing, software
+                #    distributed under the License is distributed on an "AS IS" BASIS,
+                #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+                #    See the License for the specific language governing permissions and
+                #    limitations under the License.
+                #
+                ################################################################################
+
                 # The format of this file is as follows:
                 # The name of the file corresponds to a Configuration Admin PID. This file is for PID:
                 #    org.apache.karaf.command.acl.bundle
@@ -461,6 +603,25 @@
         <conditional>
             <condition>management</condition>
             <config name="jmx.acl.org.apache.karaf.config">
+                ################################################################################
+                #
+                #    Licensed to the Apache Software Foundation (ASF) under one or more
+                #    contributor license agreements.  See the NOTICE file distributed with
+                #    this work for additional information regarding copyright ownership.
+                #    The ASF licenses this file to You under the Apache License, Version 2.0
+                #    (the "License"); you may not use this file except in compliance with
+                #    the License.  You may obtain a copy of the License at
+                #
+                #       http://www.apache.org/licenses/LICENSE-2.0
+                #
+                #    Unless required by applicable law or agreed to in writing, software
+                #    distributed under the License is distributed on an "AS IS" BASIS,
+                #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+                #    See the License for the specific language governing permissions and
+                #    limitations under the License.
+                #
+                ################################################################################
+
                 #
                 # JMX ACL specific to the org.apache.karaf:type=config,name=* MBean which maps to the Karaf MBean to interact with the
                 # OSGi Config Admin service.
@@ -499,6 +660,25 @@
         <conditional>
             <condition>shell</condition>
             <config name="org.apache.karaf.command.acl.config">
+                ################################################################################
+                #
+                #    Licensed to the Apache Software Foundation (ASF) under one or more
+                #    contributor license agreements.  See the NOTICE file distributed with
+                #    this work for additional information regarding copyright ownership.
+                #    The ASF licenses this file to You under the Apache License, Version 2.0
+                #    (the "License"); you may not use this file except in compliance with
+                #    the License.  You may obtain a copy of the License at
+                #
+                #       http://www.apache.org/licenses/LICENSE-2.0
+                #
+                #    Unless required by applicable law or agreed to in writing, software
+                #    distributed under the License is distributed on an "AS IS" BASIS,
+                #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+                #    See the License for the specific language governing permissions and
+                #    limitations under the License.
+                #
+                ################################################################################
+
                 #
                 # This configuration file defines the ACLs for various commands in the config subshell
                 #
@@ -565,6 +745,25 @@
 
     <feature name="jaas" description="Provide JAAS support" version="${project.version}">
         <config name="org.apache.karaf.jaas">
+            ################################################################################
+            #
+            #    Licensed to the Apache Software Foundation (ASF) under one or more
+            #    contributor license agreements.  See the NOTICE file distributed with
+            #    this work for additional information regarding copyright ownership.
+            #    The ASF licenses this file to You under the Apache License, Version 2.0
+            #    (the "License"); you may not use this file except in compliance with
+            #    the License.  You may obtain a copy of the License at
+            #
+            #       http://www.apache.org/licenses/LICENSE-2.0
+            #
+            #    Unless required by applicable law or agreed to in writing, software
+            #    distributed under the License is distributed on an "AS IS" BASIS,
+            #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+            #    See the License for the specific language governing permissions and
+            #    limitations under the License.
+            #
+            ################################################################################
+
             #
             # Boolean enabling / disabling encrypted passwords
             #
@@ -618,6 +817,25 @@
         <conditional>
             <condition>shell</condition>
             <config name="org.apache.karaf.command.acl.jaas">
+                ################################################################################
+                #
+                #    Licensed to the Apache Software Foundation (ASF) under one or more
+                #    contributor license agreements.  See the NOTICE file distributed with
+                #    this work for additional information regarding copyright ownership.
+                #    The ASF licenses this file to You under the Apache License, Version 2.0
+                #    (the "License"); you may not use this file except in compliance with
+                #    the License.  You may obtain a copy of the License at
+                #
+                #       http://www.apache.org/licenses/LICENSE-2.0
+                #
+                #    Unless required by applicable law or agreed to in writing, software
+                #    distributed under the License is distributed on an "AS IS" BASIS,
+                #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+                #    See the License for the specific language governing permissions and
+                #    limitations under the License.
+                #
+                ################################################################################
+
                 #
                 # This configuration file defines the ACLs for commands in the jaas subshell
                 #
@@ -648,6 +866,25 @@
 
     <feature name="log" description="Provide Log support" version="${project.version}">
         <config name="org.apache.karaf.log">
+            ################################################################################
+            #
+            #    Licensed to the Apache Software Foundation (ASF) under one or more
+            #    contributor license agreements.  See the NOTICE file distributed with
+            #    this work for additional information regarding copyright ownership.
+            #    The ASF licenses this file to You under the Apache License, Version 2.0
+            #    (the "License"); you may not use this file except in compliance with
+            #    the License.  You may obtain a copy of the License at
+            #
+            #       http://www.apache.org/licenses/LICENSE-2.0
+            #
+            #    Unless required by applicable law or agreed to in writing, software
+            #    distributed under the License is distributed on an "AS IS" BASIS,
+            #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+            #    See the License for the specific language governing permissions and
+            #    limitations under the License.
+            #
+            ################################################################################
+
             #
             # This configuration file is used to configure the default values for the log:display
             # and log:exception-display commands.
@@ -721,6 +958,25 @@
         <conditional>
             <condition>shell</condition>
             <config name="org.apache.karaf.command.acl.system">
+                ################################################################################
+                #
+                #    Licensed to the Apache Software Foundation (ASF) under one or more
+                #    contributor license agreements.  See the NOTICE file distributed with
+                #    this work for additional information regarding copyright ownership.
+                #    The ASF licenses this file to You under the Apache License, Version 2.0
+                #    (the "License"); you may not use this file except in compliance with
+                #    the License.  You may obtain a copy of the License at
+                #
+                #       http://www.apache.org/licenses/LICENSE-2.0
+                #
+                #    Unless required by applicable law or agreed to in writing, software
+                #    distributed under the License is distributed on an "AS IS" BASIS,
+                #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+                #    See the License for the specific language governing permissions and
+                #    limitations under the License.
+                #
+                ################################################################################
+
                 #
                 # This configuration file defines the ACLs for commands in the system subshell
                 #
@@ -770,43 +1026,47 @@
         <bundle start-level="30">mvn:org.apache.karaf.web/org.apache.karaf.web.core/${project.version}</bundle>
     </feature>
     
-    <feature name="jetty" version="${dependency.jetty.version}">
+    <feature name="jetty" version="${jetty.version}">
         <bundle dependency="true" start-level="30">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activation-api-1.1/${servicemix.specs.version}</bundle>
         <bundle dependency="true" start-level="30">mvn:${servlet.spec.groupId}/${servlet.spec.artifactId}/${servlet.spec.version}</bundle>
         <bundle dependency="true" start-level="30">mvn:javax.mail/mail/${javax.mail.version}</bundle>
         <bundle dependency="true" start-level="30">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/${geronimo.jta-spec.version}</bundle>
         <bundle dependency="true" start-level="30">mvn:javax.annotation/javax.annotation-api/${javax.annotation.version}</bundle>
         <bundle dependency="true" start-level="30">mvn:org.apache.geronimo.specs/geronimo-jaspic_1.0_spec/${geronimo.jaspic-spec.version}</bundle>
-        <bundle dependency="true" start-level="30">mvn:org.ow2.asm/asm-all/${asm.version}</bundle>
+        <bundle dependency="true" start-level="30">mvn:org.ow2.asm/asm/${asm.version}</bundle>
+        <bundle dependency="true" start-level="30">mvn:org.ow2.asm/asm-util/${asm.version}</bundle>
+        <bundle dependency="true" start-level="30">mvn:org.ow2.asm/asm-tree/${asm.version}</bundle>
+        <bundle dependency="true" start-level="30">mvn:org.ow2.asm/asm-analysis/${asm.version}</bundle>
+        <bundle dependency="true" start-level="30">mvn:org.ow2.asm/asm-commons/${asm.version}</bundle>
         <bundle dependency="true" start-level="30">mvn:org.apache.aries.spifly/org.apache.aries.spifly.dynamic.bundle/${aries.spifly.version}</bundle>
         <bundle dependency="true" start-level="30">mvn:org.apache.aries/org.apache.aries.util/${aries.util.version}</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-continuation/${dependency.jetty.version}</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-http/${dependency.jetty.version}</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-io/${dependency.jetty.version}</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-jaspi/${dependency.jetty.version}</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-plus/${dependency.jetty.version}</bundle>
-       	<bundle start-level="30">mvn:org.eclipse.jetty/jetty-jndi/${dependency.jetty.version}</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-rewrite/${dependency.jetty.version}</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-security/${dependency.jetty.version}</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-server/${dependency.jetty.version}</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-servlet/${dependency.jetty.version}</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-servlets/${dependency.jetty.version}</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-util/${dependency.jetty.version}</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-util-ajax/${dependency.jetty.version}</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-webapp/${dependency.jetty.version}</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-jaas/${dependency.jetty.version}</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-xml/${dependency.jetty.version}</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-client/${dependency.jetty.version}</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-deploy/${dependency.jetty.version}</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-jmx/${dependency.jetty.version}</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty.websocket/websocket-server/${dependency.jetty.version}</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty.websocket/websocket-client/${dependency.jetty.version}</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty.websocket/websocket-common/${dependency.jetty.version}</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty.websocket/websocket-servlet/${dependency.jetty.version}</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty.websocket/websocket-api/${dependency.jetty.version}</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty.websocket/javax-websocket-server-impl/${dependency.jetty.version}</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty.websocket/javax-websocket-client-impl/${dependency.jetty.version}</bundle>
-        <bundle start-level="30">mvn:javax.websocket/javax.websocket-api/${dependency.websocket.version}</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-continuation/${jetty.version}</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-http/${jetty.version}</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-io/${jetty.version}</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-jaspi/${jetty.version}</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-plus/${jetty.version}</bundle>
+       	<bundle start-level="30">mvn:org.eclipse.jetty/jetty-jndi/${jetty.version}</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-rewrite/${jetty.version}</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-security/${jetty.version}</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-server/${jetty.version}</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-servlet/${jetty.version}</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-servlets/${jetty.version}</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-util/${jetty.version}</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-util-ajax/${jetty.version}</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-webapp/${jetty.version}</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-jaas/${jetty.version}</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-xml/${jetty.version}</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-client/${jetty.version}</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-deploy/${jetty.version}</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-jmx/${jetty.version}</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty.websocket/websocket-server/${jetty.version}</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty.websocket/websocket-client/${jetty.version}</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty.websocket/websocket-common/${jetty.version}</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty.websocket/websocket-servlet/${jetty.version}</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty.websocket/websocket-api/${jetty.version}</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty.websocket/javax-websocket-server-impl/${jetty.version}</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty.websocket/javax-websocket-client-impl/${jetty.version}</bundle>
+        <bundle start-level="30">mvn:javax.websocket/javax.websocket-api/${websocket.version}</bundle>
     </feature>
 
     <feature name="jetty" version="8.1.14.v20131031">
@@ -824,6 +1084,25 @@
         <conditional>
             <condition>shell</condition>
             <config name="org.apache.karaf.command.acl.kar">
+                ################################################################################
+                #
+                #    Licensed to the Apache Software Foundation (ASF) under one or more
+                #    contributor license agreements.  See the NOTICE file distributed with
+                #    this work for additional information regarding copyright ownership.
+                #    The ASF licenses this file to You under the Apache License, Version 2.0
+                #    (the "License"); you may not use this file except in compliance with
+                #    the License.  You may obtain a copy of the License at
+                #
+                #       http://www.apache.org/licenses/LICENSE-2.0
+                #
+                #    Unless required by applicable law or agreed to in writing, software
+                #    distributed under the License is distributed on an "AS IS" BASIS,
+                #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+                #    See the License for the specific language governing permissions and
+                #    limitations under the License.
+                #
+                ################################################################################
+
                 #
                 # This configuration file defines the ACLs for commands in the kar subshell
                 #
@@ -841,6 +1120,25 @@
     <feature name="webconsole" description="Base support of the Karaf WebConsole" version="${project.version}">
         <feature>jaas-boot</feature>
         <config name="org.apache.karaf.webconsole">
+            ################################################################################
+            #
+            #    Licensed to the Apache Software Foundation (ASF) under one or more
+            #    contributor license agreements.  See the NOTICE file distributed with
+            #    this work for additional information regarding copyright ownership.
+            #    The ASF licenses this file to You under the Apache License, Version 2.0
+            #    (the "License"); you may not use this file except in compliance with
+            #    the License.  You may obtain a copy of the License at
+            #
+            #       http://www.apache.org/licenses/LICENSE-2.0
+            #
+            #    Unless required by applicable law or agreed to in writing, software
+            #    distributed under the License is distributed on an "AS IS" BASIS,
+            #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+            #    See the License for the specific language governing permissions and
+            #    limitations under the License.
+            #
+            ################################################################################
+
             realm=karaf
         </config>
         <feature>http</feature>
@@ -880,6 +1178,25 @@
 
     <feature name="management" description="Provide a JMX MBeanServer and a set of MBeans in Karaf" version="${project.version}">
         <config name="jmx.acl">
+            ################################################################################
+            #
+            #    Licensed to the Apache Software Foundation (ASF) under one or more
+            #    contributor license agreements.  See the NOTICE file distributed with
+            #    this work for additional information regarding copyright ownership.
+            #    The ASF licenses this file to You under the Apache License, Version 2.0
+            #    (the "License"); you may not use this file except in compliance with
+            #    the License.  You may obtain a copy of the License at
+            #
+            #       http://www.apache.org/licenses/LICENSE-2.0
+            #
+            #    Unless required by applicable law or agreed to in writing, software
+            #    distributed under the License is distributed on an "AS IS" BASIS,
+            #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+            #    See the License for the specific language governing permissions and
+            #    limitations under the License.
+            #
+            ################################################################################
+
             #
             # Generic JMX ACL
             #
@@ -936,6 +1253,25 @@
             * = admin
         </config>
         <config name="jmx.acl.org.apache.karaf.security.jmx">
+            ################################################################################
+            #
+            #    Licensed to the Apache Software Foundation (ASF) under one or more
+            #    contributor license agreements.  See the NOTICE file distributed with
+            #    this work for additional information regarding copyright ownership.
+            #    The ASF licenses this file to You under the Apache License, Version 2.0
+            #    (the "License"); you may not use this file except in compliance with
+            #    the License.  You may obtain a copy of the License at
+            #
+            #       http://www.apache.org/licenses/LICENSE-2.0
+            #
+            #    Unless required by applicable law or agreed to in writing, software
+            #    distributed under the License is distributed on an "AS IS" BASIS,
+            #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+            #    See the License for the specific language governing permissions and
+            #    limitations under the License.
+            #
+            ################################################################################
+
             #
             # JMX ACL specific to the org.apache.karaf:type=security,area=jmx MBean which
             # can be used to find out whether the currently logged in JMX user can invoke
@@ -946,6 +1282,25 @@
             canInvoke = viewer
         </config>
         <config name="jmx.acl.java.lang.Memory">
+            ################################################################################
+            #
+            #    Licensed to the Apache Software Foundation (ASF) under one or more
+            #    contributor license agreements.  See the NOTICE file distributed with
+            #    this work for additional information regarding copyright ownership.
+            #    The ASF licenses this file to You under the Apache License, Version 2.0
+            #    (the "License"); you may not use this file except in compliance with
+            #    the License.  You may obtain a copy of the License at
+            #
+            #       http://www.apache.org/licenses/LICENSE-2.0
+            #
+            #    Unless required by applicable law or agreed to in writing, software
+            #    distributed under the License is distributed on an "AS IS" BASIS,
+            #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+            #    See the License for the specific language governing permissions and
+            #    limitations under the License.
+            #
+            ################################################################################
+
             #
             # JMX ACL specific to the java.lang.Memory MBean
             #
@@ -954,6 +1309,25 @@
             gc = manager
         </config>
         <config name="jmx.acl.osgi.compendium.cm">
+            ################################################################################
+            #
+            #    Licensed to the Apache Software Foundation (ASF) under one or more
+            #    contributor license agreements.  See the NOTICE file distributed with
+            #    this work for additional information regarding copyright ownership.
+            #    The ASF licenses this file to You under the Apache License, Version 2.0
+            #    (the "License"); you may not use this file except in compliance with
+            #    the License.  You may obtain a copy of the License at
+            #
+            #       http://www.apache.org/licenses/LICENSE-2.0
+            #
+            #    Unless required by applicable law or agreed to in writing, software
+            #    distributed under the License is distributed on an "AS IS" BASIS,
+            #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+            #    See the License for the specific language governing permissions and
+            #    limitations under the License.
+            #
+            ################################################################################
+
             #
             # JMX ACL specific to osgi.compendium.cm MBean
             #
@@ -990,6 +1364,25 @@
             updateForLocation(java.lang.String,java.lang.String,javax.management.openmbean.TabularData) = manager
         </config>
         <config name="org.apache.karaf.management">
+            ################################################################################
+            #
+            #    Licensed to the Apache Software Foundation (ASF) under one or more
+            #    contributor license agreements.  See the NOTICE file distributed with
+            #    this work for additional information regarding copyright ownership.
+            #    The ASF licenses this file to You under the Apache License, Version 2.0
+            #    (the "License"); you may not use this file except in compliance with
+            #    the License.  You may obtain a copy of the License at
+            #
+            #       http://www.apache.org/licenses/LICENSE-2.0
+            #
+            #    Unless required by applicable law or agreed to in writing, software
+            #    distributed under the License is distributed on an "AS IS" BASIS,
+            #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+            #    See the License for the specific language governing permissions and
+            #    limitations under the License.
+            #
+            ################################################################################
+
             #
             # The properties in this file define the configuration of Apache Karaf's JMX Management
             #
@@ -1113,6 +1506,25 @@
 
     <feature name="eventadmin" description="OSGi Event Admin service specification for event-based communication" version="${project.version}">
         <config name="org.apache.felix.eventadmin.impl.EventAdmin">
+            ################################################################################
+            #
+            #    Licensed to the Apache Software Foundation (ASF) under one or more
+            #    contributor license agreements.  See the NOTICE file distributed with
+            #    this work for additional information regarding copyright ownership.
+            #    The ASF licenses this file to You under the Apache License, Version 2.0
+            #    (the "License"); you may not use this file except in compliance with
+            #    the License.  You may obtain a copy of the License at
+            #
+            #       http://www.apache.org/licenses/LICENSE-2.0
+            #
+            #    Unless required by applicable law or agreed to in writing, software
+            #    distributed under the License is distributed on an "AS IS" BASIS,
+            #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+            #    See the License for the specific language governing permissions and
+            #    limitations under the License.
+            #
+            ################################################################################
+
             org.apache.felix.eventadmin.AddTimestamp=true
             org.apache.felix.eventadmin.AddSubject=true
         </config>
@@ -1200,6 +1612,25 @@
 
     <feature name="profile" description="Profiles support" version="${project.version}">
         <config name="org.apache.karaf.profile">
+            ################################################################################
+            #
+            #    Licensed to the Apache Software Foundation (ASF) under one or more
+            #    contributor license agreements.  See the NOTICE file distributed with
+            #    this work for additional information regarding copyright ownership.
+            #    The ASF licenses this file to You under the Apache License, Version 2.0
+            #    (the "License"); you may not use this file except in compliance with
+            #    the License.  You may obtain a copy of the License at
+            #
+            #       http://www.apache.org/licenses/LICENSE-2.0
+            #
+            #    Unless required by applicable law or agreed to in writing, software
+            #    distributed under the License is distributed on an "AS IS" BASIS,
+            #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+            #    See the License for the specific language governing permissions and
+            #    limitations under the License.
+            #
+            ################################################################################
+
             profilesDirectory = ${karaf.home}/profiles
         </config>
         <bundle>mvn:org.apache.karaf.profile/org.apache.karaf.profile.core/${project.version}</bundle>
@@ -1210,6 +1641,25 @@
     <feature name="jolokia" description="Jolokia monitoring support" version="${jolokia.version}">
         <feature>http</feature>
         <config name="org.jolokia.osgi">
+            ################################################################################
+            #
+            #    Licensed to the Apache Software Foundation (ASF) under one or more
+            #    contributor license agreements.  See the NOTICE file distributed with
+            #    this work for additional information regarding copyright ownership.
+            #    The ASF licenses this file to You under the Apache License, Version 2.0
+            #    (the "License"); you may not use this file except in compliance with
+            #    the License.  You may obtain a copy of the License at
+            #
+            #       http://www.apache.org/licenses/LICENSE-2.0
+            #
+            #    Unless required by applicable law or agreed to in writing, software
+            #    distributed under the License is distributed on an "AS IS" BASIS,
+            #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+            #    See the License for the specific language governing permissions and
+            #    limitations under the License.
+            #
+            ################################################################################
+
             org.jolokia.user=karaf
             org.jolokia.realm=karaf
             org.jolokia.authMode=jaas
@@ -1222,6 +1672,25 @@
         <bundle start-level="30">mvn:org.apache.karaf.maven/org.apache.karaf.maven.core/${project.version}</bundle>
         <bundle dependency="true">mvn:org.apache.commons/commons-lang3/${commons-lang3.version}</bundle>
         <config name="org.apache.karaf.command.acl.maven">
+            ################################################################################
+            #
+            #    Licensed to the Apache Software Foundation (ASF) under one or more
+            #    contributor license agreements.  See the NOTICE file distributed with
+            #    this work for additional information regarding copyright ownership.
+            #    The ASF licenses this file to You under the Apache License, Version 2.0
+            #    (the "License"); you may not use this file except in compliance with
+            #    the License.  You may obtain a copy of the License at
+            #
+            #       http://www.apache.org/licenses/LICENSE-2.0
+            #
+            #    Unless required by applicable law or agreed to in writing, software
+            #    distributed under the License is distributed on an "AS IS" BASIS,
+            #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+            #    See the License for the specific language governing permissions and
+            #    limitations under the License.
+            #
+            ################################################################################
+
             #
             # This configuration file defines the ACLs for maven configuration commands
             #
@@ -1243,6 +1712,25 @@
         <feature>eventadmin</feature>
         <bundle start-level="20">mvn:org.apache.karaf.audit/org.apache.karaf.audit.core/${project.version}</bundle>
         <config name="org.apache.karaf.audit">
+            ################################################################################
+            #
+            #    Licensed to the Apache Software Foundation (ASF) under one or more
+            #    contributor license agreements.  See the NOTICE file distributed with
+            #    this work for additional information regarding copyright ownership.
+            #    The ASF licenses this file to You under the Apache License, Version 2.0
+            #    (the "License"); you may not use this file except in compliance with
+            #    the License.  You may obtain a copy of the License at
+            #
+            #       http://www.apache.org/licenses/LICENSE-2.0
+            #
+            #    Unless required by applicable law or agreed to in writing, software
+            #    distributed under the License is distributed on an "AS IS" BASIS,
+            #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+            #    See the License for the specific language governing permissions and
+            #    limitations under the License.
+            #
+            ################################################################################
+
             # Security audit configuration
             # Only the above 4 loggers are supported
             # Supported layouts include: simple, gelf, rfc3164, rfc5424
