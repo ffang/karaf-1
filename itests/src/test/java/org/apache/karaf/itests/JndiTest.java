@@ -36,20 +36,20 @@ public class JndiTest extends KarafTestSupport {
     
     @Test
     public void testCommand() throws Exception {
-        String output = executeCommand("jndi:names");
+        String output = executeCommand("jndi:names", new org.apache.karaf.jaas.boot.principal.RolePrincipal("viewer"));
         System.out.println(output);
         assertContains("osgi:service/jndi", output);
-        output = executeCommand("jndi:alias osgi:service/jndi /test/foo");
+        output = executeCommand("jndi:alias osgi:service/jndi /test/foo", new org.apache.karaf.jaas.boot.principal.RolePrincipal("admin"));
         System.out.println(output);
-        output = executeCommand("jndi:names");
+        output = executeCommand("jndi:names", new org.apache.karaf.jaas.boot.principal.RolePrincipal("viewer"));
         System.out.println(output);
         assertContains("/test/foo", output);
-        output = executeCommand("jndi:bind 40 /test/bar");
+        output = executeCommand("jndi:bind 40 /test/bar", new org.apache.karaf.jaas.boot.principal.RolePrincipal("admin"));
         System.out.println(output);
-        output = executeCommand("jndi:names");
+        output = executeCommand("jndi:names", new org.apache.karaf.jaas.boot.principal.RolePrincipal("viewer"));
         System.out.println(output);
         assertContains("/test/bar", output);
-        output = executeCommand("jndi:unbind /test/bar");
+        output = executeCommand("jndi:unbind /test/bar", new org.apache.karaf.jaas.boot.principal.RolePrincipal("admin"));
         System.out.println(output);
         assertContainsNot("/test/bar", output);
     }

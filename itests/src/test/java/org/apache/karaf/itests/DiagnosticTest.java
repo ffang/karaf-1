@@ -30,22 +30,22 @@ public class DiagnosticTest extends KarafTestSupport {
 
     @Test
     public void dumpCreateCommand() throws Exception {
-        assertContains("Created dump zip", executeCommand("dev:dump-create"));
+        assertContains("Created dump zip", executeCommand("dev:dump-create", new org.apache.karaf.jaas.boot.principal.RolePrincipal("viewer")));
     }
   
     @Test
     public void dumpCreateCommandNoHeapDump() throws Exception {
-        assertContains("Created dump zip", executeCommand("dev:dump-create --no-heap-dump"));
+        assertContains("Created dump zip", executeCommand("dev:dump-create --no-heap-dump", new org.apache.karaf.jaas.boot.principal.RolePrincipal("viewer")));
     }
     
     @Test
     public void dumpCreateCommandNoThreadDump() throws Exception {
-        assertContains("Created dump zip", executeCommand("dev:dump-create --no-thread-dump"));
+        assertContains("Created dump zip", executeCommand("dev:dump-create --no-thread-dump", new org.apache.karaf.jaas.boot.principal.RolePrincipal("viewer")));
     }
    
     @Test
     public void dumpCreateCommandNoHeapAndThreadDump() throws Exception {
-        assertContains("Created dump zip", executeCommand("dev:dump-create --no-heap-dump --no-thread-dump"));
+        assertContains("Created dump zip", executeCommand("dev:dump-create --no-heap-dump --no-thread-dump", new org.apache.karaf.jaas.boot.principal.RolePrincipal("viewer")));
     }
     
     @Test

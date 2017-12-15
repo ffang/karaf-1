@@ -43,7 +43,7 @@ public class WrapperTest extends KarafTestSupport {
     
     @Test
     public void installCommand() throws Exception {
-        String installOutput = executeCommand("wrapper:install");
+        String installOutput = executeCommand("wrapper:install", new org.apache.karaf.jaas.boot.principal.RolePrincipal("admin"));
         System.out.println(installOutput);
         assertFalse(installOutput.isEmpty());
     }

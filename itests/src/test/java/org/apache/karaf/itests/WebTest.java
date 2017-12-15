@@ -41,7 +41,7 @@ public class WebTest extends KarafTestSupport {
     
     @Test
     public void listCommand() throws Exception {
-        String listOutput = executeCommand("web:list");
+        String listOutput = executeCommand("web:list", new org.apache.karaf.jaas.boot.principal.RolePrincipal("viewer"));
         System.out.println(listOutput);
         assertFalse(listOutput.isEmpty());
     }

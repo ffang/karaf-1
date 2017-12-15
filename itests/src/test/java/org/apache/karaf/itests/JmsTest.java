@@ -117,7 +117,7 @@ public class JmsTest extends KarafTestSupport {
     }
 
     private String execute(String command) {
-        String output = executeCommand(command);
+        String output = executeCommand(command, new org.apache.karaf.jaas.boot.principal.RolePrincipal("admin"));
         System.out.println(output);
         return output;
     }

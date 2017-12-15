@@ -43,7 +43,7 @@ public class HttpTest extends KarafTestSupport {
     @Test
     public void list() throws Exception {
         waitForService("(objectClass=javax.servlet.ServletContext)", 5000);
-        assertContains("/system/console", executeCommand("http:list"));
+        assertContains("/system/console", executeCommand("http:list", new org.apache.karaf.jaas.boot.principal.RolePrincipal("viewer")));
     }
 
     @Test

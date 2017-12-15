@@ -382,6 +382,68 @@
             simulate = admin, manager
             rollback = admin
         </config>
+	    <config name="org.apache.karaf.command.acl.dev">
+            #
+            # This configuration file defines the ACLs for commands in the dev subshell
+            #
+            # For an explanation of the syntax of this file, see the file:
+            #   org.apache.karaf.command.acl.bundle.cfg
+            #
+            dump-create = admin, manager, viewer
+        </config>
+        <config name="org.apache.karaf.command.acl.http">
+            #
+            # This configuration file defines the ACLs for commands in the http subshell
+            #
+            # For an explanation of the syntax of this file, see the file:
+            #   org.apache.karaf.command.acl.bundle.cfg
+            #
+            list = admin, manager, viewer
+        </config>
+	    <config name="org.apache.karaf.command.acl.jndi">
+            #
+            # This configuration file defines the ACLs for commands in the jndi subshell
+            #
+            # For an explanation of the syntax of this file, see the file:
+            #   org.apache.karaf.command.acl.bundle.cfg
+            #
+            names = admin, manager, viewer
+	        bind = admin
+	        unbind = admin
+	        alias = admin
+        </config>
+        <config name="org.apache.karaf.command.acl.obr">
+            #
+            # This configuration file defines the ACLs for commands in the jndi subshell
+            #
+            # For an explanation of the syntax of this file, see the file:
+            #   org.apache.karaf.command.acl.bundle.cfg
+            #
+            list = admin, manager, viewer
+	        url-list = admin, manager, viewer
+        </config>
+	    <config name="org.apache.karaf.command.acl.web">
+            #
+            # This configuration file defines the ACLs for commands in the web subshell
+            #
+            # For an explanation of the syntax of this file, see the file:
+            #   org.apache.karaf.command.acl.bundle.cfg
+            #
+            list = admin, manager, viewer
+	        start = admin
+	        stop = admin
+	        launch = admin
+        </config>
+	    <config name="org.apache.karaf.command.acl.wrapper">
+            #
+            # This configuration file defines the ACLs for commands in the wrapper subshell
+	        #
+            # For an explanation of the syntax of this file, see the file:
+            #   org.apache.karaf.command.acl.bundle.cfg
+            #
+            install = admin
+	    </config>
+            
         <config name="org.apache.karaf.command.acl.cxf">
             #
             # This configuration file defines the ACLs for commands in the cxf subshell
@@ -495,21 +557,24 @@
                 # JMX ACL specific to the org.apache.karaf:type=bundle,name=* MBean which maps to the Karaf MBean
                 # to control OSGi bundles.
                 #
-                install = manager
-                refresh = manager
-                resolve = manager
-                restart = manager
+                # For a description of the format of this file, see jmx.acl.cfg
+                #
+                getStartLevel = admin, manager, viewer
+                install = admin, manager
+                refresh = admin, manager
+                resolve = admin, manager
+                restart = admin, manager
                 setStartLevel(java.lang.String, int)[/([1-4])?[0-9]/,/.*/] = admin
-                setStartLevel = manager
+                setStartLevel = admin, manager
                 start(java.lang.String)[/([1-4])?[0-9]/] = admin
-                start = manager
+                start = admin, manager
                 stop(java.lang.String)[/([1-4])?[0-9]/] = admin
-                stop = manager
+                stop = admin, manager
                 uninstall(java.lang.String)["0"] = #this is a comment, no roles can perform this operation
-                uninstall = admin
+                uninstall = admin, manager
                 update(java.lang.String)[/([1-4])?[0-9]/] = admin
                 update(java.lang.String,java.lang.String)[/([1-4])?[0-9]/,/.*/] = admin
-                update = manager
+                update = admin, manager
             </config>
         </conditional>
         <conditional>
@@ -631,31 +696,118 @@
                 # By default, only an admin can make changes to the JMX ACL and shell command rules, but managers can make
                 # changes to other PIDs.
                 #
+                listProperties = admin, manager, viewer
                 appendProperty(java.lang.String,java.lang.String,java.lang.String)[/jmx[.]acl.*/,/.*/,/.*/] = admin
                 appendProperty(java.lang.String,java.lang.String,java.lang.String)[/org[.]apache[.]karaf[.]command[.]acl.+/,/.*/,/.*/] = admin
                 appendProperty(java.lang.String,java.lang.String,java.lang.String)[/org[.]apache[.]karaf[.]service[.]acl.+/,/.*/,/.*/] = admin
-                appendProperty(java.lang.String,java.lang.String,java.lang.String) = manager
+                appendProperty(java.lang.String,java.lang.String,java.lang.String) = admin, manager
                 create(java.lang.String)[/jmx[.]acl.*/] = admin
                 create(java.lang.String)[/org[.]apache[.]karaf[.]command[.]acl.+/] = admin
                 create(java.lang.String)[/org[.]apache[.]karaf[.]service[.]acl.+/] = admin
-                create(java.lang.String) = manager
+                create(java.lang.String) = admin, manager
                 delete(java.lang.String)[/jmx[.]acl.*/] = admin
                 delete(java.lang.String)[/org[.]apache[.]karaf[.]command[.]acl.+/] = admin
                 delete(java.lang.String)[/org[.]apache[.]karaf[.]service[.]acl.+/] = admin
-                delete(java.lang.String) = manager
+                delete(java.lang.String) = admin, manager
                 deleteProperty(java.lang.String,java.lang.String)[/jmx[.]acl.*/,/.*/] = admin
                 deleteProperty(java.lang.String,java.lang.String)[/org[.]apache[.]karaf[.]command[.]acl.+/,/.*/] = admin
                 deleteProperty(java.lang.String,java.lang.String)[/org[.]apache[.]karaf[.]service[.]acl.+/,/.*/] = admin
-                deleteProperty(java.lang.String,java.lang.String) = manager
+                deleteProperty(java.lang.String,java.lang.String) = admin, manager
                 setProperty(java.lang.String,java.lang.String,java.lang.String)[/jmx[.]acl.*/,/.*/,/.*/] = admin
                 setProperty(java.lang.String,java.lang.String,java.lang.String)[/org[.]apache[.]karaf[.]command[.]acl.+/,/.*/,/.*/] = admin
                 setProperty(java.lang.String,java.lang.String,java.lang.String)[/org[.]apache[.]karaf[.]service[.]acl.+/,/.*/,/.*/] = admin
-                setProperty(java.lang.String,java.lang.String,java.lang.String) = manager
+                setProperty(java.lang.String,java.lang.String,java.lang.String) = admin, manager
                 update(java.lang.String,java.util.Map)[/jmx[.]acl.*/,/.*/] = admin
                 update(java.lang.String,java.util.Map)[/org[.]apache[.]karaf[.]command[.]acl.+/,/.*/] = admin
                 update(java.lang.String,java.util.Map)[/org[.]apache[.]karaf[.]service[.]acl.+/,/.*/] = admin
-                update(java.lang.String,java.util.Map) = manager
+                update(java.lang.String,java.util.Map) = admin, manager
             </config>
+            <config name="jmx.acl.org.apache.karaf.diagnostic">
+                #
+                # JMX ACL specific to the org.apache.karaf:type=diagnostic,name=* MBean which maps to the Karaf MBean
+                # to control OSGi bundles.
+                #
+                # For a description of the format of this file, see jmx.acl.cfg
+                #
+                createDump = admin, manager, viewer
+            </config>
+            <config name="jmx.acl.org.apache.karaf.feature">
+                #
+                # JMX ACL specific to the org.apache.karaf:type=feature,name=* MBean which maps to the Karaf MBean
+                # to control OSGi bundles.
+                #
+                # For a description of the format of this file, see jmx.acl.cfg
+                #
+                infoFeature = admin, manager, viewer
+                removeRepository = admin, manager
+                addRepository = admin, manager
+                uninstallFeature = admin
+                installFeature = admin
+                refreshRepository = admin, manager
+            </config>
+            <config name="jmx.acl.org.apache.karaf.instance">
+                #
+                # JMX ACL specific to the org.apache.karaf:type=admin,name=* MBean which maps to the Karaf MBean
+                # to control OSGi bundles.
+                #
+                # For a description of the format of this file, see jmx.acl.cfg
+                #
+                createInstance = admin
+                destroyInstance = admin
+                startInstance = admin, manager
+                stopInstance = admin, manager
+                cloneInstance = admin
+                renameInstance = admin
+                changeSshPort = admin, manager
+                changeSshHost = admin, manager
+                ChangeRmiRegistryPort = admin, manager
+                changeRmiServerPort = admin, manager
+                changeJavaOpts = admin, manager
+            </config>
+            <config name="jmx.acl.org.apache.karaf.log">
+                #
+                # JMX ACL specific to the org.apache.karaf:type=log,name=* MBean which maps to the Karaf MBean
+                # to control OSGi bundles.
+                #
+                # For a description of the format of this file, see jmx.acl.cfg
+                #
+                getLevel = admin, manager, viewer
+                setLevel = admin, manager
+            </config>
+            <config name="jmx.acl.org.apache.karaf.package">
+                #
+                # JMX ACL specific to the org.apache.karaf:type=package,name=* MBean which maps to the Karaf MBean
+                # to control OSGi bundles.
+                #
+                # For a description of the format of this file, see jmx.acl.cfg
+                #
+                getImports = admin, manager, viewer
+                getExports = admin, manager, viewer
+            </config>
+            <config name="jmx.acl.org.apache.karaf.service">
+                #
+                # JMX ACL specific to the org.apache.karaf:type=service,name=* MBean which maps to the Karaf MBean
+                # to control OSGi bundles.
+                #
+                # For a description of the format of this file, see jmx.acl.cfg
+                #
+                getServices = admin, manager, viewer
+            </config>
+            <config name="jmx.acl.org.apache.karaf.system">
+                #
+                # JMX ACL specific to the org.apache.karaf:type=system,name=* MBean which maps to the Karaf MBean
+                # to control OSGi bundles.
+                #
+                # For a description of the format of this file, see jmx.acl.cfg
+                #
+                setProperty = admin
+                getPropert* = admin, manager, viewer
+                halt = admin
+                reboot = admin
+                rebootCleanCache = admin
+                rebootCleanCleanAll = admin
+            </config>
+
         </conditional>
         <conditional>
             <condition>shell</condition>
@@ -845,7 +997,7 @@
                 # Jaas commands commands have no effect until update is called.
 
                 realm-list = admin, manager, viewer
-                realm-manage = admin, manager,viewer
+                realm-manage = admin, manager, viewer
                 pending-list = admin, manager
                 cancel = admin, manager
                 group-add = admin, manager
@@ -982,7 +1134,7 @@
                 #
                 property = admin
                 shutdown = admin
-                start-level[/.*[0-9][0-9][0-9]+.*/] = admin, manager # manager can set startlevels above 100
+                start-level[/.*[1-9][0-9][0-9]+.*/] = admin, manager # manager can set startlevels above 100
                 start-level[/[^0-9]*/] = admin, manager, viewer               # viewer can obtain the current start level
                 start-level = admin                           # admin can set any start level, including less than 100
                 name = admin
@@ -1246,12 +1398,78 @@
             # look for any other matching definitions. So the most specific definition
             # always takes precedence.
             #
-            list* = viewer
-            get* = viewer
-            is* = viewer
+            list* = admin, manager, viewer
+            get* = admin, manager, viewer
+            is* = admin, manager, viewer
             set* = admin
             * = admin
         </config>
+        <config name="jmx.acl.whitelist">
+            # open this up so we can check available plugins before authenticating
+            hawtio.plugin=bypass
+            # open this up so that permissions can validated by anyone
+            org.apache.karaf.security.jmx=bypass
+            org.apache.camel;getIndex=bypass
+            org.apache.camel;getRouteId=bypass
+            org.apache.camel;getState=bypass
+            org.apache.camel;dumpStatsAsXml=bypass
+            org.apache.camel;getExchangesInflight=bypass
+            org.apache.camel;getProcessorId=bypass
+        </config>
+        <config name="jmx.acl.com.sun.management">
+            #
+            # JMX ACL specific to the com.sun.management MBean
+            #
+            # For a description of the format of this file, see jmx.acl.cfg
+            #
+            dumpHeap = admin, manager, viewer
+            getVMOption = admin, manager, viewer
+            setVMOption = admin
+        </config>
+        <config name="jmx.acl.connector">
+            #
+            # JMX ACL specific to the connector MBean
+            #
+            # For a description of the format of this file, see jmx.acl.cfg
+            #
+            stop = admin
+            start = admin
+        </config>
+        <config name="jmx.acl.hawtio.ConfigAdmin">
+            #
+            # JMX ACL specific to hawtio.ConfigAdmin MBean
+            #
+            # For a description of the format of this file, see jmx.acl.cfg
+            #
+            configAdminUpdate = admin, manager
+        </config>
+        <config name="jmx.acl.hawtio.OSGiTools">
+            #
+            # JMX ACL specific to hawtio.OSGiTools MBean
+            #
+            # For a description of the format of this file, see jmx.acl.cfg
+            #
+            getResourceURL = admin, manager, viewer
+            getLoadClassOrigin = admin, manager, viewer
+        </config>
+        <config name="jmx.acl.hawtio.QuartzFacade">
+            #
+            # JMX ACL specific to hawtio.QuartzFacade MBean
+            #
+            # For a description of the format of this file, see jmx.acl.cfg
+            #
+            updateSimpleTrigger = admin, manager
+            updateCronTrigger = admin, manager
+        </config>
+        <config name="jmx.acl.hawtio.SchemaLookup">
+            #
+            # JMX ACL specific to hawtio.SchemaLookup MBean
+            #
+            # For a description of the format of this file, see jmx.acl.cfg
+            #
+            getSchemaForClass = admin, manager, viewer
+        </config>
+
         <config name="jmx.acl.org.apache.karaf.security.jmx">
             ################################################################################
             #
@@ -1306,8 +1524,354 @@
             #
             # For a description of the format of this file, see jmx.acl.cfg
             #
-            gc = manager
+            gc = admin, manager
         </config>
+        <config name="jmx.acl.java.lang.MemoryPool">
+            #
+            # JMX ACL specific to the java.lang.MemoryPool MBean
+            #
+            # For a description of the format of this file, see jmx.acl.cfg
+            #
+            resetPeakUsage = admin, manager
+        </config>
+        <config name="jmx.acl.java.lang.Threading">
+            #
+            # JMX ACL specific to the java.lang.MemoryPool MBean
+            #
+            # For a description of the format of this file, see jmx.acl.cfg
+            #
+            find* = admin, manager, viewer
+            dumpAllThreads = admin, manager, viewer
+            resetPeakThreadCount = admin, manager
+        </config>
+        <config name="jmx.acl.java.util.logging">
+            #
+            # JMX ACL specific to the java.util.logging MBean
+            #
+            # For a description of the format of this file, see jmx.acl.cfg
+            #
+            getLoggerLevel = admin, manager, viewer
+            getParentLoggerName = admin, manager, viewer
+            setLoggerLevel = admin, manage
+        </config>
+        <config name="jmx.acl.jmx4perl.Config.hawtio">
+            #
+            # JMX ACL specific to jmx4perl.Config.hawtio MBean
+            #
+            # For a description of the format of this file, see jmx.acl.cfg
+            #
+            is*  = admin, manager, viewer
+            get* = admin, manager, viewer
+            set* = admin, manager
+            debugInfo = admin, manager, viewer
+            setHistoryEntriesForAttribute = admin, manager
+            setHistoryEntriesForOperation = admin, manager
+            setHistoryLimitForOperation = admin, manager
+            resetHistoryEntries = admin, manager
+            resetDebugInfo = admin, manager
+            setHistoryLimitForAttribute = admin, manager
+        </config>
+        <config name="jmx.acl.jolokia.Config.hawtio">
+            #
+            # JMX ACL specific to jolokia.Config.hawtio MBean
+            #
+            # For a description of the format of this file, see jmx.acl.cfg
+            #
+            is*  = admin, manager, viewer
+            get* = admin, manager, viewer
+            set* = admin, manager
+            debugInfo = admin, manager, viewer
+            setHistoryEntriesForAttribute = admin, manager
+            setHistoryEntriesForOperation = admin, manager
+            setHistoryLimitForOperation = admin, manager
+            resetHistoryEntries = admin, manager
+            resetDebugInfo = admin, manager
+            setHistoryLimitForAttribute = admin, manager
+        </config>
+        <config name="jmx.acl.jolokia.Discovery">
+            #
+            # JMX ACL specific to jolokia.Discovery MBean
+            #
+            # For a description of the format of this file, see jmx.acl.cfg
+            #
+            lookupAgents = admin, manager, viewer
+            lookupAgentsWithTimeout = admin, manager, viewer
+        </config>
+        <config name="jmx.acl.jolokia.ServerHandler.hawtio">
+            #
+            # JMX ACL specific to jolokia.ServerHandler.hawtio MBean
+            #
+            # For a description of the format of this file, see jmx.acl.cfg
+            #
+            mBeanServersInfo  = admin, manager, viewer
+        </config>
+        <config name="jmx.acl.org.apache.aries.blueprint.blueprintMetadata">
+            #
+            # JMX ACL specific to the org.apache.aries.blueprint.blueprintMetadata MBean
+            #
+            # For a description of the format of this file, see jmx.acl.cfg
+            #
+            get* = admin, manager, viewer
+        </config>
+        <config name="jmx.acl.org.apache.aries.blueprint.blueprintState">
+            #
+            # JMX ACL specific to the org.apache.aries.blueprint.blueprintState MBean
+            #
+            # For a description of the format of this file, see jmx.acl.cfg
+            #
+            get* = admin, manager, viewer
+        </config>
+        <config name="jmx.acl.org.apache.camel.components">
+            #
+            # JMX ACL specific to org.apache.camel.components MBean
+            #
+            # For a description of the format of this file, see jmx.acl.cfg
+            #
+            getState = admin, manager, viewer
+            getComponentName = admin, manager, viewer
+            getCamelId = admin, manager, viewer
+        </config>
+        <config name="jmx.acl.org.apache.camel.consumers">
+            #
+            # JMX ACL specific to org.apache.camel.consumers MBean
+            #
+            # For a description of the format of this file, see jmx.acl.cfg
+            #
+            isSuspended = admin, manager, viewer
+            getState = admin, manager, viewer
+            getServiceType = admin, manager, viewer
+            isSupportSuspension = admin, manager, viewer
+            isStaticService = admin, manager, viewer
+            getCamelId = admin, manager, viewer
+            getRouteId = admin, manager, viewer
+            getInflightExchanges = admin, manager, viewer
+            getEndpointUri = admin, manager, viewer
+            stop = admin, manager
+            start = admin, manager
+            suspend = admin, manager
+            resume = admin, manager
+        </config>
+        <config name="jmx.acl.org.apache.camel.context">
+            #
+            # JMX ACL specific to org.apache.camel.context MBean
+            #
+            # For a description of the format of this file, see jmx.acl.cfg
+            #
+            getResetTimestamp = admin, manager, viewer
+            getExchangesTotal = admin, manager, viewer
+            getTotalProcessingTime = admin, manager, viewer
+            isStatisticsEnabled = admin, manager, viewer
+            setStatisticsEnabled = admin, manager
+            getExchangesCompleted = admin, manager, viewer
+            getExchangesFailed = admin, manager, viewer
+            getFailuresHandled = admin, manager, viewer
+            getRedeliveries = admin, manager, viewer
+            getExternalRedeliveries = admin, manager, viewer
+            getMinProcessingTime = admin, manager, viewer
+            getMeanProcessingTime = admin, manager, viewer
+            getMaxProcessingTime = admin, manager, viewer
+            getLastProcessingTime = admin, manager, viewer
+            getDeltaProcessingTime = admin, manager, viewer
+            getLastExchangeCompletedTimestamp = admin, manager, viewer
+            getLastExchangeCompletedExchangeId = admin, manager, viewer
+            getFirstExchangeCompletedTimestamp = admin, manager, viewer
+            getFirstExchangeCompletedExchangeId = admin, manager, viewer
+            getLastExchangeFailureTimestamp = admin, manager, viewer
+            getLastExchangeFailureExchangeId = admin, manager, viewer
+            getFirstExchangeFailureTimestamp = admin, manager, viewer
+            getFirstExchangeFailureExchangeId = admin, manager, viewer
+            getCamelId = admin, manager, viewer
+            getTimeout = admin, manager, viewer
+            setTimeout = admin, manager
+            getProperties = admin, manager, viewer
+            getState = admin, manager, viewer
+            getUptime = admin, manager, viewer
+            getInflightExchanges = admin, manager, viewer
+            getTracing = admin, manager, viewer
+            setTracing = admin, manager
+            getLoad01 = admin, manager, viewer
+            getLoad05 = admin, manager, viewer
+            getLoad15 = admin, manager, viewer
+            getCamelVersion = admin, manager, viewer
+            getApplicationContextClassName = admin, manager, viewer
+            getTotalRoutes = admin, manager, viewer
+            getStartedRoutes = admin, manager, viewer
+            isMessageHistory = admin, manager, viewer
+            getTimeUnit = admin, manager, viewer
+            setTimeUnit = admin, manager
+            getClassResolver = admin, manager, viewer
+            getManagementName = admin, manager, viewer
+            getPackageScanClassResolver = admin, manager, viewer
+            isUseMDCLogging = admin, manager, viewer
+            isAllowUseOriginalMessage = admin, manager, viewer
+            isUseBreadcrumb = admin, manager, viewer
+            isShutdownNowOnTimeout = admin, manager, viewer
+            setShutdownNowOnTimeout = admin, manager
+            reset = admin, manager
+            dumpStatsAsXml = admin, manager, viewer
+            setProperty = admin, manager
+            getProperty = admin, manager, viewer
+            createEndpoint = admin, manager
+            restart = admin, manager
+            stop = admin, manager
+            start = admin, manager
+            suspend = admin, manager
+            resume = admin, manager
+            sendStringBody = admin, manager
+            requestStringBody = admin, manager
+            dumpRoutesAsXml = admin, manager, viewer
+            addOrUpdateRoutesFromXml = admin, manager
+            findComponentNames = admin, manager, viewer
+            dumpRoutesStatsAsXml = admin, manager, viewer
+            componentParameterJsonSchema = admin, manager, viewer
+            sendBody = admin, manager
+            sendBodyAndHeaders = admin, manager
+            requestBody = admin, manager
+            requestBodyAndHeaders = admin, manager
+            findComponents = admin, manager, viewer
+            getComponentDocumentation = admin, manager, viewer
+            removeEndpoints =  admin, manager
+            completeEndpointPath = admin, manager, viewer
+        </config>
+        <config name="jmx.acl.org.apache.camel.endpoints">
+            #
+            # JMX ACL specific to org.apache.camel.endpoints MBean
+            #
+            # For a description of the format of this file, see jmx.acl.cfg
+            #
+            is* = admin, manager, viewer
+            get* = admin, manager, viewer
+            set* = admin, manager
+        </config>
+        <config name="jmx.acl.org.apache.camel.errorhandlers">
+            #
+            # JMX ACL specific to org.apache.camel.errorhandlers MBean
+            #
+            # For a description of the format of this file, see jmx.acl.cfg
+            #
+            is* = admin, manager, viewer
+            get* = admin, manager, viewer
+            set* = admin, manager
+        </config>
+        <config name="jmx.acl.org.apache.camel.eventnotifiers">
+            #
+            # JMX ACL specific to org.apache.camel.eventnotifiers MBean
+            #
+            # For a description of the format of this file, see jmx.acl.cfg
+            #
+            set* = admin, manager
+        </config>
+        <config name="jmx.acl.org.apache.camel.processors">
+            #
+            # JMX ACL specific to org.apache.camel.processors MBean
+            #
+            # For a description of the format of this file, see jmx.acl.cfg
+            #
+            dumpStatsAsXml = admin, manager, viewer
+            get* = admin, manager, viewer
+            is* = admin, manager, viewer
+            set* = admin, manager
+            reset = admin, manager
+            stop = admin, manager
+            start = admin, manager
+        </config>
+        <config name="jmx.acl.org.apache.camel.routes">
+            #
+            # JMX ACL specific to org.apache.camel.routes MBean
+            #
+            # For a description of the format of this file, see jmx.acl.cfg
+            #
+            is* = admin, manager, viewer
+            get* = admin, manager, viewer
+            set* = admin, manager
+            reset = admin, manager
+            dump* = admin, manager, viewer
+            remove = admin, manager
+            shutdown = admin, manager
+            stop = admin, manager
+            start = admin, manager
+            suspend = admin, manager
+            resume = admin, manager
+            updateRouteFromXml = admin, manager
+        </config>
+        <config name="jmx.acl.org.apache.camel.services">
+            #
+            # JMX ACL specific to org.apache.camel.services MBean
+            #
+            # For a description of the format of this file, see jmx.acl.cfg
+            #
+            is* = admin, manager, viewer
+            get* = admin, manager, viewer
+            set* = admin, manager
+            stop = admin, manager
+            start = admin, manager
+            suspend = admin, manager
+            resume = admin, manager
+            purge = admin, manager
+            hasTypeConverter = admin, manager, viewer
+            resetTypeConversionCounters = admin, manager
+            listTypeConverters = admin, manager, viewer
+        </config>
+        <config name="jmx.acl.org.apache.camel.threadpools">
+            #
+            # JMX ACL specific to org.apache.camel.threadpools MBean
+            #
+            # For a description of the format of this file, see jmx.acl.cfg
+            #
+            is* = admin, manager, viewer
+            get* = admin, manager, viewer
+            set* = admin, manager
+            purge = admin, manager
+        </config>
+        <config name="jmx.acl.org.apache.camel.tracer">
+            #
+            # JMX ACL specific to org.apache.camel.tracer MBean
+            #
+            # For a description of the format of this file, see jmx.acl.cfg
+            #
+            is* = admin, manager, viewer
+            get* = admin, manager, viewer
+            set* = admin, manager
+            step = admin, manager, viewer
+            enableDebugger = admin, manager
+            disableDebugger = admin, manager
+            *Breakpoint* = admin, manager, viewer
+            resumeAll = admin, manager, viewer
+            resetDebugCounter = admin, manager
+            dump* = admin, manager, viewer
+            clear = admin, manager
+            resetTraceCounter = admin, manager
+        </config>
+        <config name="jmx.acl.org.apache.cxf.Bus.Service.Endpoint">
+            #
+            # JMX ACL specific to org.apache.cxf.Bus.Service.Endpoint MBean
+            #
+            # For a description of the format of this file, see jmx.acl.cfg
+            #
+            destroy = admin, manager
+            start = admin, manager
+            stop = admin, manager
+            getState = admin, manager, viewer
+            getTransportId = admin, manager, viewer
+            getAddress = admin, manager, viewer
+        </config>
+        <config name="jmx.acl.org.apache.cxf.Bus">
+            #
+            # JMX ACL specific to org.apache.cxf.Bus MBean
+            #
+            # For a description of the format of this file, see jmx.acl.cfg
+            #
+            shutdown = admin, manage
+        </config>
+        <config name="jmx.acl.org.apache.cxf.WorkQueueManager">
+            #
+            # JMX ACL specific to org.apache.cxf.WorkQueueManager MBean
+            #
+            # For a description of the format of this file, see jmx.acl.cfg
+            #
+            shutdown = admin, manager
+        </config>
+
         <config name="jmx.acl.osgi.compendium.cm">
             ################################################################################
             #
@@ -1340,28 +1904,133 @@
             createFactoryConfiguration(java.lang.String)[/jmx[.]acl.*/] = admin
             createFactoryConfiguration(java.lang.String)[/org[.]apache[.]karaf[.]command[.]acl[.].+/] = admin
             createFactoryConfiguration(java.lang.String)[/org[.]apache[.]karaf[.]service[.]acl[.].+/] = admin
-            createFactoryConfiguration(java.lang.String) = manager
+            createFactoryConfiguration(java.lang.String) = admin, manager
             createFactoryConfigurationForLocation(java.lang.String,java.lang.String)[/jmx[.]acl.*/,/.*/] = admin
             createFactoryConfigurationForLocation(java.lang.String,java.lang.String)[/org[.]apache[.]karaf[.]command[.]acl[.].+/,/.*/] = admin
             createFactoryConfigurationForLocation(java.lang.String,java.lang.String)[/org[.]apache[.]karaf[.]service[.]acl[.].+/,/.*/] = admin
-            createFactoryConfigurationForLocation(java.lang.String,java.lang.String) = manager
+            createFactoryConfigurationForLocation(java.lang.String,java.lang.String) = admin, manager
             delete(java.lang.String)[/jmx[.]acl.*/] = admin
             delete(java.lang.String)[/org[.]apache[.]karaf[.]command[.]acl[.].+/] = admin
             delete(java.lang.String)[/org[.]apache[.]karaf[.]service[.]acl[.].+/] = admin
-            delete(java.lang.String) = manager
+            delete(java.lang.String) = admin, manager
             deleteConfigurations = admin
             deleteForLocation(java.lang.String,java.lang.String)[/jmx[.]acl.*/,/.*/] = admin
             deleteForLocation(java.lang.String,java.lang.String)[/org[.]apache[.]karaf[.]command[.]acl[.].+/,/.*/] = admin
             deleteForLocation(java.lang.String,java.lang.String)[/org[.]apache[.]karaf[.]service[.]acl[.].+/,/.*/] = admin
-            deleteForLocation(java.lang.String,java.lang.String) = manager
+            deleteForLocation(java.lang.String,java.lang.String) = admin, manager
             update(java.lang.String,javax.management.openmbean.TabularData)[/jmx[.]acl.*/,/.*/] = admin
             update(java.lang.String,javax.management.openmbean.TabularData)[/org[.]apache[.]karaf[.]command[.]acl[.].+/,/.*/] = admin
             update(java.lang.String,javax.management.openmbean.TabularData)[/org[.]apache[.]karaf[.]service[.]acl[.].+/,/.*/] = admin
-            update(java.lang.String,javax.management.openmbean.TabularData) = manager
+            update(java.lang.String,javax.management.openmbean.TabularData) = admin, manager
             updateForLocation(java.lang.String,java.lang.String,javax.management.openmbean.TabularData)[/jmx[.]acl.*/,/.*/,/.*/] = admin
             updateForLocation(java.lang.String,java.lang.String,javax.management.openmbean.TabularData)[/org[.]apache[.]karaf[.]command[.]acl[.].+/,/.*/,/.*/] = admin
             updateForLocation(java.lang.String,java.lang.String,javax.management.openmbean.TabularData)[/org[.]apache[.]karaf[.]service[.]acl[.].+/,/.*/,/.*/] = admin
-            updateForLocation(java.lang.String,java.lang.String,javax.management.openmbean.TabularData) = manager
+            updateForLocation(java.lang.String,java.lang.String,javax.management.openmbean.TabularData) = admin, manager
+        </config>
+        <config name="jmx.acl.osgi.core.bundleState">
+            #
+            # JMX ACL specific to osgi.core.bundleState MBean
+            #
+            # For a description of the format of this file, see jmx.acl.cfg
+            #
+            getRequiredBundles = admin, manager, viewer
+            getHosts = admin, manager, viewer
+            getLocation = admin, manager, viewer
+            getState = admin, manager, viewer
+            getBundle = admin, manager, viewer
+            getVersion = admin, manager, viewer
+            getSymbolicName = admin, manager, viewer
+            getRegisteredServices = admin, manager, viewer
+            getServicesInUse = admin, manager, viewer
+            getFragments = admin, manager, viewer
+            getLastModified = admin, manager, viewer
+            getHeaders = admin, manager, viewer
+            getHeader = admin, manager, viewer
+            getStartLevel = admin, manager, viewer
+            getExportedPackages = admin, manager, viewer
+            getRequiringBundles = admin, manager, viewer
+            isFragment = admin, manager, viewer
+            isRemovalPending = admin, manager, viewer
+            isPersistentlyStarted = admin, manager, viewer
+            isActivationPolicyUsed = admin, manager, viewer
+            getImportedPackages = admin, manager, viewer
+            isRequired = admin, manager, viewer
+            listBundles = admin, manager, viewer
+        </config>
+        <config name="jmx.acl.osgi.core.framework">
+            #
+            # JMX ACL specific to osgi.core.framework MBean
+            #
+            # For a description of the format of this file, see jmx.acl.cfg
+            #
+            startBundles = admin, manager
+            getProperty = admin, manager, viewer
+            resolve = admin, manager
+            installBundle = admin, manager
+            setBundleStartLevel = admin, manager
+            startBundle = admin, manager
+            updateBundle = admin, manager
+            stopBundle = admin, manager
+            stopBundle(long)["0"] = #this is a comment, no roles can perform this operation
+            uninstallBundle = admin, manager
+            resolveBundles = admin, manager
+            getDependencyClosure = admin, manager, viewer
+            refreshBundle = admin, manager
+            refreshBundles = admin, manager
+            installBundleFromURL = admin, manager
+            installBundles = admin, manager
+            installBundlesFromURL = admin, manager
+            refreshBundleAndWait = admin, manager
+            refreshBundlesAndWait = admin, manager
+            resolveBundle = admin, manager
+            restartFramework = admin
+            setBundleStartLevels = admin, manager
+            shutdownFramework = admin
+            stopBundles = admin, manager
+            uninstallBundles = admin, manager
+            updateBundleFromURL = admin, manager
+            updateBundles = admin, manager
+            updateBundlesFromURL = admin, manager
+        </config>
+        <config name="jmx.acl.osgi.core.packageState">
+            #
+            # JMX ACL specific to osgi.core.packageState MBean
+            #
+            # For a description of the format of this file, see jmx.acl.cfg
+            #
+            getExportingBundles = admin, manager, viewer
+            listPackages = admin, manager, viewer
+            getImportingBundles = admin, manager, viewer
+            isRemovalPending = admin, manager, viewer
+        </config>
+        <config name="jmx.acl.osgi.core.serviceState">
+            #
+            # JMX ACL specific to osgi.core.serviceState MBean
+            #
+            # For a description of the format of this file, see jmx.acl.cfg
+            #
+            getProperty = admin, manager, viewer
+            getProperties = admin, manager, viewer
+            getService = admin, manager, viewer
+            getBundleIdentifier = admin, manager, viewer
+            getObjectClass = admin, manager, viewer
+            listServices = admin, manager, viewer
+            getUsingBundles = admin, manager, viewer
+        </config>
+        <config name="jmx.acl.osgi.core.wiringState">
+            #
+            # JMX ACL specific to osgi.core.wiringState MBean
+            #
+            # For a description of the format of this file, see jmx.acl.cfg
+            #
+            getCurrentRevisionDeclaredCapabilities = admin, manager, viewer
+            getCurrentWiringClosure = admin, manager, viewer
+            getRevisionsDeclaredRequirements = admin, manager, viewer
+            getRevisionsDeclaredCapabilities = admin, manager, viewer
+            getRevisionsWiring = admin, manager, viewer
+            getRevisionsWiringClosure = admin, manager, viewer
+            getCurrentRevisionDeclaredRequirements = admin, manager, viewer
+            getCurrentWiring = admin, manager, viewer
         </config>
         <config name="org.apache.karaf.management">
             ################################################################################

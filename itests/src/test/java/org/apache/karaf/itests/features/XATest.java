@@ -90,12 +90,12 @@ public class XATest extends KarafTestSupport {
         Bundle bundle = bundleContext.installBundle("blueprint:file:etc/xa-test-camel.xml");
         bundle.start();
 
-        executeCommand("jdbc:execute derby CREATE TABLE messages (id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY, message VARCHAR(1024) NOT NULL, CONSTRAINT primary_key PRIMARY KEY (id))");
-        executeCommand("jms:send artemis MyQueue 'the-message'");
+        executeCommand("jdbc:execute derby CREATE TABLE messages (id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY, message VARCHAR(1024) NOT NULL, CONSTRAINT primary_key PRIMARY KEY (id))", new org.apache.karaf.jaas.boot.principal.RolePrincipal("admin"));
+        executeCommand("jms:send artemis MyQueue 'the-message'", new org.apache.karaf.jaas.boot.principal.RolePrincipal("admin"));
 
         Thread.sleep(1000);
 
-        String output = executeCommand("jdbc:query derby select * from messages");
+        String output = executeCommand("jdbc:query derby select * from messages", new org.apache.karaf.jaas.boot.principal.RolePrincipal("admin"));
         System.err.println(output);
 
         assertContains("the-message", output);

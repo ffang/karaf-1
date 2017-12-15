@@ -42,8 +42,8 @@ public class ObrTest extends KarafTestSupport {
        
     @Test
     public void listCommands() throws Exception {
-        System.out.println(executeCommand("obr:url-list"));
-        System.out.println(executeCommand("obr:list"));
+        System.out.println(executeCommand("obr:url-list", new org.apache.karaf.jaas.boot.principal.RolePrincipal("viewer")));
+        System.out.println(executeCommand("obr:list", new org.apache.karaf.jaas.boot.principal.RolePrincipal("viewer")));
     }
 
     @Test
