@@ -1498,7 +1498,7 @@
             #
             # For a description of the format of this file, see jmx.acl.cfg
             #
-            canInvoke = viewer
+            canInvoke = admin, manager, viewer
         </config>
         <config name="jmx.acl.java.lang.Memory">
             ################################################################################
@@ -1862,7 +1862,7 @@
             #
             # For a description of the format of this file, see jmx.acl.cfg
             #
-            shutdown = admin, manage
+            shutdown = admin, manager
         </config>
         <config name="jmx.acl.org.apache.cxf.WorkQueueManager">
             #
@@ -2365,11 +2365,11 @@
             # This configuration file defines the ACLs for maven configuration commands
             #
             summary[/.*[-][x].*/] = admin
-            summary = viewer
+            summary = admin, manager, viewer
             http-proxy-list[/.*[-][x].*/] = admin
-            http-proxy-list = viewer
+            http-proxy-list = admin, manager, viewer
             repository-list[/.*[-][x].*/] = admin
-            repository-list = viewer
+            repository-list = admin, manager, viewer
             http-proxy = admin
             password = admin
             repository-add = admin
