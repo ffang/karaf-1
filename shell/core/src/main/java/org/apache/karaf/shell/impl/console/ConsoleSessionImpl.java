@@ -527,11 +527,13 @@ public class ConsoleSessionImpl implements Session {
         LineReader reader = LineReaderBuilder.builder()
                 .terminal(jlineTerminal)
                 .appName("karaf")
+                .variables(new HashMap<>())
+                .variable(LineReader.DISABLE_HISTORY, Boolean.TRUE)
+                .variable(LineReader.DISABLE_COMPLETION, Boolean.TRUE)
+                .variable(LineReader.HISTORY_FILE, new File("temp-history-file-should-not-exist"))
                 .parser((line, cursor, context) -> new SimpleParsedLine(line, cursor))
-                .build();
-        reader.setOpt(LineReader.Option.DISABLE_EVENT_EXPANSION);
-        reader.setVariable(LineReader.DISABLE_HISTORY, Boolean.TRUE);
-        reader.setVariable(LineReader.DISABLE_COMPLETION, Boolean.TRUE);
+                .build()
+                .option(LineReader.Option.DISABLE_EVENT_EXPANSION, true);
         return reader.readLine(prompt, mask);
     }
 
