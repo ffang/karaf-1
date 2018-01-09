@@ -271,8 +271,8 @@
         <pax.runner.version>1.8.6</pax.runner.version>
         <pax.url.version>2.5.2</pax.url.version>
         <pax.swissbox.version>1.8.2</pax.swissbox.version>
-        <pax.web.version>4.3.5</pax.web.version>
-        <pax.web.feature.version>4.3.5.redhat-001</pax.web.feature.version>
+        <pax.web.version>4.3.6</pax.web.version>
+        <pax.web.feature.version>4.3.6.redhat-001</pax.web.feature.version>
         <pax.tinybundles.version>1.3.2</pax.tinybundles.version>
         <plexus.utils.version>3.0</plexus.utils.version>
         <poi.bundle.version>3.15_1</poi.bundle.version>
