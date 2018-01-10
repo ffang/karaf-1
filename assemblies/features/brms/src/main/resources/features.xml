@@ -90,6 +90,7 @@
     </feature>
 
     <feature name="hibernate-dependencies">
+        <feature>jpa</feature>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.antlr/${antlr.bundle.version}</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.ant/${ant.bundle.version}</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.dom4j/${dom4j.bundle.version}</bundle>
@@ -110,6 +111,7 @@
         <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jsr303-api-1.1.0/${servicemix.specs.version}</bundle>
         <bundle>mvn:org.jboss.logging/jboss-logging/${jboss.logging.version}</bundle>
         <bundle>mvn:org.hibernate/hibernate-validator/${hibernate.validator.version}</bundle>
+        <bundle>mvn:com.fasterxml/classmate/${classmate.version}</bundle>
     </feature>
 
     <feature name="servlet-api-dependencies">
