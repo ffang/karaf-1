@@ -245,6 +245,7 @@ public class Main {
     private Lock lock;
     private int defaultStartLevel = 100;
     private int lockStartLevel = 1;
+    private int lockDefaultBootLevel = 1;
     private int lockDelay = Integer.parseInt( DEFAULT_LOCK_DELAY );
     private int shutdownTimeout = 5 * 60 * 1000;
     private boolean exiting = false;
@@ -345,7 +346,7 @@ public class Main {
         System.setProperty(Constants.FRAMEWORK_BEGINNING_STARTLEVEL, Integer.toString(this.defaultStartLevel));
         lockStartLevel = Integer.parseInt(configProps.getProperty(PROPERTY_LOCK_LEVEL, Integer.toString(lockStartLevel)));
         lockDelay = Integer.parseInt(configProps.getProperty(PROPERTY_LOCK_DELAY, DEFAULT_LOCK_DELAY));
-        configProps.setProperty(Constants.FRAMEWORK_BEGINNING_STARTLEVEL, Integer.toString(lockStartLevel));
+        configProps.setProperty(Constants.FRAMEWORK_BEGINNING_STARTLEVEL, Integer.toString(lockDefaultBootLevel));
         shutdownTimeout = Integer.parseInt(configProps.getProperty(KARAF_SHUTDOWN_TIMEOUT, Integer.toString(shutdownTimeout)));
         // Start up the OSGI framework
 
