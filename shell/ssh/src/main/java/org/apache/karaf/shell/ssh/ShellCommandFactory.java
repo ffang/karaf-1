@@ -48,6 +48,7 @@ public class ShellCommandFactory implements CommandFactory {
 
     public static final String SHELL_INIT_SCRIPT = "karaf.shell.init.script";
     public static final String EXEC_INIT_SCRIPT = "karaf.exec.init.script";
+    public static final String EXIT_CODE = "EXIT_CODE";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ShellCommandFactory.class);
 
@@ -140,6 +141,10 @@ public class ShellCommandFactory implements CommandFactory {
                     if (result != null)
                     {
                         commandSession.getConsole().println(commandSession.format(result, Converter.INSPECT));
+                    }
+                    Integer exitCode = (Integer) commandSession.get(EXIT_CODE);
+                    if (exitCode != null) {
+                        exitStatus = exitCode;
                     }
                 } catch (Throwable t) {
                     exitStatus = 1;
