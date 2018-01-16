@@ -115,7 +115,7 @@ public class ShellCommandFactory implements CommandFactory {
                     Object result;
                     if (subject != null) {
                         try {
-                            
+
                             result = JaasHelper.doAs(subject, new PrivilegedExceptionAction<Object>() {
                                 public Object run() throws Exception {
                                     String scriptFileName = System.getProperty(EXEC_INIT_SCRIPT);
@@ -137,9 +137,13 @@ public class ShellCommandFactory implements CommandFactory {
                         executeScript(scriptFileName, commandSession);
                         result = commandSession.execute(command);
                     }
-                    if (result != null)
+                    if (result instanceof String)
                     {
                         commandSession.getConsole().println(commandSession.format(result, Converter.INSPECT));
+                    }
+                    if(result instanceof Integer) {
+                        // if it is an integer it's interpreted as a return code
+                        exitStatus = (Integer) result;
                     }
                 } catch (Throwable t) {
                     exitStatus = 1;
