@@ -120,6 +120,7 @@
             openjpa=mvn:org.apache.openjpa/openjpa-features/RELEASE/xml/features
             artemis=mvn:org.apache.activemq/artemis-features/RELEASE/xml/features
             brave=mvn:io.zipkin.brave.karaf/brave-features/RELEASE/xml/features
+						sling=mvn:org.apache.sling/org.apache.sling.karaf-features/RELEASE/xml/features
         </config>
         <conditional>
             <condition>shell</condition>
@@ -231,7 +232,7 @@
 
             #
             # This configuration file defines the ACLs for scope bundles
-            # 
+            #
             features=org.apache.karaf.features.command
             jaas=org.apache.karaf.jaas.command
             admin=org.apache.karaf.admin.command
@@ -1178,7 +1179,7 @@
         <feature>pax-war</feature>
         <bundle start-level="30">mvn:org.apache.karaf.web/org.apache.karaf.web.core/${project.version}</bundle>
     </feature>
-    
+
     <feature name="jetty" version="${jetty.version}">
         <bundle dependency="true" start-level="30">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activation-api-1.1/${servicemix.specs.version}</bundle>
         <bundle dependency="true" start-level="30">mvn:${servlet.spec.groupId}/${servlet.spec.artifactId}/${servlet.spec.version}</bundle>
@@ -1353,7 +1354,7 @@
             #
             # Generic JMX ACL
             #
-            # This file defines the roles required for MBean operations for MBeans that 
+            # This file defines the roles required for MBean operations for MBeans that
             # do not have this defined explicitly.
             #
             # The definition of ACLs for JMX operations works as follows:
@@ -1370,7 +1371,7 @@
             # this:
             #   test : admin
             #   getVal : manager, viewer
-            #   
+            #
             # The system looks for required roles using the following process:
             # The most specific configuration file/pid is tried first. E.g. in the
             # above example the jmx.acl.foo.bar.Test.cfg is looked at first. In this
@@ -1390,9 +1391,9 @@
             # associated with the longest match are used. So if you have te* and * and
             # the method invoked is 'test', then the roles defined with te* are used,
             # not the ones defined with *.
-            # If no matching definition is found in the current configuration file, a 
-            # more general configuration file is looked for. So jmx.acl.foo.bar.cfg is 
-            # tried next, this matches the domain of the MBean. If there is no match 
+            # If no matching definition is found in the current configuration file, a
+            # more general configuration file is looked for. So jmx.acl.foo.bar.cfg is
+            # tried next, this matches the domain of the MBean. If there is no match
             # found in the domain the most generic configuration file is consulted
             # (jmx.acl.cfg).
             # If a matching definition is found, this is used and the process will not
@@ -2171,6 +2172,44 @@
     </feature>
 
     <feature name="scheduler" description="Provide a scheduler service in Karaf to fire events" version="${project.version}">
+        <config name="org.apache.karaf.scheduler.quartz">
+            ################################################################################
+            #
+            #    Licensed to the Apache Software Foundation (ASF) under one or more
+            #    contributor license agreements.  See the NOTICE file distributed with
+            #    this work for additional information regarding copyright ownership.
+            #    The ASF licenses this file to You under the Apache License, Version 2.0
+            #    (the "License"); you may not use this file except in compliance with
+            #    the License.  You may obtain a copy of the License at
+            #
+            #       http://www.apache.org/licenses/LICENSE-2.0
+            #
+            #    Unless required by applicable law or agreed to in writing, software
+            #    distributed under the License is distributed on an "AS IS" BASIS,
+            #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+            #    See the License for the specific language governing permissions and
+            #    limitations under the License.
+            #
+            ################################################################################
+
+            #============================================================================
+            # Configure Karaf Scheduler Properties
+            #============================================================================
+            org.quartz.scheduler.instanceName=Karaf
+            org.quartz.scheduler.instanceId=AUTO
+
+            #============================================================================
+            # Configure ThreadPool
+            #============================================================================
+            org.quartz.threadPool.class=org.quartz.simpl.SimpleThreadPool
+            org.quartz.threadPool.threadCount=3
+            org.quartz.threadPool.threadPriority=5
+
+            #============================================================================
+            # Configure JobStore
+            #============================================================================
+            org.quartz.jobStore.class=org.quartz.simpl.RAMJobStore
+        </config>
         <bundle start-level="30">mvn:org.apache.karaf.scheduler/org.apache.karaf.scheduler.core/${project.version}</bundle>
     </feature>
 
@@ -2209,7 +2248,7 @@
             <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.webconsole.plugins.event/${felix.eventadmin.webconsole.plugin.version}</bundle>
         </conditional>
     </feature>
-    
+
     <feature name="jasypt-encryption" description="Advanced encryption support for Karaf security" version="${project.version}">
         <feature>jaas</feature>
         <bundle dependency="true" start-level="30">mvn:commons-codec/commons-codec/${commons-codec.version}</bundle>
