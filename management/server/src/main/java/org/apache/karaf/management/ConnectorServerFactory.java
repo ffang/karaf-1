@@ -402,7 +402,9 @@ public class ConnectorServerFactory {
 
     public void unregister(KeystoreInstance keystore, Map<String,?> properties) {
         if (this.secured) {
-            LOGGER.info("Keystore: {} undeployed. Re-initializing.", keystore.getName());
+            if (keystore != null) {
+                LOGGER.info("Keystore: {} undeployed. Re-initializing.", keystore.getName());	
+            }
             try {
                 this.destroy();
             } catch (Exception e) {
