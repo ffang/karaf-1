@@ -807,7 +807,7 @@
                 halt = admin
                 reboot = admin
                 rebootCleanCache = admin
-                rebootCleanCleanAll = admin
+                rebootCleanAll = admin
             </config>
 
         </conditional>
