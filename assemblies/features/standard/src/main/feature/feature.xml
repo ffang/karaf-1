@@ -465,10 +465,6 @@
             # For an explanation of the syntax of this file, see the file:
             #   org.apache.karaf.command.acl.bundle.cfg
             #
-            backlog-tracer-dump = admin, manager, viewer
-            backlog-tracer-info = admin, manager, viewer
-            backlog-tracer-start = admin, manager
-            backlog-tracer-stop = admin, manager
             context-info = admin, manager, viewer
             context-list = admin, manager, viewer
             context-start = admin, manager
