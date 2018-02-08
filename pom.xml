@@ -246,7 +246,7 @@
 
         <geronimo.transaction.manager.version>3.1.3</geronimo.transaction.manager.version>
         <guava.version>20.0</guava.version>
-        <narayana.version>5.7.1.Final</narayana.version>
+        <narayana.version>5.7.2.Final</narayana.version>
         <hibernate.annotations.common.version>3.3.0.ga</hibernate.annotations.common.version>
         <hibernate.annotations.version>3.4.0.GA</hibernate.annotations.version>
         <hibernate.ejb.version>3.4.0.GA</hibernate.ejb.version>
@@ -255,11 +255,11 @@
         <hibernate43.version>4.3.6.Final</hibernate43.version>
         <hibernate.version>5.1.10.Final-redhat-1</hibernate.version>
         <hibernate.validator.version>5.3.5.Final-redhat-2</hibernate.validator.version>
-        <jansi.version>1.16</jansi.version>
+        <jansi.version>1.17</jansi.version>
         <javassist.version>3.9.0.GA</javassist.version>
         <aesh.readline.version>1.0</aesh.readline.version>
         <jetty.version>9.3.21.v20170918</jetty.version>
-        <jline.version>3.5.2</jline.version>
+        <jline.version>3.6.0</jline.version>
         <jsw.version>3.2.3</jsw.version>
         <log4j.version>1.2.17</log4j.version>
         <maven.version>3.5.2</maven.version>
@@ -293,7 +293,7 @@
         <spring41.version>4.1.9.RELEASE_1</spring41.version>
         <spring42.version>4.2.9.RELEASE_1</spring42.version>
         <spring43.version>4.3.12.RELEASE_1</spring43.version>
-        <spring50.version>5.0.2.RELEASE_1</spring50.version>
+        <spring50.version>5.0.3.RELEASE_1</spring50.version>
         <spring.security31.version>3.1.4.RELEASE</spring.security31.version>
 
         <sshd.version>1.7.0</sshd.version>
