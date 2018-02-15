@@ -154,7 +154,6 @@
                 repo-list = admin, manager, viewer
                 info = admin, manager, viewer
                 version-list = admin, manager, viewer
-                repo-add = admin, manager
                 repo-refresh = admin, manager
                 repo-add = admin, manager
                 repo-remove = admin, manager
@@ -636,8 +635,6 @@
                 list = admin, manager, viewer
                 info = admin, manager, viewer
                 info[/.*[-][f].*/] = admin
-                services = admin, manager, viewer
-                services[/.*[-][f].*/] = admin
                 install[/.*[-][f].*/] = admin
                 install = admin, manager
                 refresh[/.*[-][f].*/] = admin
