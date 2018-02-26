@@ -196,7 +196,7 @@
         <felix.gogo.jline.version>1.0.10</felix.gogo.jline.version>
         <felix.httplite.version>0.1.6</felix.httplite.version>
         <felix.inventory.version>1.0.4</felix.inventory.version>
-        <felix.plugin.version>3.3.0</felix.plugin.version>
+        <felix.plugin.version>3.5.0</felix.plugin.version>
         <felix.utils.version>1.10.4</felix.utils.version>
         <felix.webconsole.version>4.3.4</felix.webconsole.version>
         <felix.webconsole.api.version>3.1.2</felix.webconsole.api.version>
@@ -220,10 +220,10 @@
         <aries.blueprint.spring.version>0.6.0</aries.blueprint.spring.version>
         <aries.blueprint.spring.extender.version>0.4.0</aries.blueprint.spring.extender.version>
         <aries.jmx.api.version>1.1.5</aries.jmx.api.version>
-        <aries.jmx.core.version>1.1.7</aries.jmx.core.version>
-        <aries.jmx.blueprint.api.version>1.1.5</aries.jmx.blueprint.api.version>
-        <aries.jmx.blueprint.core.version>1.1.5</aries.jmx.blueprint.core.version>
-        <aries.jmx.whiteboard.version>1.1.5</aries.jmx.whiteboard.version>
+        <aries.jmx.core.version>1.1.8</aries.jmx.core.version>
+        <aries.jmx.blueprint.api.version>1.2.0</aries.jmx.blueprint.api.version>
+        <aries.jmx.blueprint.core.version>1.2.0</aries.jmx.blueprint.core.version>
+        <aries.jmx.whiteboard.version>1.2.0</aries.jmx.whiteboard.version>
         <aries.jpa.version>2.6.1</aries.jpa.version>
         <aries.jpa.blueprint.aries.version>1.0.4</aries.jpa.blueprint.aries.version>
         <aries.jpa.api.version>1.0.2</aries.jpa.api.version>
@@ -270,13 +270,13 @@
         <osgi.version>6.0.0</osgi.version>
         <osgi.compendium.version>5.0.0</osgi.compendium.version>
 
-        <pax.cdi.version>1.0.0.RC2</pax.cdi.version>
+        <pax.cdi.version>1.0.0</pax.cdi.version>
         <pax.exam.version>4.11.0</pax.exam.version>
         <pax.logging.version>1.10.1</pax.logging.version>
         <pax.base.version>1.5.0</pax.base.version>
         <pax.swissbox.version>1.8.3</pax.swissbox.version>
         <pax.url.version>2.5.4</pax.url.version>
-        <pax.web.version>6.1.1</pax.web.version>
+        <pax.web.version>6.1.2</pax.web.version>
         <pax.tinybundle.version>3.0.0</pax.tinybundle.version>
         <pax.jdbc.version>1.2.0</pax.jdbc.version>
         <pax.jms.version>0.1.0</pax.jms.version>
