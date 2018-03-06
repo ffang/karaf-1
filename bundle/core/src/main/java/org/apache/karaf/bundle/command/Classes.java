@@ -33,7 +33,7 @@ public class Classes extends BundlesCommand {
     boolean displayAllFiles;
 
     @Override
-    protected void executeOnBundle(Bundle bundle) throws Exception {
+    protected synchronized void executeOnBundle(Bundle bundle) throws Exception {
         BundleWiring wiring = bundle.adapt(BundleWiring.class);
         if (wiring != null){
             Collection<String> resources;
@@ -59,6 +59,5 @@ public class Classes extends BundlesCommand {
             System.out.println("Bundle " + bundle.getBundleId() + " is not resolved.");
         }
     }
-
 
 }
