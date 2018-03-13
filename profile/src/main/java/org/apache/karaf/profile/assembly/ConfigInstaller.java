@@ -63,15 +63,22 @@ public class ConfigInstaller {
             for (Config config : content.getConfig()) {
                 if (pidMatching(config.getName())) {
                     Path configFile = etcDirectory.resolve(config.getName() + ".cfg");
+                    if (config.getName() != null
+                            && (config.getName().startsWith("org.apache.karaf.command.acl.")
+                            || config.getName().startsWith("jmx.acl"))) { // yes - without dot after "acl"
+                        configFile = etcDirectory.resolve("auth").resolve(config.getName() + ".cfg");
+                        configFile.getParent().toFile().mkdirs();
+                    }
+                    final Path finalConfigFile = configFile;
                     LOGGER.info("      adding config file: {}", configFile);
                     if (config.isExternal()) {
                         downloader.download(config.getValue().trim(), provider -> {
                             synchronized (provider) {
-                                Files.copy(provider.getFile().toPath(), configFile, StandardCopyOption.REPLACE_EXISTING);
+                                Files.copy(provider.getFile().toPath(), finalConfigFile, StandardCopyOption.REPLACE_EXISTING);
                             }
                         });
                     } else {
-                        Files.write(configFile, config.getValue().getBytes());
+                        Files.write(finalConfigFile, config.getValue().getBytes());
                     }
                 }
             }

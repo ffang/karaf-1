@@ -154,11 +154,20 @@ public class AssemblyDeployCallback extends StaticInstallSupport implements Depl
         // Install
         Downloader downloader = manager.createDownloader();
         for (Config config : ((Feature) feature).getConfig()) {
+            // ENTESB-7844: explicitly, without XML hints put ACL PIDs into etc/auth/
+            Path configDirectory = etcDirectory;
+            if (config.getName() != null
+                    && (config.getName().startsWith("org.apache.karaf.command.acl.")
+                    || config.getName().startsWith("jmx.acl"))) { // yes - without dot after "acl"
+                configDirectory = etcDirectory.resolve("auth");
+                configDirectory.toFile().mkdirs();
+            }
+            final Path finalConfigDirectory = configDirectory;
             if (config.isExternal()) {
                 downloader.download(config.getValue().trim(), provider -> {
                     Path input = provider.getFile().toPath();
                     byte[] data = Files.readAllBytes(input);
-                    Path configFile = etcDirectory.resolve(config.getName() + ".cfg");
+                    Path configFile = finalConfigDirectory.resolve(config.getName() + ".cfg");
                     LOGGER.info("      adding config file: {}", homeDirectory.relativize(configFile));
                     if (!Files.exists(configFile)) {
                         Files.write(configFile, data);
@@ -168,7 +177,7 @@ public class AssemblyDeployCallback extends StaticInstallSupport implements Depl
                 });
             } else {
                 byte[] data = config.getValue().getBytes();
-                Path configFile = etcDirectory.resolve(config.getName() + ".cfg");
+                Path configFile = finalConfigDirectory.resolve(config.getName() + ".cfg");
                 LOGGER.info("      adding config file: {}", homeDirectory.relativize(configFile));
                 if (!Files.exists(configFile)) {
                     Files.write(configFile, data);

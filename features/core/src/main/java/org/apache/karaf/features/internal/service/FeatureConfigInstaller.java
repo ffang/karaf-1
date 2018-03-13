@@ -71,6 +71,7 @@ public class FeatureConfigInstaller {
             cid.pid = pid.substring(0, n);
         } else {
             cid.pid = pid;
+            cid.acl = pid.startsWith("org.apache.karaf.command.acl.") || pid.startsWith("jmx.acl");
         }
         return cid;
     }
@@ -115,7 +116,7 @@ public class FeatureConfigInstaller {
                 cfgProps.put(CONFIG_KEY, cid.fullPid);
                 props.put(CONFIG_KEY, cid.fullPid);
                 if (storage != null && configCfgStore) {
-                    File cfgFile = new File(storage, cid.fullPid + ".cfg");
+                    File cfgFile = new File(storage, (cid.acl ? "auth/" : "") + cid.fullPid + ".cfg");
                     cfgProps.put(FILEINSTALL_FILE_NAME, cfgFile.getAbsoluteFile().toURI().toString());
                 }
                 cfg.update(cfgProps);
@@ -262,7 +263,7 @@ public class FeatureConfigInstaller {
     private File getConfigFile(ConfigId cid) throws IOException, InvalidSyntaxException {
         Configuration cfg = findExistingConfiguration(configAdmin, cid);
         // update the cfg file depending of the configuration
-        File cfgFile = new File(storage, cid.fullPid + ".cfg");
+        File cfgFile = new File(storage, (cid.acl ? "auth/" : "") + cid.fullPid + ".cfg");
         if (cfg != null && cfg.getProperties() != null) {
             Object val = cfg.getProperties().get(FILEINSTALL_FILE_NAME);
             try {
@@ -327,5 +328,7 @@ public class FeatureConfigInstaller {
         String fullPid;
         String pid;
         String factoryPid;
+        // ENTESB-7844 - cleanup ${karaf.etc} directory
+        boolean acl;
     }
 }
