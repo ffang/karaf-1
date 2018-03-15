@@ -566,6 +566,15 @@
         </conditional>
         <conditional>
             <condition>shell</condition>
+            <config name="org.apache.karaf.command.acl.*">
+                #
+                # This configuration file defines the ACLs for commands in the * subshell
+                #
+                # For an explanation of the syntax of this file, see the file:
+                # org.apache.karaf.command.acl.bundle.cfg
+                #
+                help = admin, manager, viewer
+            </config>
             <config name="org.apache.karaf.command.acl.bundle">
                 ################################################################################
                 #
