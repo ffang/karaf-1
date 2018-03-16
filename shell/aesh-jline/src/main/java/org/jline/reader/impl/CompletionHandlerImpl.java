@@ -68,8 +68,6 @@ public class CompletionHandlerImpl extends SimpleCompletionHandler {
     private final LineReaderImpl reader;
     private final Completer completer;
 
-    private CompletionStatus status = CompletionStatus.COMPLETE;
-
     public CompletionHandlerImpl(LineReaderImpl reader, Completer completer) {
         this.reader = reader;
         this.completer = completer;
@@ -241,14 +239,14 @@ public class CompletionHandlerImpl extends SimpleCompletionHandler {
         int lines = postResult.lines;
         int listMax = getInt(reader, LineReader.LIST_MAX, 100);
         if (listMax > 0 && possible.size() >= listMax || lines >= size.getRows() - 1) {
-            if (status == CompletionStatus.COMPLETE) {
-                status = CompletionStatus.ASKING_FOR_COMPLETIONS;
+            if (completionStatus() == CompletionStatus.COMPLETE) {
+                setCompletionStatus(CompletionStatus.ASKING_FOR_COMPLETIONS);
                 buf.writeOut(Config.CR);
                 buf.writeOut("Display all " + possible.size() + " possibilities? (" + lines + " lines)?");
                 return;
             }
         }
-        status = CompletionStatus.COMPLETE;
+        setCompletionStatus(CompletionStatus.COMPLETE);
         buf.writeOut(Config.CR);
         buf.writeOut(postResult.post.toAnsi(reader.getTerminal()));
         buf.writeOut(Config.CR);
