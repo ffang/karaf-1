@@ -551,7 +551,7 @@
                 refresh = admin, manager
                 resolve = admin, manager
                 restart = admin, manager
-                setStartLevel(java.lang.String, int)[/([1-4])?[0-9]/,/.*/] = admin
+                setStartLevel(java.lang.String,int)[/([1-4])?[0-9]/,/.*/] = admin
                 setStartLevel = admin, manager
                 start(java.lang.String)[/([1-4])?[0-9]/] = admin
                 start = admin, manager
@@ -621,7 +621,7 @@
                 # If no command-name match can be found it is assumed that the command does not need a specific
                 # role and can therefore be invoked by any user.
                 start-level = admin, manager
-                start-level[/.*[-][f].*/] = admin, manager
+                start-level[/\\[([1-4])?[0-9]\\s*,\\s*\\d*\\]/] = admin
                 services = admin, manager, viewer
                 services[/.*[-][f].*/] = admin
                 classes = admin, manager, viewer
