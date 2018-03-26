@@ -50,7 +50,7 @@ public abstract class BundlesCommand implements Action {
     protected String errorMessage = "Unable to execute command on bundle ";
 
     @Override
-    public Object execute() throws Exception {
+    public synchronized Object execute() throws Exception {
         List<Bundle> bundles =  bundleService.selectBundles(context, ids, defaultAllBundles);
         return doExecute(bundles);
     }
