@@ -57,7 +57,7 @@ import java.util.function.IntBinaryOperator;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static org.aesh.util.Parser.toCodePoints;
+import static org.aesh.readline.util.Parser.toCodePoints;
 import static org.jline.reader.impl.ReaderUtils.getInt;
 
 /**

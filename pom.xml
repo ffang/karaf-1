@@ -265,7 +265,7 @@
         <hibernate.validator.version>5.3.5.Final-redhat-2</hibernate.validator.version>
         <jansi.version>1.17</jansi.version>
         <javassist.version>3.9.0.GA</javassist.version>
-        <aesh.readline.version>1.0</aesh.readline.version>
+        <aesh.readline.version>1.6</aesh.readline.version>
         <jetty.version>9.3.21.v20170918</jetty.version>
         <jline.version>3.6.1</jline.version>
         <jsw.version>3.2.3</jsw.version>

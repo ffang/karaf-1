@@ -58,8 +58,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static org.aesh.util.Parser.fromCodePoints;
-import static org.aesh.util.Parser.toCodePoints;
+import static org.aesh.readline.util.Parser.fromCodePoints;
+import static org.aesh.readline.util.Parser.toCodePoints;
 
 /**
  * @author <a href="mailto:gnodet@gmail.com">Guillaume Nodet</a>

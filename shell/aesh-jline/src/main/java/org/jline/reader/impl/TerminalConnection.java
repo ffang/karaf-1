@@ -3,17 +3,22 @@ package org.jline.reader.impl;
 import org.aesh.terminal.Connection;
 import org.aesh.terminal.Device;
 import org.aesh.terminal.tty.Capability;
+import org.aesh.terminal.tty.Point;
 import org.aesh.terminal.tty.Signal;
 import org.aesh.terminal.tty.Size;
-import org.aesh.util.LoggerUtil;
+import org.aesh.readline.util.LoggerUtil;
 import org.jline.terminal.Attributes;
+import org.jline.terminal.Cursor;
 import org.jline.terminal.Terminal;
 import org.jline.utils.Curses;
 import org.jline.utils.NonBlockingReader;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.nio.CharBuffer;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -130,13 +135,22 @@ public class TerminalConnection implements Connection, Device {
                     getSizeHandler().accept(size());
                 }
             });
+            int[] cb = new int[1024];
+            int idx = 0;
             while (reading) {
                 int read = terminal.reader().read(10);
                 if (read == NonBlockingReader.READ_EXPIRED) {
+                    if (idx > 0) {
+                        stdinHandler.accept(Arrays.copyOf(cb, idx));
+                        idx = 0;
+                    }
                     continue;
                 }
                 if (read > 0) {
-                    stdinHandler.accept(new int[]{read});
+                    if (idx == cb.length) {
+                        cb = Arrays.copyOf(cb, cb.length * 2);
+                    }
+                    cb[idx++] = read;
                 } else {
                     if (getCloseHandler() != null)
                         getCloseHandler().accept(null);
@@ -278,6 +292,17 @@ public class TerminalConnection implements Connection, Device {
     @Override
     public boolean put(Capability capability, Object... objects) {
         return terminal.puts(convert(org.jline.utils.InfoCmp.Capability.class, capability), objects);
+    }
+
+    @Override
+    public boolean supportsAnsi() {
+        return terminal.getType() != null && !terminal.getType().startsWith(Terminal.TYPE_DUMB);
+    }
+
+    @Override
+    public Point getCursorPosition() {
+        Cursor cursor = terminal.getCursorPosition(null);
+        return cursor != null ? new Point(cursor.getX(), cursor.getY()) : null;
     }
 
     private <F extends Enum<F>, T extends Enum<T>, V> void convert(Class<F> from, Class<T> to, Function<F, V> getter, BiConsumer<T, V> setter) {

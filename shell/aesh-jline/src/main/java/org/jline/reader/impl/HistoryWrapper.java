@@ -26,8 +26,8 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.List;
 
-import static org.aesh.util.Parser.arrayContains;
-import static org.aesh.util.Parser.toCodePoints;
+import static org.aesh.readline.util.Parser.arrayContains;
+import static org.aesh.readline.util.Parser.toCodePoints;
 
 /**
  * @author <a href="mailto:gnodet@gmail.com">Guillaume Nodet</a>
