@@ -20,10 +20,12 @@
 package org.jline.reader.impl;
 
 import org.aesh.readline.history.SearchDirection;
+import org.aesh.readline.util.Parser;
 import org.jline.reader.History;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 
@@ -46,7 +48,8 @@ public class HistoryWrapper extends org.aesh.readline.history.History {
 
     @Override
     public void push(int[] entry) {
-
+        history.add(Instant.now(), Parser.fromCodePoints(entry));
+        history.moveToEnd();
     }
 
     @Override
