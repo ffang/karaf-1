@@ -135,23 +135,24 @@ public class TerminalConnection implements Connection, Device {
                     getSizeHandler().accept(size());
                 }
             });
-            int[] cb = new int[1024];
-            int idx = 0;
+            int[] cb = new int[32];
             while (reading) {
-                int read = terminal.reader().read(10);
-                if (read == NonBlockingReader.READ_EXPIRED) {
-                    if (idx > 0) {
-                        stdinHandler.accept(Arrays.copyOf(cb, idx));
-                        idx = 0;
+                int read = terminal.reader().read(100);
+                if (read == 27) {
+                    int idx = 0;
+                    while (read >= 0) {
+                        if (idx == cb.length) {
+                            cb = Arrays.copyOf(cb, cb.length * 2);
+                        }
+                        cb[idx++] = read;
+                        read = terminal.reader().read(1);
                     }
-                    continue;
+                    stdinHandler.accept(Arrays.copyOf(cb, idx));
+                } else if (read >= 0) {
+                    stdinHandler.accept(new int[] { read });
+                    read = NonBlockingReader.READ_EXPIRED;
                 }
-                if (read > 0) {
-                    if (idx == cb.length) {
-                        cb = Arrays.copyOf(cb, cb.length * 2);
-                    }
-                    cb[idx++] = read;
-                } else {
+                if (read != NonBlockingReader.READ_EXPIRED) {
                     if (getCloseHandler() != null)
                         getCloseHandler().accept(null);
                     close();

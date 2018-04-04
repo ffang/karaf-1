@@ -210,6 +210,7 @@ public class LineReaderImpl implements LineReader {
         if (str.length() > 0 && !prompt.isMasking()) {
             history.add(Instant.now(), historyLine);
         }
+        history.moveToEnd();
         inputProcessor.setReturnValue(toCodePoints(str));
     }
 

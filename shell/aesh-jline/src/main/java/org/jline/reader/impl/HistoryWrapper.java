@@ -25,6 +25,7 @@ import org.jline.reader.History;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.List;
+import java.util.Objects;
 
 import static org.aesh.readline.util.Parser.arrayContains;
 import static org.aesh.readline.util.Parser.toCodePoints;
@@ -36,6 +37,8 @@ public class HistoryWrapper extends org.aesh.readline.history.History {
 
     private final History history;
     private SearchDirection direction = SearchDirection.REVERSE;
+    private SearchDirection previousDirection;
+    private int[] previousSearch;
 
     public HistoryWrapper(History history) {
         this.history = history;
@@ -87,23 +90,30 @@ public class HistoryWrapper extends org.aesh.readline.history.History {
         return null;
     }
 
+
     @Override
     public int[] search(int[] search) {
+        boolean same = Objects.equals(previousDirection, direction)
+                && Objects.deepEquals(previousSearch, search);
+        previousDirection = direction;
+        previousSearch = search;
         if(direction == SearchDirection.REVERSE) {
-            int[] cur;
-            while ((cur = getPreviousFetch()) != null) {
+            int[] cur = same ? getPreviousFetch() : getCurrent();
+            while (cur != null) {
                 if (arrayContains(cur, search)) {
                     return cur;
                 }
+                cur = getPreviousFetch();
             }
             return null;
         }
         else {
-            int[] cur;
-            while ((cur = getNextFetch()) != null) {
+            int[] cur = same ? getNextFetch() : getCurrent();
+            while (cur != null) {
                 if (arrayContains(cur, search)) {
                     return cur;
                 }
+                cur = getNextFetch();
             }
             return null;
         }
