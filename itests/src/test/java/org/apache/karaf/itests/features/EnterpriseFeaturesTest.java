@@ -114,12 +114,8 @@ public class EnterpriseFeaturesTest extends KarafTestSupport {
     }
 
     @Test
-    public void installHibernateValidatorFeatures() throws Exception {
+    public void installHibernateValidatorFeature() throws Exception {
         installAssertAndUninstallFeatures("hibernate-validator");
-        installAssertAndUninstallFeatures("hibernate-validator-jsoup");
-        installAssertAndUninstallFeatures("hibernate-validator-joda-time");
-        installAssertAndUninstallFeatures("hibernate-validator-javax-money");
-        installAssertAndUninstallFeatures("hibernate-validator-groovy");
     }
 
     @Test
