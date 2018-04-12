@@ -79,6 +79,8 @@
         <module>profile</module>
         <module>event</module>
         <module>tooling</module>
+        <module>manual</module>
+        <module>specs</module>
         <module>assemblies</module>
         <module>demos</module>
         <module>archetypes</module>
@@ -89,7 +91,7 @@
         <connection>scm:git:https://gitbox.apache.org/repos/asf/karaf.git</connection>
         <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/karaf.git</developerConnection>
         <url>https://gitbox.apache.org/repos/asf?p=karaf.git;a=summary</url>
-      <tag>HEAD</tag>
+      <tag>karaf-4.2.0.redhat-700-SNAPSHOT</tag>
   </scm>
 
     <issueManagement>
@@ -208,6 +210,7 @@
         <felix.utils.version>1.10.4</felix.utils.version>
         <felix.webconsole.version>4.3.4</felix.webconsole.version>
         <felix.webconsole.api.version>3.1.2</felix.webconsole.api.version>
+        <felix.memoryusage.webconsole.plugin.version>1.0.8</felix.memoryusage.webconsole.plugin.version>
         <felix.metatype.version>1.1.6</felix.metatype.version>
         <felix.eventadmin.version>1.4.10</felix.eventadmin.version>
         <felix.eventadmin.webconsole.plugin.version>1.1.8</felix.eventadmin.webconsole.plugin.version>
@@ -266,8 +269,8 @@
         <jansi.version>1.17</jansi.version>
         <javassist.version>3.9.0.GA</javassist.version>
         <aesh.readline.version>1.6</aesh.readline.version>
-        <jetty.version>9.3.22.v20171030</jetty.version>
-        <jline.version>3.6.1</jline.version>
+        <jetty.version>9.4.6.v20170531</jetty.version>
+        <jline.version>3.6.2</jline.version>
         <jsw.version>3.2.3</jsw.version>
         <log4j.version>1.2.17</log4j.version>
         <maven.version>3.5.2</maven.version>
@@ -284,7 +287,7 @@
         <pax.base.version>1.5.0</pax.base.version>
         <pax.swissbox.version>1.8.3</pax.swissbox.version>
         <pax.url.version>2.5.4</pax.url.version>
-        <pax.web.version>6.1.2</pax.web.version>
+        <pax.web.version>7.0.0</pax.web.version>
         <pax.tinybundle.version>3.0.0</pax.tinybundle.version>
         <pax.jdbc.version>1.2.0</pax.jdbc.version>
         <pax.jms.version>0.3.0</pax.jms.version>
@@ -301,7 +304,7 @@
         <spring41.version>4.1.9.RELEASE_1</spring41.version>
         <spring42.version>4.2.9.RELEASE_1</spring42.version>
         <spring43.version>4.3.14.RELEASE_1</spring43.version>
-        <spring50.version>5.0.3.RELEASE_1</spring50.version>
+        <spring50.version>5.0.4.RELEASE_1</spring50.version>
         <spring.security31.version>3.1.4.RELEASE</spring.security31.version>
         <spring.security42.version>4.2.4.RELEASE_1</spring.security42.version>
 
@@ -309,7 +312,7 @@
         <derby-version>10.12.1.1</derby-version>
         <directory-version>2.0.0-M24</directory-version>
         <struts.bundle.version>1.3.10_1</struts.bundle.version>
-        <xbean.version>4.6</xbean.version>
+        <xbean.version>4.7</xbean.version>
         <xerces.version>2.11.0_1</xerces.version>
         <xalan.bundle.version>2.7.2_3</xalan.bundle.version>
         <xalan-serializer.bundle.version>2.7.2_1</xalan-serializer.bundle.version>
@@ -474,6 +477,26 @@
             <dependency>
                 <groupId>org.apache.karaf</groupId>
                 <artifactId>org.apache.karaf.client</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.karaf.specs</groupId>
+                <artifactId>org.apache.karaf.specs.locator</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.karaf.specs</groupId>
+                <artifactId>org.apache.karaf.specs.activator</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.karaf.specs</groupId>
+                <artifactId>org.apache.karaf.specs.java.xml</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.karaf.specs</groupId>
+                <artifactId>org.apache.karaf.specs.java.xml.ws</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -991,6 +1014,11 @@
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.webconsole.plugins.ds</artifactId>
                 <version>${felix.scr.webconsole.plugin.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.webconsole.plugins.memoryusage</artifactId>
+                <version>${felix.memoryusage.webconsole.plugin.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.felix</groupId>
@@ -1912,7 +1940,7 @@
                         <useReleaseProfile>false</useReleaseProfile>
                         <preparationGoals>clean install</preparationGoals>
                         <goals>deploy</goals>
-                        <arguments>-Prelease,deploy,src,manual</arguments>
+                        <arguments>-Prelease,deploy,src</arguments>
                         <autoVersionSubmodules>true</autoVersionSubmodules>
                     </configuration>
                 </plugin>
@@ -2223,12 +2251,6 @@
               <invoker.skip>true</invoker.skip>
               <archetype.test.skip>true</archetype.test.skip>
             </properties>
-        </profile>
-        <profile>
-            <id>manual</id>
-            <modules>
-                <module>manual</module>
-            </modules>
         </profile>
         <profile>
             <id>rat</id>

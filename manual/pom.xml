@@ -23,7 +23,7 @@
 
 	<artifactId>manual</artifactId>
 	<name>Apache Karaf :: Manual</name>
-	<packaging>pom</packaging>
+	<packaging>bundle</packaging>
 
 	<build>
 		<plugins>
@@ -238,6 +238,17 @@
 					<content>${project.build.directory}/generated-docs</content>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>3.3.0</version>
+				<configuration>
+					<instructions>
+						<Web-ContextPath>/documentation</Web-ContextPath>
+						<Include-Resource>target/generated-docs</Include-Resource>
+					</instructions>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -267,8 +278,8 @@
 											<arg value="--log" />
 											<arg value="${project.build.directory}/prince.log" />
 										</exec>
-										<attachartifact file="target/documentation.html" type="html"/>
-										<attachartifact file="target/documentation.pdf" type="pdf"/>
+										<attachartifact file="target/documentation.html" type="html" />
+										<attachartifact file="target/documentation.pdf" type="pdf" />
 									</tasks>
 								</configuration>
 							</execution>
