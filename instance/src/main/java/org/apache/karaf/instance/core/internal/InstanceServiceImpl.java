@@ -344,6 +344,7 @@ public class InstanceServiceImpl implements InstanceService {
                 "etc/shell.init.script",
                 "etc/users.properties",
                 "etc/scripts/shell.completion.script",
+                "etc/jolokia-access.xml",
                 FEATURES_CFG
             };
             copyResourcesToDir(resources, karafBase, textResources, printOutput);
