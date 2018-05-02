@@ -50,11 +50,13 @@ public abstract class BundlesCommand implements Action {
     protected String errorMessage = "Unable to execute command on bundle ";
 
     @Override
-    public synchronized Object execute() throws Exception {
-        List<Bundle> bundles =  bundleService.selectBundles(context, ids, defaultAllBundles);
-        return doExecute(bundles);
+    public Object execute() throws Exception {
+        synchronized (BundlesCommand.class) {
+            List<Bundle> bundles =  bundleService.selectBundles(context, ids, defaultAllBundles);
+            return doExecute(bundles);
+        }
     }
-    
+
     protected Object doExecute(List<Bundle> bundles) throws Exception {
         if (bundles.isEmpty()) {
             throw new IllegalArgumentException("No matching bundles");
