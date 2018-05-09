@@ -249,7 +249,7 @@
         <eclipse.jdt.core.compiler.version>4.4.2.redhat-1</eclipse.jdt.core.compiler.version>
         <hornetq.version>2.3.25.SP13-redhat-1</hornetq.version>
         <jline.version>2.12.1.redhat-002</jline.version>
-        <jledit.version>0.2.1</jledit.version>
+        <jledit.version>0.2.2</jledit.version>
         <joda-time2-version>2.9.2</joda-time2-version>
         <jsoup.bundle.version>1.5.2_2</jsoup.bundle.version>
         <jsw.version>3.2.3</jsw.version>
