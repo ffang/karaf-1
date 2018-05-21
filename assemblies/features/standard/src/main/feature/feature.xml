@@ -111,6 +111,7 @@
             hibernate=mvn:org.hibernate/hibernate-osgi/RELEASE/xml/karaf
             ignite=mvn:org.apache.ignite/ignite-osgi-karaf/RELEASE/xml/features
             artemis=mvn:org.apache.activemq/artemis-features/RELEASE/xml/features
+            activemq=mvn:org.apache.activemq/activemq-karaf/RELEASE/xml/features
         </config>
         <conditional>
             <condition>shell</condition>
