@@ -34,6 +34,8 @@ public class SshServerFactory {
 
     private String welcomeBanner;
 
+    private SftpConfigurer sftpConfigurer;
+
     public SshServerFactory(SshServer server) {
         this.server = server;
     }
@@ -55,21 +57,29 @@ public class SshServerFactory {
     }
 
     public int getNioWorkers() {
-		return nioWorkers;
-	}
+        return nioWorkers;
+    }
 
-	public void setNioWorkers(int nioWorkers) {
-		this.nioWorkers = nioWorkers;
-	}
+    public void setNioWorkers(int nioWorkers) {
+        this.nioWorkers = nioWorkers;
+    }
 
-	public String getWelcomeBanner() {
+    public String getWelcomeBanner() {
         return welcomeBanner;
     }
 
     public void setWelcomeBanner(String welcomeBanner) {
         this.welcomeBanner = welcomeBanner;
     }
-    
+
+    public SftpConfigurer getSftpConfigurer() {
+        return sftpConfigurer;
+    }
+
+    public void setSftpConfigurer(SftpConfigurer sftpConfigurer) {
+        this.sftpConfigurer = sftpConfigurer;
+    }
+
     public void start() {
         if (start) {
             try {
@@ -77,6 +87,9 @@ public class SshServerFactory {
                 server.getProperties().put(SshServer.NIO_WORKERS, new Integer(nioWorkers).toString());
                 if (getWelcomeBanner() != null && !getWelcomeBanner().isEmpty()) {
                     server.getProperties().put(SshServer.WELCOME_BANNER, getWelcomeBanner());
+                }
+                if (getSftpConfigurer() != null) {
+                    getSftpConfigurer().configure(server);
                 }
                 server.start();
             } catch (Exception e) {
