@@ -49,6 +49,7 @@
             <cm:property name="macs" value="hmac-sha1" />
             <cm:property name="ciphers" value="aes256-ctr,aes192-ctr,aes128-ctr,arcfour256" />
             <cm:property name="welcomeBanner" value="" />
+            <cm:property name="sftpEnabled" value="false" />
         </cm:default-properties>
     </cm:property-placeholder>
 
@@ -111,6 +112,20 @@
                 <property name="bundleContext" ref="blueprintBundleContext"/>
             </bean>
         </property>
+        <property name="keyPairProvider" ref="keyPairProvider"/>
+        <property name="passwordAuthenticator" ref="authenticator"/>
+        <property name="publickeyAuthenticator" ref="authenticator"/>
+        <property name="userAuthFactories">
+            <bean factory-ref="userAuthFactoriesFactory" factory-method="getFactories"/>
+        </property>
+        <property name="agentFactory" ref="agentFactory" />
+    </bean>
+
+    <bean id="sftpConfigurer" class="org.apache.karaf.shell.ssh.SftpConfigurer">
+        <property name="enabled" value="${sftpEnabled}" />
+        <property name="fileSystemFactory">
+            <bean class="org.apache.karaf.shell.ssh.KarafFileSystemFactory" />
+        </property>
         <property name="commandFactory">
             <bean class="org.apache.sshd.server.command.ScpCommandFactory">
                 <argument>
@@ -120,21 +135,9 @@
                 </argument>
             </bean>
         </property>
-        <property name="subsystemFactories">
-            <list>
-                <bean class="org.apache.sshd.server.sftp.SftpSubsystem.Factory"/>
-            </list>
+        <property name="subsystemFactory">
+            <bean class="org.apache.sshd.server.sftp.SftpSubsystem.Factory" />
         </property>
-        <property name="keyPairProvider" ref="keyPairProvider"/>
-        <property name="passwordAuthenticator" ref="authenticator"/>
-        <property name="publickeyAuthenticator" ref="authenticator"/>
-        <property name="fileSystemFactory">
-            <bean class="org.apache.karaf.shell.ssh.KarafFileSystemFactory"/>
-        </property>
-        <property name="userAuthFactories">
-            <bean factory-ref="userAuthFactoriesFactory" factory-method="getFactories"/>
-        </property>
-        <property name="agentFactory" ref="agentFactory" />
     </bean>
 
     <bean id="agentFactory" class="org.apache.karaf.shell.ssh.KarafAgentFactory">
@@ -160,6 +163,7 @@
         <property name="idleTimeout" value="${sshIdleTimeout}"/>
         <property name="nioWorkers" value="${nio-workers}"/>
         <property name="welcomeBanner" value="${welcomeBanner}"/>
+        <property name="sftpConfigurer" ref="sftpConfigurer"/>
     </bean>
 
     <reference id="commandProcessor" interface="org.apache.felix.service.command.CommandProcessor">
