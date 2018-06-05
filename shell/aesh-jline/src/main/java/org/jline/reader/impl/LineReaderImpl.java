@@ -153,7 +153,7 @@ public class LineReaderImpl implements LineReader {
         String str = fromCodePoints(consoleBuffer.buffer().multiLine());
 
         parsedLine = null;
-        String exp = null;
+        String exp = str;
         if (!isSet(Option.DISABLE_EVENT_EXPANSION)) {
             try {
                 exp = expander.expandHistory(getHistory(), str);
