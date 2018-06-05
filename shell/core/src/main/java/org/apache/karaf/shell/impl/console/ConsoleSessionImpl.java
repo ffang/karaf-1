@@ -433,14 +433,14 @@ public class ConsoleSessionImpl implements Session {
         CharSequence command = null;
         reading.set(true);
         try {
-            reader.readLine(getPrompt(), getRPrompt(), maskingCallback, null);
+            String res = reader.readLine(getPrompt(), getRPrompt(), maskingCallback, null);
             ParsedLine pl = reader.getParsedLine();
             if (pl instanceof ParsedLineImpl) {
                 command = ((ParsedLineImpl) pl).program();
+            } else if (pl != null) {
+                command = pl.line();
             } else {
-                if (pl != null) {
-                    command = pl.line();
-                }
+                command = res;
             }
         } catch (EndOfFileException e) {
             command = null;

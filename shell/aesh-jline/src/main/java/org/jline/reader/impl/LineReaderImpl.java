@@ -139,13 +139,15 @@ public class LineReaderImpl implements LineReader {
             terminal.setAttributes(attr);
         }
         String line = out[0];
+        parsedLine = null;
         if (line != null) {
-            parsedLine = parser.parse(line, line.length(), Parser.ParseContext.ACCEPT_LINE);
-            return line;
-        } else {
-            parsedLine = null;
-            return null;
+            try {
+                parsedLine = parser.parse(line, line.length(), Parser.ParseContext.ACCEPT_LINE);
+            } catch (SyntaxError e) {
+                // ignore
+            }
         }
+        return line;
     }
 
     private void acceptLine(InputProcessor inputProcessor) {
