@@ -1,5 +1,7 @@
 package org.jline.reader.impl;
 
+import org.aesh.readline.action.KeyAction;
+import org.aesh.readline.editing.EditMode;
 import org.aesh.terminal.Connection;
 import org.aesh.terminal.Device;
 import org.aesh.terminal.tty.Capability;
@@ -7,18 +9,18 @@ import org.aesh.terminal.tty.Point;
 import org.aesh.terminal.tty.Signal;
 import org.aesh.terminal.tty.Size;
 import org.aesh.readline.util.LoggerUtil;
+import org.jline.keymap.BindingReader;
+import org.jline.keymap.KeyMap;
+import org.jline.reader.EndOfFileException;
 import org.jline.terminal.Attributes;
 import org.jline.terminal.Cursor;
 import org.jline.terminal.Terminal;
 import org.jline.utils.Curses;
-import org.jline.utils.NonBlockingReader;
 
-import java.io.ByteArrayOutputStream;
+import java.io.IOError;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.nio.CharBuffer;
 import java.nio.charset.Charset;
-import java.util.Arrays;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -29,7 +31,23 @@ public class TerminalConnection implements Connection, Device {
 
     private static final Logger LOGGER = LoggerUtil.getLogger(TerminalConnection.class.getName());
 
+    private static final KeyAction UNKNOWN = new KeyAction() {
+        @Override
+        public int getCodePointAt(int index) throws IndexOutOfBoundsException {
+            return 0;
+        }
+        @Override
+        public int length() {
+            return 0;
+        }
+        @Override
+        public String name() {
+            return "unknown";
+        }
+    };
+
     private final Terminal terminal;
+    private final EditMode editMode;
     private Attributes attributes;
     private volatile boolean reading = false;
     private Consumer<Size> sizeHandler;
@@ -41,8 +59,9 @@ public class TerminalConnection implements Connection, Device {
     private Terminal.SignalHandler prevIntHandler;
     private Terminal.SignalHandler prevWinchHandler;
 
-    public TerminalConnection(Terminal terminal) {
+    public TerminalConnection(Terminal terminal, EditMode editMode) {
         this.terminal = terminal;
+        this.editMode = editMode;
         this.stdoutHandler = data -> write(new String(data, 0, data.length));
     }
 
@@ -135,31 +154,27 @@ public class TerminalConnection implements Connection, Device {
                     getSizeHandler().accept(size());
                 }
             });
-            int[] cb = new int[32];
+            KeyMap<KeyAction> map = new KeyMap<>();
+            map.setNomatch(UNKNOWN);
+            map.setUnicode(UNKNOWN);
+            for (KeyAction action : editMode.keys()) {
+                int[] cp = action.buffer().array();
+                map.bind(action, new String(cp, 0, cp.length));
+            }
+            BindingReader br = new BindingReader(terminal.reader());
             while (reading) {
-                int read = terminal.reader().read(100);
-                if (read == 27) {
-                    int idx = 0;
-                    while (read >= 0) {
-                        if (idx == cb.length) {
-                            cb = Arrays.copyOf(cb, cb.length * 2);
-                        }
-                        cb[idx++] = read;
-                        read = terminal.reader().read(1);
-                    }
-                    stdinHandler.accept(Arrays.copyOf(cb, idx));
-                } else if (read >= 0) {
-                    stdinHandler.accept(new int[] { read });
-                    read = NonBlockingReader.READ_EXPIRED;
-                }
-                if (read != NonBlockingReader.READ_EXPIRED) {
+                KeyAction ka = br.readBinding(map);
+                if (ka != null) {
+                    String lb = br.getLastBinding();
+                    stdinHandler.accept(lb.codePoints().toArray());
+                } else {
                     if (getCloseHandler() != null)
                         getCloseHandler().accept(null);
                     close();
                     return;
                 }
             }
-        } catch (IOException ioe) {
+        } catch (IOError | EndOfFileException ioe) {
             //could be caused by karaf shell shutdown, so use low log level to avoid the noise
             LOGGER.log(Level.FINE, "Failed while reading, exiting", ioe);
             if (getCloseHandler() != null)

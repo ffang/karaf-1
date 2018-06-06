@@ -78,7 +78,7 @@ public class LineReaderImpl implements LineReader {
 
     private final Map<Option, Boolean> options = new HashMap<>();
 
-    private EditMode editMode = EditModeBuilder.builder().create();
+    private EditMode editMode;
 
     private Prompt prompt;
     private ParsedLine parsedLine;
@@ -102,6 +102,7 @@ public class LineReaderImpl implements LineReader {
         this.editMode.addAction(Key.CTRL_M, enter);
         this.editMode.addAction(Key.ENTER, enter);
         this.editMode.addAction(Key.ENTER_2, enter);
+
     }
 
     public void setParser(Parser parser) {
@@ -127,7 +128,7 @@ public class LineReaderImpl implements LineReader {
     private String readInput(String buffer) {
         final String[] out = new String[1];
         Attributes attr = terminal.enterRawMode();
-        TerminalConnection connection = new TerminalConnection(terminal);
+        TerminalConnection connection = new TerminalConnection(terminal, editMode);
         Readline readline = new Readline(editMode, new HistoryWrapper(history), completionHandler);
         try {
             readline.readline(connection, prompt, line -> {
