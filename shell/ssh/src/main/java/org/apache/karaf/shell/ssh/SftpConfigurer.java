@@ -27,7 +27,6 @@ public class SftpConfigurer {
 
     private boolean enabled = false;
     private FileSystemFactory fileSystemFactory;
-    private CommandFactory commandFactory;
     private NamedFactory<Command> subsystemFactory;
 
     public boolean isEnabled() {
@@ -46,14 +45,6 @@ public class SftpConfigurer {
         this.fileSystemFactory = fileSystemFactory;
     }
 
-    public CommandFactory getCommandFactory() {
-        return commandFactory;
-    }
-
-    public void setCommandFactory(CommandFactory commandFactory) {
-        this.commandFactory = commandFactory;
-    }
-
     public NamedFactory<Command> getSubsystemFactory() {
         return subsystemFactory;
     }
@@ -64,9 +55,6 @@ public class SftpConfigurer {
 
     public void configure(SshServer server) {
         if (enabled) {
-            if (commandFactory != null) {
-                server.setCommandFactory(commandFactory);
-            }
             if (subsystemFactory != null) {
                 if (server.getSubsystemFactories() == null) {
                     server.setSubsystemFactories(new LinkedList<NamedFactory<Command>>());
