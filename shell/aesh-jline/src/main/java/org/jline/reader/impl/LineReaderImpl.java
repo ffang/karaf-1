@@ -29,6 +29,7 @@ import org.aesh.readline.completion.CompletionHandler;
 import org.aesh.readline.editing.EditMode;
 import org.aesh.readline.editing.EditModeBuilder;
 import org.aesh.readline.terminal.Key;
+import org.aesh.utils.Config;
 import org.jline.keymap.KeyMap;
 import org.jline.reader.Binding;
 import org.jline.reader.Buffer;
@@ -173,7 +174,10 @@ public class LineReaderImpl implements LineReader {
         try {
             parsedLine = parser.parse(exp, consoleBuffer.buffer().multiCursor(), Parser.ParseContext.ACCEPT_LINE);
         } catch (EOFError e) {
-            consoleBuffer.writeString("\n");
+            consoleBuffer.buffer().setMultiLine(true);
+            consoleBuffer.buffer().updateMultiLineBuffer();
+            consoleBuffer.writeOut(Config.CR);
+            consoleBuffer.drawLine();
             return;
         } catch (SyntaxError e) {
             // do nothing
