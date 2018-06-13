@@ -179,8 +179,8 @@
         <jolokia.version>1.5.0.redhat-1</jolokia.version>
         <serp.bundle.version>1.14.1_1</serp.bundle.version>
         <servlet.spec.groupId>javax.servlet</servlet.spec.groupId>
-	    <servlet.spec.artifactId>javax.servlet-api</servlet.spec.artifactId>
-	    <servlet.spec.version>3.1.0</servlet.spec.version>
+        <servlet.spec.artifactId>javax.servlet-api</servlet.spec.artifactId>
+        <servlet.spec.version>3.1.0</servlet.spec.version>
 
         <geronimo.jms-spec.version>1.1.1</geronimo.jms-spec.version>
         <geronimo.jpa-spec.version>1.1</geronimo.jpa-spec.version>
@@ -396,6 +396,17 @@
             </releases>
             <snapshots>
                 <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <!-- For jolokia-osgi 1.5.0-redhat-1 -->
+        <repository>
+            <id>jboss-common</id>
+            <url>http://download-node-02.eng.bos.redhat.com/brewroot/repos/jb-common-build/latest/maven</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
             </snapshots>
         </repository>
     </repositories>
@@ -1859,6 +1870,11 @@
                 <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-validator</artifactId>
                 <version>${hibernate.validator.version}</version>
+            </dependency>
+            <dependency>
+               <groupId>org.jolokia</groupId>
+               <artifactId>jolokia-osgi</artifactId>
+               <version>${jolokia.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
