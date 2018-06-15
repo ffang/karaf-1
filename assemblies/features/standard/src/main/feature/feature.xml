@@ -104,7 +104,6 @@
             pax-jms=mvn:org.ops4j.pax.jms/pax-jms-features/RELEASE/xml/features
             pax-jpa=mvn:org.ops4j.pax.jpa/pax-jpa-features/RELEASE/xml/features
             pax-transx=mvn:org.ops4j.pax.transx/pax-transx-features/RELEASE/xml/features
-            pax-keycloak=mvn:org.ops4j.pax.keycloak/pax-keycloak-features/RELEASE/xml/features
             pax-web=mvn:org.ops4j.pax.web/pax-web-features/RELEASE/xml/features
             decanter=mvn:org.apache.karaf.decanter/apache-karaf-decanter/RELEASE/xml/features
             aries-jpa=mvn:org.apache.aries.jpa/jpa-features/RELEASE/xml/features
