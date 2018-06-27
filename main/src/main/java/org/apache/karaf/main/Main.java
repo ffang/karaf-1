@@ -372,6 +372,10 @@ public class Main {
             // Progress bar
             new StartupListener(framework.getBundleContext());
         }
+
+        // ENTESB-9057: set lock start level before trying to obtain the lock
+        setStartLevel(lockStartLevel, 0);
+
         // Start lock monitor
         new Thread() {
             public void run() {
@@ -1563,7 +1567,6 @@ public class Main {
                     }
                 }
             } else {
-                setStartLevel(lockStartLevel, 0);
                 if (!lockLogged) {
                     LOG.info("Waiting for the lock ...");
                     lockLogged = true;
