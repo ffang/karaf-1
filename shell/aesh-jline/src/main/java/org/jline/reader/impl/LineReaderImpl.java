@@ -129,6 +129,7 @@ public class LineReaderImpl implements LineReader {
     private String readInput(String buffer) {
         final String[] out = new String[1];
         Attributes attr = terminal.enterRawMode();
+        parsedLine = null;
         TerminalConnection connection = new TerminalConnection(terminal, editMode);
         Readline readline = new Readline(editMode, new HistoryWrapper(history), completionHandler);
         try {
@@ -140,16 +141,10 @@ public class LineReaderImpl implements LineReader {
         } finally {
             terminal.setAttributes(attr);
         }
-        String line = out[0];
-        parsedLine = null;
-        if (line != null) {
-            try {
-                parsedLine = parser.parse(line, line.length(), Parser.ParseContext.ACCEPT_LINE);
-            } catch (SyntaxError e) {
-                // ignore
-            }
+        if (out[0] == null) {
+            throw new EndOfFileException();
         }
-        return line;
+        return out[0];
     }
 
     private void acceptLine(InputProcessor inputProcessor) {
