@@ -108,9 +108,21 @@ public class ResourceImpl implements Resource {
 
     @Override
     public String toString() {
-        Capability cap = getCapabilities(IdentityNamespace.IDENTITY_NAMESPACE).get(0);
-        return cap.getAttributes().get(IdentityNamespace.IDENTITY_NAMESPACE) + "/"
-                + cap.getAttributes().get(IdentityNamespace.CAPABILITY_VERSION_ATTRIBUTE);
+        List<Capability> caps = getCapabilities(IdentityNamespace.IDENTITY_NAMESPACE);
+        if (caps.size() > 0) {
+            Capability cap = caps.get(0);
+            return cap.getAttributes().get(IdentityNamespace.IDENTITY_NAMESPACE) + "/"
+                    + cap.getAttributes().get(IdentityNamespace.CAPABILITY_VERSION_ATTRIBUTE);
+        } else {
+            List<Requirement> reqs = getRequirements(IdentityNamespace.IDENTITY_NAMESPACE);
+            if (reqs.size() > 0) {
+                Requirement req = reqs.get(0);
+                return "R: " + req.getAttributes().get(IdentityNamespace.IDENTITY_NAMESPACE) + "/"
+                        + req.getAttributes().get(IdentityNamespace.CAPABILITY_VERSION_ATTRIBUTE);
+            }
+        }
+
+        return "Resource with no capabilities and requirements";
     }
 
 }
