@@ -198,6 +198,7 @@ public class KarafTestSupport {
                 KarafDistributionOption.editConfigurationFilePut("etc/org.apache.karaf.management.cfg", "rmiServerPort", rmiServerPort),
                 KarafDistributionOption.editConfigurationFilePut("etc/org.apache.karaf.shell.cfg", "sshPort", sshPort),
                 KarafDistributionOption.editConfigurationFilePut("etc/org.ops4j.pax.url.mvn.cfg", "org.ops4j.pax.url.mvn.localRepository", localRepository),
+                KarafDistributionOption.editConfigurationFileExtend("etc/org.ops4j.pax.url.mvn.cfg", "org.ops4j.pax.url.mvn.repositories", "https://maven.repository.redhat.com/ga@id=redhat.ga.repo"),
                 KarafDistributionOption.editConfigurationFilePut("etc/system.properties", "spring31.version", System.getProperty("spring31.version")),
                 KarafDistributionOption.editConfigurationFilePut("etc/system.properties", "spring32.version", System.getProperty("spring32.version")),
                 KarafDistributionOption.editConfigurationFilePut("etc/system.properties", "spring40.version", System.getProperty("spring40.version")),
