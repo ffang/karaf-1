@@ -92,9 +92,9 @@
         <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-websocket/${spring50.version}</bundle>
     </feature>    
 
-    <!-- Aries Blueprint Spring support -->
+    <!-- Aries Blueprint Spring 5.0.x support -->
 
-    <feature name="aries-blueprint-spring">
+    <feature name="aries-blueprint-spring" version="${spring50.version}">
         <feature>aries-blueprint</feature>
         <feature>spring</feature>
         <bundle>mvn:org.apache.aries.blueprint/org.apache.aries.blueprint.spring/${aries.blueprint.spring.version}</bundle>
