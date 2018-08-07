@@ -315,7 +315,7 @@
         <surefire.itests.version>2.17</surefire.itests.version>
         <xbean.version>3.18</xbean.version>
         <xbean4.version>4.5</xbean4.version>
-        <xerces.version>2.11.0.SP4-redhat-1</xerces.version>
+        <xerces.version>2.12.0</xerces.version>
         <xalan.bundle.version>2.7.2_3</xalan.bundle.version>
         <xalan-serializer.bundle.version>2.7.2_1</xalan-serializer.bundle.version>
         <bcprov.version>1.56</bcprov.version>
