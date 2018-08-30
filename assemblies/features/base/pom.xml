@@ -38,9 +38,9 @@
 
     <dependencies>
                     <dependency>
-                        <groupId>javax.xml.bind</groupId>
-                        <artifactId>jaxb-api</artifactId>
-                        <version>2.3.0</version>
+                        <groupId>org.apache.servicemix.specs</groupId>
+                        <artifactId>org.apache.servicemix.specs.jaxb-api-2.3</artifactId>
+                        <version>2.3_1-SNAPSHOT</version>
                     </dependency>
                     <dependency>
                         <groupId>javax.activation</groupId>
@@ -198,9 +198,14 @@
                                     <outputDirectory>target/classes/resources/lib/endorsed</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
-                                    <groupId>javax.xml.bind</groupId>
-                                    <artifactId>jaxb-api</artifactId>
+                                    <groupId>org.apache.servicemix.specs</groupId>
+                                    <artifactId>org.apache.servicemix.specs.jaxb-api-2.3</artifactId>
                                     <outputDirectory>target/classes/resources/lib/boot</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.apache.servicemix.specs</groupId>
+                                    <artifactId>org.apache.servicemix.specs.jaxb-api-2.3</artifactId>
+                                    <outputDirectory>target/classes/resources/lib/endorsed</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>javax.activation</groupId>
