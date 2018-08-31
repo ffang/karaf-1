@@ -192,7 +192,7 @@
 	        <id>java9-plus</id>
 	        <properties>
                 <plexus-utils.version>3.1.0</plexus-utils.version>
-                <mvn.opts>--add-exports=java.base/sun.net.www.protocol.http=ALL-UNNAMED --add-exports=java.base/sun.net.www.protocol.https=ALL-UNNAMED --add-exports=java.xml.bind/com.sun.xml.internal.bind.v2.runtime=ALL-UNNAMED --add-exports=jdk.xml.dom/org.w3c.dom.html=ALL-UNNAMED -Djava.io.tmpdir=${project.build.directory}</mvn.opts>
+                <mvn.opts>--add-exports=java.base/sun.net.www.protocol.http=ALL-UNNAMED --add-exports=java.base/sun.net.www.protocol.https=ALL-UNNAMED  --add-exports=jdk.xml.dom/org.w3c.dom.html=ALL-UNNAMED -Djava.io.tmpdir=${project.build.directory}</mvn.opts>
 	        </properties>
                 <dependencies>
                     <dependency>
@@ -202,8 +202,8 @@
                     </dependency>
                     <dependency>
                         <groupId>javax.activation</groupId>
-                        <artifactId>activation</artifactId>
-                        <version>1.1.1</version>
+                        <artifactId>javax.activation-api</artifactId>
+                        <version>1.2.0</version>
                     </dependency>
                     <dependency>
                         <groupId>com.sun.xml.bind</groupId>
