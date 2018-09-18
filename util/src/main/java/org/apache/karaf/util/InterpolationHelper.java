@@ -16,7 +16,12 @@
  */
 package org.apache.karaf.util;
 
+import java.util.Deque;
+import java.util.Dictionary;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.LinkedList;
 import java.util.Map;
 
 import org.osgi.framework.BundleContext;
@@ -210,6 +215,54 @@ public class InterpolationHelper {
             escape = val.indexOf(ESCAPE_CHAR, escape + 1);
         }
         return val;
+    }
+
+    /**
+     * <p>When configuration is read via configadmin, escaped property placeholders are unescaped.
+     * They should be escaped again before storing in configadmin.</p>
+     *
+     * @param configuration
+     * @return whether any property was escaped
+     */
+    public static boolean escapePropertyPlaceholders(Dictionary<String, Object> configuration) {
+        boolean anyEscape = false;
+        for (Enumeration<String> e = configuration.keys(); e.hasMoreElements(); ) {
+            String k = e.nextElement();
+            Object v = configuration.get(k);
+            if (v instanceof String && ((String) v).contains("${")) {
+                // we don't assume stateful/context-dependent parsing
+                String sv = (String) v;
+                StringBuilder sb = new StringBuilder();
+                char[] charArray = sv.toCharArray();
+                Deque<Boolean> stack = new LinkedList<>();
+                for (int i = 0, charArrayLength = charArray.length; i < charArrayLength; i++) {
+                    char c = charArray[i];
+                    switch (c) {
+                        case '$':
+                            if (i < charArrayLength - 1 && charArray[i + 1] == '{') {
+                                sb.append("$\\");
+                                anyEscape = true;
+                            }
+                            break;
+                        case '{':
+                            stack.push(i > 0 && charArray[i - 1] == '$');
+                            sb.append("{");
+                            break;
+                        case '}':
+                            if (stack.peek() != null && stack.peek()) {
+                                sb.append("\\");
+                            }
+                            stack.pop();
+                            sb.append("}");
+                            break;
+                        default:
+                            sb.append(c);
+                    }
+                }
+                configuration.put(k, sb.toString());
+            }
+        }
+        return anyEscape;
     }
 
 }

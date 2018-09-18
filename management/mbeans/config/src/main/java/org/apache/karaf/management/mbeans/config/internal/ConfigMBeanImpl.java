@@ -15,7 +15,9 @@ package org.apache.karaf.management.mbeans.config.internal;
 
 import org.apache.felix.fileinstall.ArtifactInstaller;
 import org.apache.felix.utils.properties.Properties;
+import org.apache.felix.utils.properties.TypedProperties;
 import org.apache.karaf.management.mbeans.config.ConfigMBean;
+import org.apache.karaf.util.InterpolationHelper;
 import org.osgi.framework.Constants;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
@@ -225,6 +227,8 @@ public class ConfigMBeanImpl extends StandardMBean implements ConfigMBean {
                     throw (IOException) new IOException(e.getMessage()).initCause(e);
                 }
             }
+            InterpolationHelper.escapePropertyPlaceholders(properties);
+
             Properties p = new Properties(storageFile);
             p.clear();
             for (Enumeration<String> keys = properties.keys(); keys.hasMoreElements(); ) {

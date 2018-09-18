@@ -51,6 +51,10 @@
             <artifactId>org.apache.felix.utils</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.karaf</groupId>
+            <artifactId>org.apache.karaf.util</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.fileinstall</artifactId>
         </dependency>
@@ -94,7 +98,8 @@
                         </Import-Package>
                         <Private-Package>
                             org.apache.karaf.management.mbeans.config.internal,
-                            org.apache.felix.utils.properties;-split-package:=merge-first
+                            org.apache.felix.utils.properties;-split-package:=merge-first,
+                            org.apache.karaf.util;-split-package:=merge-first
                         </Private-Package>
                     </instructions>
                 </configuration>
