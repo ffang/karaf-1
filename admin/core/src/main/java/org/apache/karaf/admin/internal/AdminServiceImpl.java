@@ -320,6 +320,8 @@ public class AdminServiceImpl implements AdminService {
                     }
                 }
 
+                String javaOpts = settings.getJavaOpts();
+
                 HashMap<String, String> props = new HashMap<String, String>();
                 props.put("${SUBST-KARAF-NAME}", name);
                 props.put("${SUBST-KARAF-HOME}", System.getProperty("karaf.home"));
@@ -328,6 +330,14 @@ public class AdminServiceImpl implements AdminService {
                 props.put("${SUBST-SSH-HOST}", sshHost);
                 props.put("${SUBST-RMI-REGISTRY-PORT}", Integer.toString(rmiRegistryPort));
                 props.put("${SUBST-RMI-SERVER-PORT}", Integer.toString(rmiServerPort));
+
+                // ENTESB-9493: filter out zookeeper credentials
+                List<String> zookeeperCredentials = new ArrayList<String>(3);
+                javaOpts = extractZookeeperCredentials(javaOpts, zookeeperCredentials);
+                props.put("${SUBST-ZOOKEEPER-URL}", zookeeperCredentials.size() > 0 ? zookeeperCredentials.get(0) : "");
+                props.put("${SUBST-ZOOKEEPER-PASSWORD-ENCODE}", zookeeperCredentials.size() > 1 ? zookeeperCredentials.get(1) : "");
+                props.put("${SUBST-ZOOKEEPER-PASSWORD}", zookeeperCredentials.size() > 2 ? zookeeperCredentials.get(2) : "");
+
                 copyFilteredResourceToDir("etc/system.properties", karafBase, textResources, props);
                 copyFilteredResourceToDir("etc/org.apache.karaf.shell.cfg", karafBase, textResources, props);
                 copyFilteredResourceToDir("etc/org.apache.karaf.management.cfg", karafBase, textResources, props);
@@ -407,7 +417,6 @@ public class AdminServiceImpl implements AdminService {
                     copyResourceToDir(karafBase, resource, false, binaryResources);
                 }
 
-                String javaOpts = settings.getJavaOpts();
                 if (javaOpts == null || javaOpts.length() == 0) {
                     javaOpts = DEFAULT_JAVA_OPTS;
                 }
@@ -421,6 +430,97 @@ public class AdminServiceImpl implements AdminService {
                 return instance;
             }
         }, true);
+    }
+
+    /**
+     * Takes Zookeeper-related properties out of provided option string, adds them to passed (cleared) list
+     * and returns option string without these Zookeeper options.
+     * @param javaOpts
+     * @param zookeeperCredentials
+     * @return
+     */
+    static String extractZookeeperCredentials(String javaOpts, List<String> zookeeperCredentials) {
+        zookeeperCredentials.clear();
+
+        javaOpts = extract(javaOpts, "zookeeper.url", zookeeperCredentials);
+        javaOpts = extract(javaOpts, "zookeeper.password.encode", zookeeperCredentials);
+        javaOpts = extract(javaOpts, "zookeeper.password", zookeeperCredentials);
+
+        return javaOpts;
+    }
+
+    /**
+     * Extracts given property from property string
+     * @param javaOpts
+     * @param property
+     * @param zookeeperCredentials
+     * @return
+     */
+    private static String extract(String javaOpts, String property, List<String> zookeeperCredentials) {
+        if (javaOpts != null && javaOpts.contains(property)) {
+            StringBuilder sb = new StringBuilder();
+            int id = javaOpts.indexOf("-D" + property);
+            if (id > 0) {
+                int from = id + ("-D" + property).length();
+                // states: 0: before =, 1: waiting for value, 2: waiting for end, 3: end
+                int state = 0;
+                char delim = 0;
+                int pbegin = id;
+                int pend = -1;
+                int vbegin = -1;
+                int vend = -1;
+                while (state < 3 && from < javaOpts.length()) {
+                    char c = javaOpts.charAt(from);
+                    switch (state) {
+                        case 0:
+                            if (c == ' ' || c == '\t') {
+                                break;
+                            }
+                            if (c == '=') {
+                                state = 1;
+                            }
+                            break;
+                        case 1:
+                            if (c == ' ' || c == '\t') {
+                                break;
+                            } else {
+                                vbegin = from;
+                                if (c == '\'' || c == '"') {
+                                    delim = c;
+                                    vbegin++;
+                                }
+                                state = 2;
+                            }
+                            break;
+                        case 2:
+                            if (delim != 0 && c == delim && javaOpts.charAt(from - 1) != '\\') {
+                                pend = from + 1;
+                                vend = from;
+                                state = 3;
+                            } else if (delim == 0 && c == ' ') {
+                                pend = from;
+                                vend = from;
+                                state = 3;
+                            }
+                            break;
+                    }
+                    from++;
+                }
+                if (pend == -1) {
+                    pend = javaOpts.length();
+                    vend = javaOpts.length();
+                }
+                if (pend > pbegin) {
+                    String a = javaOpts.substring(0, pbegin);
+                    String b = javaOpts.substring(pend);
+                    String value = javaOpts.substring(vbegin, vend);
+                    zookeeperCredentials.add(value);
+                    javaOpts = a.trim() + " " + b.trim();
+                }
+            }
+        }
+
+        return javaOpts;
     }
 
     /**
@@ -510,6 +610,10 @@ public class AdminServiceImpl implements AdminService {
                 if (opts == null || opts.length() == 0) {
                     opts = DEFAULT_JAVA_OPTS;
                 }
+
+                // ENTESB-9493: filter out zookeeper credentials
+                List<String> zookeeperCredentials = new ArrayList<String>(3);
+                opts = extractZookeeperCredentials(opts, zookeeperCredentials);
 
                 // fallback and read karafOpts from KARAF_OPTS environment if no System property present
                 String karafOptsEnv = System.getenv("KARAF_OPTS");
