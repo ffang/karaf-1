@@ -23,8 +23,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -145,6 +147,48 @@ public class AdminServiceImplTest extends TestCase {
         saveStorage(storage, storageFile, "testToSimulateRenameInstanceByExternalProcess");
         
         assertNotNull(service.getInstance(getName() + "b"));
+    }
+
+    public void testExtractZookeeperCredentials() {
+        List<String> credentials = new ArrayList<>(3);
+        String options = AdminServiceImpl.extractZookeeperCredentials("-Dx=y -Dzookeeper.url=test", credentials);
+        assertEquals(1, credentials.size());
+        assertEquals("test", credentials.get(0));
+        assertEquals("-Dx=y ", options);
+
+        options = AdminServiceImpl.extractZookeeperCredentials("-Dx=y -Dzookeeper.url = test ", credentials);
+        assertEquals(1, credentials.size());
+        assertEquals("test", credentials.get(0));
+        assertEquals("-Dx=y ", options);
+
+        options = AdminServiceImpl.extractZookeeperCredentials("-Dx=y -Dzookeeper.url = \"test \" ", credentials);
+        assertEquals(1, credentials.size());
+        assertEquals("test ", credentials.get(0));
+        assertEquals("-Dx=y ", options);
+
+        options = AdminServiceImpl.extractZookeeperCredentials("-Dx=y -Dzookeeper.url = \"test \\\"\" ", credentials);
+        assertEquals(1, credentials.size());
+        assertEquals("test \\\"", credentials.get(0));
+        assertEquals("-Dx=y ", options);
+
+        options = AdminServiceImpl.extractZookeeperCredentials("-Dx=y -Dzookeeper.url = \" test \\\"\" ", credentials);
+        assertEquals(1, credentials.size());
+        assertEquals(" test \\\"", credentials.get(0));
+        assertEquals("-Dx=y ", options);
+
+        options = AdminServiceImpl.extractZookeeperCredentials("-Dx=y -Dzookeeper.url = \" test \\\"\" -Dzookeeper.password=abcd -Dzookeeper.password.encode=true -Da=b ", credentials);
+        assertEquals(3, credentials.size());
+        assertEquals(" test \\\"", credentials.get(0));
+        assertEquals("true", credentials.get(1));
+        assertEquals("abcd", credentials.get(2));
+        assertEquals("-Dx=y -Da=b", options);
+
+        options = AdminServiceImpl.extractZookeeperCredentials("-server -Dcom.sun.management.jmxremote -Dorg.jboss.gravia.repository.storage.dir=data/repository -Dzookeeper.url=\"everfree.forest:2181\" -Dzookeeper.password.encode=\"true\" -Dzookeeper.password=\"admin\" -Xmx768m -XX:+UnlockDiagnosticVMOptions -XX:+UnsyncloadClass -Dio.fabric8.datastore.gitTimeout=40 -Dio.fabric8.datastore.component.name=io.fabric8.datastore -Dio.fabric8.datastore.felix.fileinstall.filename=file:/data/servers/jboss-fuse-6.3.0.redhat-351/etc/io.fabric8.datastore.cfg -Dio.fabric8.datastore.importDir=fabric -Dio.fabric8.datastore.gitAllowRemoteUpdate=true -Dio.fabric8.datastore.gitRandomFetchDelay=0 -Dio.fabric8.datastore.gitRemotePollInterval=60000 -Dio.fabric8.datastore.service.pid=io.fabric8.datastore", credentials);
+        assertEquals(3, credentials.size());
+        assertEquals("everfree.forest:2181", credentials.get(0));
+        assertEquals("true", credentials.get(1));
+        assertEquals("admin", credentials.get(2));
+        assertEquals("-server -Dcom.sun.management.jmxremote -Dorg.jboss.gravia.repository.storage.dir=data/repository -Xmx768m -XX:+UnlockDiagnosticVMOptions -XX:+UnsyncloadClass -Dio.fabric8.datastore.gitTimeout=40 -Dio.fabric8.datastore.component.name=io.fabric8.datastore -Dio.fabric8.datastore.felix.fileinstall.filename=file:/data/servers/jboss-fuse-6.3.0.redhat-351/etc/io.fabric8.datastore.cfg -Dio.fabric8.datastore.importDir=fabric -Dio.fabric8.datastore.gitAllowRemoteUpdate=true -Dio.fabric8.datastore.gitRandomFetchDelay=0 -Dio.fabric8.datastore.gitRemotePollInterval=60000 -Dio.fabric8.datastore.service.pid=io.fabric8.datastore", options);
     }
 
     private void saveStorage(Properties props, File location, String comment) throws IOException {
