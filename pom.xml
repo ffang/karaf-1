@@ -284,7 +284,7 @@
         <serp.bundle.version>1.14.1_1</serp.bundle.version>
         <servicemix.specs.version>2.7.0</servicemix.specs.version>
         <servlet.api.version>3.1.0.redhat-1</servlet.api.version>
-        <slf4j.version>1.7.7.redhat-2</slf4j.version>
+        <slf4j.version>1.7.22.redhat-2</slf4j.version>
 
         <xmlpull.bundle.version>1.1.4c_7</xmlpull.bundle.version>
         <xmlresolver.version>1.2_5</xmlresolver.version>
