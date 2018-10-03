@@ -234,7 +234,7 @@ public class InterpolationHelper {
                 String sv = (String) v;
                 StringBuilder sb = new StringBuilder();
                 char[] charArray = sv.toCharArray();
-                Deque<Boolean> stack = new LinkedList<>();
+                Deque<Boolean> stack = new LinkedList<Boolean>();
                 for (int i = 0, charArrayLength = charArray.length; i < charArrayLength; i++) {
                     char c = charArray[i];
                     switch (c) {
