@@ -239,4 +239,8 @@ public class SimpleLogger extends MarkerIgnoringBase {
         }
         System.err.flush();
     }
+
+    static void lazyInit() {
+        //XXX: noting to do, just to implement SimpleLogger interface as it is used from SimpleLoggerFactory in slf4j > 1.7.7
+    }
 }
