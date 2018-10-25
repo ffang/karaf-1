@@ -331,16 +331,30 @@ public class AdminServiceImpl implements AdminService {
                 props.put("${SUBST-RMI-REGISTRY-PORT}", Integer.toString(rmiRegistryPort));
                 props.put("${SUBST-RMI-SERVER-PORT}", Integer.toString(rmiServerPort));
 
-                // ENTESB-9493: filter out zookeeper credentials
-                List<String> zookeeperCredentials = new ArrayList<String>(3);
-                javaOpts = extractZookeeperCredentials(javaOpts, zookeeperCredentials);
-                props.put("${SUBST-ZOOKEEPER-URL}", zookeeperCredentials.size() > 0 ? zookeeperCredentials.get(0) : "");
-                props.put("${SUBST-ZOOKEEPER-PASSWORD-ENCODE}", zookeeperCredentials.size() > 1 ? zookeeperCredentials.get(1) : "");
-                props.put("${SUBST-ZOOKEEPER-PASSWORD}", zookeeperCredentials.size() > 2 ? zookeeperCredentials.get(2) : "");
-
                 copyFilteredResourceToDir("etc/system.properties", karafBase, textResources, props);
                 copyFilteredResourceToDir("etc/org.apache.karaf.shell.cfg", karafBase, textResources, props);
                 copyFilteredResourceToDir("etc/org.apache.karaf.management.cfg", karafBase, textResources, props);
+
+                // ENTESB-9493: add zookeeper credentials - not by filtering placeholders in template, but
+                // simply by adding the properties after copy
+                List<String> zookeeperCredentials = new ArrayList<String>(3);
+                javaOpts = extractZookeeperCredentials(javaOpts, zookeeperCredentials);
+                if (zookeeperCredentials.size() > 0) {
+                    org.apache.felix.utils.properties.Properties p
+                            = new org.apache.felix.utils.properties.Properties(new File(karafBase, "etc/system.properties"));
+                    // url
+                    p.setProperty("zookeeper.url", zookeeperCredentials.get(0));
+                    if (zookeeperCredentials.size() > 1) {
+                        // password encode
+                        p.setProperty("zookeeper.password.encode", zookeeperCredentials.get(1));
+                        if (zookeeperCredentials.size() > 2) {
+                            // password itself
+                            p.setProperty("zookeeper.password", zookeeperCredentials.get(2));
+                        }
+                    }
+                    p.save();
+                }
+
                 // If we use batch files, use batch files, else use bash scripts (even on cygwin)
                 boolean windows = System.getProperty("os.name").startsWith("Win");
                 boolean cygwin = windows && new File(System.getProperty("karaf.home"), "bin/admin").exists();
