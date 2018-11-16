@@ -174,8 +174,6 @@
         <jasypt.bundle.version>1.9.3.redhat_3</jasypt.bundle.version>
         <jolokia.version>1.5.0.redhat-1</jolokia.version>
         <serp.bundle.version>1.14.1_1</serp.bundle.version>
-        <servlet.spec.groupId>javax.servlet</servlet.spec.groupId>
-        <servlet.spec.artifactId>javax.servlet-api</servlet.spec.artifactId>
         <servlet.spec.version>3.1.0</servlet.spec.version>
 
         <geronimo.jms-spec.version>1.1.1</geronimo.jms-spec.version>
@@ -1462,8 +1460,8 @@
                 <classifier>uber</classifier>
             </dependency>
             <dependency>
-                <groupId>${servlet.spec.groupId}</groupId>
-                <artifactId>${servlet.spec.artifactId}</artifactId>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
                 <version>${servlet.spec.version}</version>
             </dependency>
             <dependency>

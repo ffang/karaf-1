@@ -63,11 +63,11 @@
 			<artifactId>org.apache.felix.utils</artifactId>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>${servlet.spec.groupId}</groupId>
-			<artifactId>${servlet.spec.artifactId}</artifactId>
-			<scope>provided</scope>
-		</dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
 		<dependency>
 			<groupId>org.apache.karaf.instance</groupId>
 			<artifactId>org.apache.karaf.instance.core</artifactId>
