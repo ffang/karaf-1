@@ -143,10 +143,6 @@
         </developer>
     </developers>
 
-    <prerequisites>
-        <maven>3.0.5</maven>
-    </prerequisites>
-
     <properties>
         <activemq.version>5.11.0.redhat-630356</activemq.version>
         <aopalliance.bundle.version>1.0_6</aopalliance.bundle.version>
