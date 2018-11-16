@@ -65,8 +65,8 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>${equinox.groupId}</groupId>
-            <artifactId>${equinox.artifactId}</artifactId>
+            <groupId>org.eclipse.platform</groupId>
+            <artifactId>org.eclipse.osgi</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>

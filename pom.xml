@@ -182,8 +182,6 @@
 
         <easymock.version>3.5.1</easymock.version>
         <objenesis.version>2.6</objenesis.version>
-        <equinox.groupId>org.eclipse.platform</equinox.groupId>
-        <equinox.artifactId>org.eclipse.osgi</equinox.artifactId>
         <equinox.version>3.12.50</equinox.version>
         <bndlib.version>2.4.0</bndlib.version>
         <equinox.region.version>1.2.101.v20150831-1342</equinox.region.version>
@@ -1541,8 +1539,8 @@
                 <version>${pax.tinybundle.version}</version>
             </dependency>
             <dependency>
-                <groupId>${equinox.groupId}</groupId>
-                <artifactId>${equinox.artifactId}</artifactId>
+                <groupId>org.eclipse.platform</groupId>
+                <artifactId>org.eclipse.osgi</artifactId>
                 <version>${equinox.version}</version>
             </dependency>
 

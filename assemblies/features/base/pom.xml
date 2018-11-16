@@ -136,9 +136,9 @@
                                     <destFileName>org.apache.felix.framework-${felix.framework.version}.jar</destFileName>
                                 </artifactItem>
                                 <artifactItem>
-                                    <groupId>${equinox.groupId}</groupId>
-                                    <artifactId>${equinox.artifactId}</artifactId>
-                                    <outputDirectory>target/classes/resources/system/${equinox.path}/${equinox.artifactId}/${equinox.version}</outputDirectory>
+                                    <groupId>org.eclipse.platform</groupId>
+                                    <artifactId>org.eclipse.osgi</artifactId>
+                                    <outputDirectory>target/classes/resources/system/org/eclipse/platform/org.eclipse.osgi/${equinox.version}</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>com.sun.winsw</groupId>
@@ -150,26 +150,6 @@
                                     <destFileName>karaf-service-win.exe</destFileName>
                                 </artifactItem>
                             </artifactItems>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>regex-property</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>regex-property</goal>
-                        </goals>
-                        <configuration>
-                            <name>equinox.path</name>
-                            <value>${equinox.groupId}</value>
-                            <regex>\.</regex>
-                            <replacement>/</replacement>
-                            <failIfNoMatch>false</failIfNoMatch>
                         </configuration>
                     </execution>
                 </executions>
