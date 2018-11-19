@@ -194,6 +194,7 @@
                             org.apache.karaf.util.config,
                             org.apache.karaf.util.locks,
                         </Private-Package>
+                        <_removeheaders>Private-Package,Include-Resource,Embed-Dependency,Bnd-LastModified,Tool,Karaf-Commands</_removeheaders>
                     </instructions>
                 </configuration>
             </plugin>
