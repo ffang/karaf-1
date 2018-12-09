@@ -101,98 +101,109 @@ public class ShellCommandFactory implements CommandFactory {
         }
 
         public void start(final Environment env) throws IOException {
-            int exitStatus = 0;
-            final CommandSession commandSession = commandProcessor.createSession(in, new PrintStream(out), new PrintStream(err));
-            try {
-                commandSession.put("SCOPE", "shell:osgi:*");
-                commandSession.put("APPLICATION", System.getProperty("karaf.name", "root"));
-                for (Map.Entry<String,String> e : env.getEnv().entrySet()) {
-                    commandSession.put(e.getKey(), e.getValue());
-                }
-                try {
-                    waitForIfCommands(commandSession);
-                    Subject subject = this.session != null ? this.session.getAttribute(KarafJaasAuthenticator.SUBJECT_ATTRIBUTE_KEY) : null;
-                    Object result;
-                    if (subject != null) {
-                        try {
-
-                            result = JaasHelper.doAs(subject, new PrivilegedExceptionAction<Object>() {
-                                public Object run() throws Exception {
-                                    String scriptFileName = System.getProperty(EXEC_INIT_SCRIPT);
-                                    if (scriptFileName == null) {
-                                        scriptFileName = System.getProperty(SHELL_INIT_SCRIPT);
-                                    }
-                                    executeScript(scriptFileName, commandSession);
-                                    return commandSession.execute(command);
-                                }
-                            });
-                        } catch (PrivilegedActionException e) {
-                            throw e.getException();
-                        }
-                    } else {
-                        String scriptFileName = System.getProperty(EXEC_INIT_SCRIPT);
-                        if (scriptFileName == null) {
-                            scriptFileName = System.getProperty(SHELL_INIT_SCRIPT);
-                        }
-                        executeScript(scriptFileName, commandSession);
-                        result = commandSession.execute(command);
-                    }
-                    if (result instanceof String)
-                    {
-                        commandSession.getConsole().println(commandSession.format(result, Converter.INSPECT));
-                    }
-                    if(result instanceof Integer) {
-                        // if it is an integer it's interpreted as a return code
-                        exitStatus = (Integer) result;
-                    }
-                } catch (Throwable t) {
-                    exitStatus = 1;
+            new Thread() {
+                public void run() {
+                    int exitStatus = 0;
+                    final CommandSession commandSession = commandProcessor
+                        .createSession(in, new PrintStream(out), new PrintStream(err));
                     try {
-                        boolean isCommandNotFound = "org.apache.felix.gogo.runtime.CommandNotFoundException".equals(t.getClass().getName());
-                        if (isCommandNotFound) {
-                            LOGGER.debug("Unknown command entered", t);
-                        } else if (!(t instanceof CloseShellException)) {
-                            LOGGER.info("Exception caught while executing command", t);
+                        commandSession.put("SCOPE", "shell:osgi:*");
+                        commandSession.put("APPLICATION", System.getProperty("karaf.name", "root"));
+                        for (Map.Entry<String, String> e : env.getEnv().entrySet()) {
+                            commandSession.put(e.getKey(), e.getValue());
                         }
-                        commandSession.put(Console.LAST_EXCEPTION, t);
-                        if (t instanceof CommandException) {
-                            commandSession.getConsole().println(((CommandException) t).getNiceHelp());
-                        } else if (isCommandNotFound) {
-                            String str = Ansi.ansi()
-                                    .fg(Ansi.Color.RED)
-                                    .a("Command not found: ")
-                                    .a(Ansi.Attribute.INTENSITY_BOLD)
-                                    .a(t.getClass().getMethod("getCommand").invoke(t))
-                                    .a(Ansi.Attribute.INTENSITY_BOLD_OFF)
-                                    .fg(Ansi.Color.DEFAULT).toString();
-                            commandSession.getConsole().println(str);
+                        try {
+                            waitForIfCommands(commandSession);
+                            Subject subject = session != null
+                                ? session.getAttribute(KarafJaasAuthenticator.SUBJECT_ATTRIBUTE_KEY) : null;
+                            Object result;
+                            if (subject != null) {
+                                try {
+
+                                    result = JaasHelper.doAs(subject,
+                                                             new PrivilegedExceptionAction<Object>() {
+                                        public Object run() throws Exception {
+                                            String scriptFileName = System.getProperty(EXEC_INIT_SCRIPT);
+                                            if (scriptFileName == null) {
+                                                scriptFileName = System.getProperty(SHELL_INIT_SCRIPT);
+                                            }
+                                            executeScript(scriptFileName, commandSession);
+                                            return commandSession.execute(command);
+                                        }
+                                    });
+                                } catch (PrivilegedActionException e) {
+                                    throw e.getException();
+                                }
+                            } else {
+                                String scriptFileName = System.getProperty(EXEC_INIT_SCRIPT);
+                                if (scriptFileName == null) {
+                                    scriptFileName = System.getProperty(SHELL_INIT_SCRIPT);
+                                }
+                                executeScript(scriptFileName, commandSession);
+                                result = commandSession.execute(command);
+                            }
+                            if (result instanceof String) {
+                                commandSession.getConsole()
+                                    .println(commandSession.format(result, Converter.INSPECT));
+                            }
+                            if (result instanceof Integer) {
+                                // if it is an integer it's interpreted as a return code
+                                exitStatus = (Integer)result;
+                            }
+                        } catch (Throwable t) {
+                            exitStatus = 1;
+                            try {
+                                boolean isCommandNotFound = "org.apache.felix.gogo.runtime.CommandNotFoundException"
+                                    .equals(t.getClass().getName());
+                                if (isCommandNotFound) {
+                                    LOGGER.debug("Unknown command entered", t);
+                                } else if (!(t instanceof CloseShellException)) {
+                                    LOGGER.info("Exception caught while executing command", t);
+                                }
+                                commandSession.put(Console.LAST_EXCEPTION, t);
+                                if (t instanceof CommandException) {
+                                    commandSession.getConsole().println(((CommandException)t).getNiceHelp());
+                                } else if (isCommandNotFound) {
+                                    String str = Ansi.ansi().fg(Ansi.Color.RED).a("Command not found: ")
+                                        .a(Ansi.Attribute.INTENSITY_BOLD)
+                                        .a(t.getClass().getMethod("getCommand").invoke(t))
+                                        .a(Ansi.Attribute.INTENSITY_BOLD_OFF).fg(Ansi.Color.DEFAULT)
+                                        .toString();
+                                    commandSession.getConsole().println(str);
+                                }
+                                if (getBoolean(commandSession, Console.PRINT_STACK_TRACES)) {
+                                    commandSession.getConsole()
+                                        .print(Ansi.ansi().fg(Ansi.Color.RED).toString());
+                                    t.printStackTrace(commandSession.getConsole());
+                                    commandSession.getConsole()
+                                        .print(Ansi.ansi().fg(Ansi.Color.DEFAULT).toString());
+                                } else if (!(t instanceof CloseShellException)
+                                           && !(t instanceof CommandException) && !isCommandNotFound) {
+                                    commandSession.getConsole()
+                                        .print(Ansi.ansi().fg(Ansi.Color.RED).toString());
+                                    commandSession.getConsole()
+                                        .println("Error executing command: " + (t.getMessage() != null
+                                            ? t.getMessage() : t.getClass().getName()));
+                                    commandSession.getConsole()
+                                        .print(Ansi.ansi().fg(Ansi.Color.DEFAULT).toString());
+                                }
+                                commandSession.getConsole().flush();
+                            } catch (Exception ignore) {
+                                // ignore
+                            }
                         }
-                        if (getBoolean(commandSession, Console.PRINT_STACK_TRACES)) {
-                            commandSession.getConsole().print(Ansi.ansi().fg(Ansi.Color.RED).toString());
-                            t.printStackTrace(commandSession.getConsole());
-                            commandSession.getConsole().print(Ansi.ansi().fg(Ansi.Color.DEFAULT).toString());
-                        }
-                        else if (!(t instanceof CloseShellException) && !(t instanceof CommandException) && !isCommandNotFound) {
-                            commandSession.getConsole().print(Ansi.ansi().fg(Ansi.Color.RED).toString());
-                            commandSession.getConsole().println("Error executing command: "
-                                    + (t.getMessage() != null ? t.getMessage() : t.getClass().getName()));
-                            commandSession.getConsole().print(Ansi.ansi().fg(Ansi.Color.DEFAULT).toString());
-                        }
-                        commandSession.getConsole().flush();
-                    } catch (Exception ignore) {
-                        // ignore
+                    } catch (Exception e) {
+                        exitStatus = 1;
+                        LOGGER.error("Unable to start shell", e);
+                    } finally {
+                        close(in, out, err);
+                        commandSession.close();
+                        callback.onExit(exitStatus);
                     }
                 }
-            } catch (Exception e) {
-                exitStatus = 1;
-                throw (IOException) new IOException("Unable to start shell").initCause(e);
-            } finally {
-                close(in, out, err);
-                commandSession.close();
-                callback.onExit(exitStatus);
-            }
+            }.start();
         }
-
+        
         private void waitForIfCommands(CommandSession commandSession) throws TimeoutException, InterruptedException {
             Set<String> names = (Set<String>) commandSession.get(".commands");
             if( names.contains("shell:if") ) {

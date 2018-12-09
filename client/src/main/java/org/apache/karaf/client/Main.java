@@ -282,10 +282,19 @@ public class Main {
             }
             session.auth().verify();
 
-            ClientChannel channel;
+            final ClientChannel channel;
             if (command.length() > 0) {
                 channel = session.createChannel("exec", command.append("\n").toString());
                 channel.setIn(new ByteArrayInputStream(new byte[0]));
+                Runtime.getRuntime().addShutdownHook(new Thread() {
+                    public void run() {
+                        try {
+                            channel.close(true);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
             } else {
                 terminal = new TerminalFactory().getTerminal();
                 channel = session.createChannel("shell");
@@ -309,6 +318,7 @@ public class Main {
             if (channel.getExitStatus() != null) {
                 exitStatus = channel.getExitStatus();
             }
+            
         } catch (Throwable t) {
             if (level > 1) {
                 t.printStackTrace();
