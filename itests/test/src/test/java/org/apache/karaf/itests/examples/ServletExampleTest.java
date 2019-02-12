@@ -17,6 +17,7 @@
 package org.apache.karaf.itests.examples;
 
 import org.apache.karaf.itests.KarafTestSupport;
+import org.apache.karaf.jaas.boot.principal.RolePrincipal;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.junit.PaxExam;
@@ -37,10 +38,10 @@ public class ServletExampleTest extends KarafTestSupport {
     }
 
     private void verify() throws Exception {
-        String command = executeCommand("http:list");
+        String command = executeCommand("http:list", new RolePrincipal("viewer"));
         while (!command.contains("servlet-example")) {
             Thread.sleep(200);
-            command = executeCommand("http:list");
+            command = executeCommand("http:list", new RolePrincipal("viewer"));
         }
         System.out.println(command);
 

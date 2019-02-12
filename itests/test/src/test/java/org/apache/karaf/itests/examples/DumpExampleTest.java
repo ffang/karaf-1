@@ -15,6 +15,7 @@ package org.apache.karaf.itests.examples;
 
 import org.apache.karaf.diagnostic.core.DumpProvider;
 import org.apache.karaf.itests.KarafTestSupport;
+import org.apache.karaf.jaas.boot.principal.RolePrincipal;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.junit.PaxExam;
@@ -35,7 +36,7 @@ public class DumpExampleTest extends KarafTestSupport {
         assertServiceAvailable(DumpProvider.class, "(component.name=org.apache.karaf.examples.dump.ScreenshotDumpProvider)", 10);
 
         // create a dump
-        System.out.println(executeCommand("dev:dump-create"));
+        System.out.println(executeCommand("dev:dump-create", new RolePrincipal("admin")));
     }
 
 }

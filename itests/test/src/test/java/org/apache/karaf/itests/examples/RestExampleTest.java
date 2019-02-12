@@ -17,6 +17,7 @@
 package org.apache.karaf.itests.examples;
 
 import org.apache.karaf.itests.KarafTestSupport;
+import org.apache.karaf.jaas.boot.principal.RolePrincipal;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.junit.PaxExam;
@@ -78,10 +79,10 @@ public class RestExampleTest extends KarafTestSupport {
 
         installAndAssertFeature("karaf-rest-example-whiteboard");
 
-        String output = executeCommand("http:list");
+        String output = executeCommand("http:list", new RolePrincipal("viewer"));
         while (!output.contains("Deployed")) {
             Thread.sleep(500);
-            output = executeCommand("http:list");
+            output = executeCommand("http:list", new RolePrincipal("viewer"));
         }
         System.out.println(output);
 

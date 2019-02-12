@@ -17,6 +17,7 @@
 package org.apache.karaf.itests.examples;
 
 import org.apache.karaf.itests.KarafTestSupport;
+import org.apache.karaf.jaas.boot.principal.RolePrincipal;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.junit.PaxExam;
@@ -52,10 +53,10 @@ public class CamelExampleTest extends KarafTestSupport {
     }
 
     public void verify() throws Exception {
-        String output = executeCommand("camel:route-list");
+        String output = executeCommand("camel:route-list", new RolePrincipal("admin"));
         while (!output.contains("Started")) {
             Thread.sleep(500);
-            output = executeCommand("camel:route-list");
+            output = executeCommand("camel:route-list", new RolePrincipal("admin"));
         }
         System.out.println(output);
 

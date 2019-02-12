@@ -47,7 +47,7 @@ public class ConfigTest extends KarafTestSupport {
 
     @Test
     public void listShortCommand() throws Exception {
-        String configListOutput = executeCommand("config:list -s");
+        String configListOutput = executeCommand("config:list -s", new RolePrincipal("viewer"));
         System.out.println(configListOutput);
         assertFalse(configListOutput.isEmpty());
         assertContains("org.apache.karaf.jaas\norg.apache.karaf.kar\n", configListOutput);

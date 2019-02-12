@@ -19,6 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
@@ -34,6 +35,7 @@ import javax.management.ObjectName;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerMethod.class)
+@Ignore("ENTESB-10164 activemq-karaf/5.11.0.redhat-630xxx needs gogo [0.12,1)")
 public class JmsTest extends KarafTestSupport {
 
     @Configuration

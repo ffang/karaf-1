@@ -17,6 +17,7 @@
 package org.apache.karaf.itests.examples;
 
 import org.apache.karaf.itests.KarafTestSupport;
+import org.apache.karaf.jaas.boot.principal.RolePrincipal;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.junit.PaxExam;
@@ -38,7 +39,7 @@ public class HttpResourceExampleTest extends KarafTestSupport {
 
         installAndAssertFeature("karaf-http-resource-example-whiteboard");
 
-        String command = executeCommand("http:list");
+        String command = executeCommand("http:list", new RolePrincipal("viewer"));
         System.out.println(command);
         assertContains("ResourceServlet", command);
 

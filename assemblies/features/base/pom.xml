@@ -84,6 +84,26 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
+            <groupId>org.apache.karaf.specs</groupId>
+            <artifactId>org.apache.karaf.specs.locator</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.specs</groupId>
+            <artifactId>org.apache.karaf.specs.java.xml</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.specs</groupId>
+            <artifactId>org.apache.karaf.specs.java.xml.ws</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.specs</groupId>
+            <artifactId>org.apache.karaf.specs.activator</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
             <groupId>org.apache.karaf</groupId>
             <artifactId>org.apache.karaf.main</artifactId>
             <scope>runtime</scope>

@@ -75,6 +75,8 @@ import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.debugConfiguration;
+
 public class KarafTestSupport {
 
     private static final EnumSet<FeaturesService.Option> NO_AUTO_REFRESH = EnumSet.of(FeaturesService.Option.NoAutoRefreshBundles);
@@ -218,6 +220,8 @@ public class KarafTestSupport {
                 KarafDistributionOption.editConfigurationFilePut("etc/system.properties", "activemq.version", System.getProperty("activemq.version")),
                 KarafDistributionOption.editConfigurationFilePut("etc/branding.properties", "welcome", ""), // No welcome banner
                 KarafDistributionOption.editConfigurationFilePut("etc/branding-ssh.properties", "welcome", ""),
+                KarafDistributionOption.editConfigurationFilePut("etc/system.properties", "karaf.secured.command.compulsory.roles", ""),
+                KarafDistributionOption.editConfigurationFilePut("etc/config.properties", "felix.fileinstall.subdir.mode", "recurse"),
                 new VMOption("--add-reads=java.xml=java.logging"),
                 new VMOption("--add-exports=java.base/org.apache.karaf.specs.locator=java.xml,ALL-UNNAMED"),
                 new VMOption("--patch-module"),
@@ -249,7 +253,7 @@ public class KarafTestSupport {
         } else {
                 
             return new Option[]{
-                //debugConfiguration("8889", true),
+//                debugConfiguration("8889", true),
                 KarafDistributionOption.karafDistributionConfiguration().frameworkUrl(karafUrl).name("Apache Karaf").unpackDirectory(new File("target/exam")),
                 // enable JMX RBAC security, thanks to the KarafMBeanServerBuilder
                 KarafDistributionOption.configureSecurity().disableKarafMBeanServerBuilder(),
@@ -267,6 +271,7 @@ public class KarafTestSupport {
                 KarafDistributionOption.editConfigurationFilePut("etc/org.apache.karaf.management.cfg", "rmiServerPort", rmiServerPort),
                 KarafDistributionOption.editConfigurationFilePut("etc/org.apache.karaf.shell.cfg", "sshPort", sshPort),
                 KarafDistributionOption.editConfigurationFilePut("etc/org.ops4j.pax.url.mvn.cfg", "org.ops4j.pax.url.mvn.localRepository", localRepository),
+                KarafDistributionOption.editConfigurationFileExtend("etc/org.ops4j.pax.url.mvn.cfg", "org.ops4j.pax.url.mvn.repositories", "https://maven.repository.redhat.com/ga@id=redhat.ga.repo"),
                 KarafDistributionOption.editConfigurationFilePut("etc/system.properties", "spring31.version", System.getProperty("spring31.version")),
                 KarafDistributionOption.editConfigurationFilePut("etc/system.properties", "spring32.version", System.getProperty("spring32.version")),
                 KarafDistributionOption.editConfigurationFilePut("etc/system.properties", "spring40.version", System.getProperty("spring40.version")),
@@ -280,8 +285,10 @@ public class KarafTestSupport {
                 KarafDistributionOption.editConfigurationFilePut("etc/system.properties", "spring.security51.version", System.getProperty("spring.security51.version")),
                 KarafDistributionOption.editConfigurationFilePut("etc/system.properties", "activemq.version", System.getProperty("activemq.version")),
                 KarafDistributionOption.editConfigurationFilePut("etc/branding.properties", "welcome", ""), // No welcome banner
-                KarafDistributionOption.editConfigurationFilePut("etc/branding-ssh.properties", "welcome", "")
-            };  
+                KarafDistributionOption.editConfigurationFilePut("etc/branding-ssh.properties", "welcome", ""),
+                KarafDistributionOption.editConfigurationFilePut("etc/system.properties", "karaf.secured.command.compulsory.roles", ""),
+                KarafDistributionOption.editConfigurationFilePut("etc/config.properties", "felix.fileinstall.subdir.mode", "recurse")
+            };
                                 
         }
     }

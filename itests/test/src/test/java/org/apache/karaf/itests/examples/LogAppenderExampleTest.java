@@ -14,6 +14,7 @@
 package org.apache.karaf.itests.examples;
 
 import org.apache.karaf.itests.KarafTestSupport;
+import org.apache.karaf.jaas.boot.principal.RolePrincipal;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.junit.PaxExam;
@@ -32,7 +33,7 @@ public class LogAppenderExampleTest extends KarafTestSupport {
         // install the karaf-log-appender-example feature
         installAndAssertFeature("karaf-log-appender-example");
 
-        String output = executeCommand("log:log TEST");
+        String output = executeCommand("log:log TEST", new RolePrincipal("admin"));
         System.out.println(output);
         assertContains("INFO - TEST", output);
     }

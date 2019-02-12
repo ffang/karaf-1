@@ -551,11 +551,14 @@ route-resume = admin, manager
 #
 # For a description of the format of this file, see jmx.acl.cfg
 #
+capabilities = admin, manager, viewer
+diag = admin, manager, viewer
 getStartLevel = admin, manager, viewer
 install = admin, manager
 refresh = admin, manager
 resolve = admin, manager
 restart = admin, manager
+status = admin, manager, viewer
 setStartLevel(java.lang.String, int)[/([1-4])?[0-9]/,/.*/] = admin
 setStartLevel = admin, manager
 start(java.lang.String)[/([1-4])?[0-9]/] = admin
@@ -625,6 +628,8 @@ help = admin, manager, viewer
 #
 # If no command-name match can be found it is assumed that the command does not need a specific
 # role and can therefore be invoked by any user.
+capabilities = admin, manager, viewer
+diag = admin, manager, viewer
 start-level = admin, manager
 start-level[/\\[([1-4])?[0-9]\\s*,\\s*\\d*\\]/] = admin
 services = admin, manager, viewer
@@ -648,6 +653,7 @@ restart[/.*[-][f].*/] = admin
 restart = admin, manager
 start[/.*[-][f].*/] = admin
 start = admin, manager
+status = admin, manager, viewer
 stop[/.*[-][f].*/] = admin
 stop = admin, manager
 uninstall[/.*[-][f].*/] = admin
@@ -1073,6 +1079,7 @@ get = admin, manager, viewer
 tail = admin, manager, viewer
 set = admin, manager
 clear = admin, manager
+log = admin, manager
         </config>
         <bundle start-level="30">mvn:org.apache.karaf.log/org.apache.karaf.log.core/${project.version}</bundle>
     </feature>

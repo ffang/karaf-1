@@ -71,10 +71,10 @@ public class JMXSecurityTest extends KarafTestSupport {
 
         // Add some extra options used by this test...
         options.addAll(Arrays.asList(
-            editConfigurationFilePut("etc/jmx.acl.org.apache.karaf.service.cfg", "getServices()", "admin"),
-            editConfigurationFilePut("etc/jmx.acl.org.apache.karaf.service.cfg", "getServices(boolean)", "viewer"),
-            editConfigurationFilePut("etc/jmx.acl.org.apache.karaf.service.cfg", "getServices(long)", "manager"),
-            editConfigurationFilePut("etc/jmx.acl.org.apache.karaf.service.cfg", "getServices(long,boolean)", "admin"),
+            editConfigurationFilePut("etc/auth/jmx.acl.org.apache.karaf.service.cfg", "getServices()", "admin"),
+            editConfigurationFilePut("etc/auth/jmx.acl.org.apache.karaf.service.cfg", "getServices(boolean)", "viewer"),
+            editConfigurationFilePut("etc/auth/jmx.acl.org.apache.karaf.service.cfg", "getServices(long)", "manager"),
+            editConfigurationFilePut("etc/auth/jmx.acl.org.apache.karaf.service.cfg", "getServices(long,boolean)", "admin"),
             editConfigurationFilePut("etc/org.apache.karaf.management.cfg", "rmiRegistryHost", "0.0.0.0"),
             editConfigurationFilePut("etc/org.apache.karaf.management.cfg", "rmiServerHost", "0.0.0.0")));
         return options.toArray(new Option[] {});

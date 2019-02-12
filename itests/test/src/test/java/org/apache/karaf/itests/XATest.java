@@ -16,6 +16,7 @@ package org.apache.karaf.itests;
 import org.apache.karaf.features.FeaturesService;
 import org.apache.karaf.itests.KarafTestSupport;
 import org.apache.karaf.itests.util.RunIfRule;
+import org.apache.karaf.jaas.boot.principal.RolePrincipal;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -96,7 +97,7 @@ public class XATest extends KarafTestSupport {
 
         Thread.sleep(5000);
 
-        System.out.println(executeCommand("camel:route-list"));
+        System.out.println(executeCommand("camel:route-list", new RolePrincipal("admin")));
 
         System.out.println("== Creating tables in Derby");
         System.out.println(executeCommand("jdbc:execute derby CREATE TABLE messages (id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY, message VARCHAR(1024) NOT NULL, CONSTRAINT primary_key PRIMARY KEY (id))"));

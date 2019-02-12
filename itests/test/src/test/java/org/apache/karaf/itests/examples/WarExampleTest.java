@@ -17,6 +17,7 @@
 package org.apache.karaf.itests.examples;
 
 import org.apache.karaf.itests.KarafTestSupport;
+import org.apache.karaf.jaas.boot.principal.RolePrincipal;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.junit.PaxExam;
@@ -40,7 +41,7 @@ public class WarExampleTest extends KarafTestSupport {
         // give time to the webapp to deploy
         Thread.sleep(2000);
 
-        String output = executeCommand("web:list");
+        String output = executeCommand("web:list", new RolePrincipal("admin"));
         System.out.println(output);
         assertContains("example", output);
 

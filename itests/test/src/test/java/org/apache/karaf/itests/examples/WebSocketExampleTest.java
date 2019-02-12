@@ -17,6 +17,7 @@
 package org.apache.karaf.itests.examples;
 
 import org.apache.karaf.itests.KarafTestSupport;
+import org.apache.karaf.jaas.boot.principal.RolePrincipal;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.StatusCode;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
@@ -54,10 +55,10 @@ public class WebSocketExampleTest extends KarafTestSupport {
         Bundle bundle = bundleContext.installBundle("mvn:org.apache.karaf.examples/karaf-websocket-example/" + System.getProperty("karaf.version"));
         bundle.start();
 
-        String httpList = executeCommand("http:list");
+        String httpList = executeCommand("http:list", new RolePrincipal("viewer"));
         while (!httpList.contains("Deployed")) {
             Thread.sleep(1000);
-            httpList = executeCommand("http:list");
+            httpList = executeCommand("http:list", new RolePrincipal("viewer"));
         }
         System.out.println(httpList);
 
