@@ -18,7 +18,6 @@ import org.jline.terminal.Terminal;
 import org.jline.utils.Curses;
 
 import java.io.IOError;
-import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.util.function.BiConsumer;
@@ -281,15 +280,11 @@ public class TerminalConnection implements Connection, Device {
 
     @Override
     public int[] getStringCapabilityAsInts(Capability capability) {
-        try {
-            String ks = getStringCapability(capability);
-            if (ks != null) {
-                StringWriter sw = new StringWriter();
-                Curses.tputs(sw, ks);
-                return sw.toString().codePoints().toArray();
-            }
-        } catch (IOException e) {
-            // ignore
+        String ks = getStringCapability(capability);
+        if (ks != null) {
+            StringWriter sw = new StringWriter();
+            Curses.tputs(sw, ks);
+            return sw.toString().codePoints().toArray();
         }
         return null;
     }

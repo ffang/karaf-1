@@ -412,4 +412,23 @@ public class LineReaderImpl implements LineReader {
     public KeyMap<Binding> getKeys() {
         return null;
     }
+
+    @Override
+    public void printAbove(String str) {
+    }
+
+    @Override
+    public void printAbove(AttributedString str) {
+    }
+
+    @Override
+    public boolean isReading() {
+        return false;
+    }
+
+    @Override
+    public String getAppName() {
+        return null;
+    }
+
 }

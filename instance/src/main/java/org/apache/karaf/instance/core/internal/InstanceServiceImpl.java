@@ -1073,6 +1073,7 @@ public class InstanceServiceImpl implements InstanceService {
     private void copyResourceToDir(String resource, File target, Map<String, URL> resources, boolean printOutput) throws IOException {
         File outFile = new File(target, resource);
         if( !outFile.exists() ) {
+            outFile.getParentFile().mkdirs();
             logDebug("Creating file: %s", printOutput, outFile.getPath());
             try (
                 InputStream is = getResourceStream(resource, resources);
