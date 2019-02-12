@@ -113,7 +113,6 @@ public class ArchiveMojo extends MojoSupport {
     private boolean useSymLinks = false;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
-        getLog().debug("Setting artifact file: " + targetFile);
         org.apache.maven.artifact.Artifact artifact = project.getArtifact();
         artifact.setFile(targetFile);
         try {
@@ -145,6 +144,11 @@ public class ArchiveMojo extends MojoSupport {
         }
         if (attach) {
             projectHelper.attachArtifact(project, artifact1.getType(), classifier, target1);
+        }
+
+        if (!project.getPackaging().equals("pom")) {
+            artifact2.setFile(target1);
+            project.setArtifact(artifact2);
         }
     }
 

@@ -57,6 +57,8 @@ import aQute.bnd.osgi.Macro;
 import aQute.bnd.osgi.Processor;
 import org.apache.felix.resolver.Logger;
 import org.apache.felix.resolver.ResolverImpl;
+import org.apache.felix.utils.resource.ResourceBuilder;
+import org.apache.felix.utils.resource.ResourceImpl;
 import org.apache.felix.utils.version.VersionRange;
 import org.apache.felix.utils.version.VersionTable;
 import org.apache.karaf.features.BundleInfo;
@@ -73,8 +75,6 @@ import org.apache.karaf.features.internal.model.ConfigFile;
 import org.apache.karaf.features.internal.model.Feature;
 import org.apache.karaf.features.internal.model.Features;
 import org.apache.karaf.features.internal.model.JaxbUtil;
-import org.apache.karaf.features.internal.resolver.ResourceBuilder;
-import org.apache.karaf.features.internal.resolver.ResourceImpl;
 import org.apache.karaf.features.internal.resolver.ResourceUtils;
 import org.apache.karaf.features.internal.service.Deployer;
 import org.apache.karaf.features.internal.service.FeaturesProcessorImpl;
@@ -341,7 +341,8 @@ public class VerifyMojo extends MojoSupport {
                 getLog().info("Verification of feature " + id + " succeeded");
             } catch (Exception e) {
                 if (e.getCause() instanceof ResolutionException || !getLog().isDebugEnabled()) {
-                    getLog().warn(e.getMessage());
+                    getLog().warn(e.getMessage() + ": " + id);
+                    getLog().warn(e.getCause().getMessage());
                 } else {
                     getLog().warn(e);
                 }

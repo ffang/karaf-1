@@ -81,7 +81,7 @@
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <scope>provided</scope>
-            <version>4.3.5</version>
+            <version>${httpclient.version}</version>
         </dependency>
 
         <!-- Test dependencies -->
@@ -126,6 +126,14 @@
             <version>1.3</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -161,6 +169,7 @@
                             !net.sf.ehcache*,
                             !net.spy.memcached*,
                             com.sun.security.auth.module;resolution:=optional,
+                            javax.xml.bind*;version="[2.2,3)",
                             *
                         </Import-Package>
                         <Private-Package>
@@ -180,4 +189,23 @@
         </plugins>
     </build>
 
+    <profiles>
+        <profile>
+	        <id>java9-plus</id>
+	        <properties>
+                <plexus-utils.version>3.1.0</plexus-utils.version>
+                <mvn.opts>--add-exports=java.base/sun.net.www.protocol.http=ALL-UNNAMED --add-exports=java.base/sun.net.www.protocol.https=ALL-UNNAMED --add-exports=jdk.xml.dom/org.w3c.dom.html=ALL-UNNAMED -Djava.io.tmpdir=${project.build.directory}</mvn.opts>
+	        </properties>
+                <dependencies>
+                    <dependency>
+                        <groupId>javax.activation</groupId>
+                        <artifactId>activation</artifactId>
+                        <version>1.1.1</version>
+                    </dependency>
+                </dependencies>
+	        <activation>
+        	    <jdk>[9,)</jdk>
+            </activation>
+	</profile>
+    </profiles>
 </project>

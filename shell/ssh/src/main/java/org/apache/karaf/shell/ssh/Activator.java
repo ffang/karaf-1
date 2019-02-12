@@ -141,11 +141,12 @@ public class Activator extends BaseActivator implements ManagedService {
     }
 
     protected SshServer createSshServer(SessionFactory sessionFactory) {
-        int sshPort            = getInt("sshPort", 8181);
+        int sshPort            = getInt("sshPort", 8101);
         String sshHost         = getString("sshHost", "0.0.0.0");
         long sshIdleTimeout    = getLong("sshIdleTimeout", 1800000);
         int nioWorkers         = getInt("nio-workers", 2);
         String sshRealm        = getString("sshRealm", "karaf");
+        Class<?>[] roleClasses = getClassesArray("sshRoleTypes", "org.apache.karaf.jaas.boot.principal.RolePrincipal");
         String sshRole         = getString("sshRole", null);
         String hostKey         = getString("hostKey", System.getProperty("karaf.etc") + "/host.key");
         String[] authMethods   = getStringArray("authMethods", "keyboard-interactive,password,publickey");
@@ -160,7 +161,7 @@ public class Activator extends BaseActivator implements ManagedService {
         
         Path serverKeyPath = Paths.get(hostKey);
         KeyPairProvider keyPairProvider = new OpenSSHKeyPairProvider(serverKeyPath.toFile(), algorithm, keySize);
-        KarafJaasAuthenticator authenticator = new KarafJaasAuthenticator(sshRealm, sshRole);
+        KarafJaasAuthenticator authenticator = new KarafJaasAuthenticator(sshRealm, sshRole, roleClasses);
         UserAuthFactoriesFactory authFactoriesFactory = new UserAuthFactoriesFactory();
         authFactoriesFactory.setAuthMethods(authMethods);
 

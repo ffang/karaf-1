@@ -17,15 +17,25 @@
 #
 
 realpath() {
+  # Use in priority xpg4 awk or nawk on SunOS as standard awk is outdated
+  AWK=awk
+  if ${solaris}; then
+      if [ -x /usr/xpg4/bin/awk ]; then
+          AWK=/usr/xpg4/bin/awk
+      elif [ -x /usr/bin/nawk ]; then
+          AWK=/usr/bin/nawk
+      fi
+  fi
+
   READLINK_EXISTS=$(command -v readlink &> /dev/null)
   if [ -z "$READLINK_EXISTS" ]; then
     OURPWD=${PWD}
     cd "$(dirname "${1}")" || exit 2
-    LINK=$(ls -l "$(basename "${1}")" | awk -F"-> " '{print $2}')
+    LINK=$(ls -l "$(basename "${1}")" | ${AWK} -F"-> " '{print $2}')
     while [ "${LINK}" ]; do
         echo "link: ${LINK}" >&2
         cd "$(dirname "${LINK}")" || exit 2
-        LINK=$(ls -l "$(basename "${1}")" | awk -F"-> " '{print $2}')
+        LINK=$(ls -l "$(basename "${1}")" | ${AWK} -F"-> " '{print $2}')
     done
     REALPATH="${PWD}/$(basename "${1}")"
     cd "${OURPWD}" || exit 2
@@ -81,6 +91,16 @@ setupClassPath() {
             CLASSPATH="${CLASSPATH}:${file}"
         fi
     done
+    if [ "${VERSION}" -gt "8" ] ; then
+        for file in "${KARAF_HOME}"/lib/jdk9plus/*.jar
+        do
+            if [ -z "${CLASSPATH}" ]; then
+                CLASSPATH="${file}"
+            else
+                CLASSPATH="${CLASSPATH}:${file}"
+            fi
+        done
+    fi
 }
 
 checkRootInstance() {
@@ -124,6 +144,9 @@ init() {
 
     # Locate the Karaf etc directory
     locateEtc
+
+    # Locate the Karaf log directory
+    locateLog
 
     # Setup the native library path
     setupNativePath
@@ -264,8 +287,8 @@ run() {
 
         # Ensure the log directory exists
         # We may need to have a place to redirect stdout/stderr
-        if [ ! -d "${KARAF_DATA}/log" ]; then
-            mkdir -p "${KARAF_DATA}/log"
+        if [ ! -d "${KARAF_LOG}" ]; then
+            mkdir -p "${KARAF_LOG}"
         fi
         if [ ! -d "${KARAF_DATA}/tmp" ]; then
             mkdir -p "${KARAF_DATA}/tmp"
@@ -283,6 +306,7 @@ run() {
                     -Dkaraf.base="${KARAF_BASE}" \
                     -Dkaraf.data="${KARAF_DATA}" \
                     -Dkaraf.etc="${KARAF_ETC}" \
+                    -Dkaraf.log="${KARAF_LOG}" \
                     -Dkaraf.restart.jvm.supported=true \
                     -Djava.io.tmpdir="${KARAF_DATA}/tmp" \
                     -Djava.util.logging.config.file="${KARAF_BASE}/etc/java.util.logging.properties" \

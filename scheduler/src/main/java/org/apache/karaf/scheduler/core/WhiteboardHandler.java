@@ -82,9 +82,9 @@ public class WhiteboardHandler {
      * Create unique identifier
      */
     private String getServiceIdentifier(final ServiceReference ref) {
-        String name = (String)ref.getProperty(Scheduler.PROPERTY_SCHEDULER_NAME);
+        String name = (String) ref.getProperty(Scheduler.PROPERTY_SCHEDULER_NAME);
         if ( name == null ) {
-            name = (String)ref.getProperty(Constants.SERVICE_PID);
+            name = (String) ref.getProperty(Constants.SERVICE_PID);
             if ( name == null ) {
                 name = "Registered Service";
             }
@@ -99,28 +99,62 @@ public class WhiteboardHandler {
      */
     private void register(final ServiceReference ref, final Object job) {
         final String name = getServiceIdentifier(ref);
-        final Boolean concurrent = (Boolean) ref.getProperty(Scheduler.PROPERTY_SCHEDULER_CONCURRENT);
+        Boolean concurrent = true;
+        if (ref.getProperty(Scheduler.PROPERTY_SCHEDULER_CONCURRENT) != null) {
+            if (ref.getProperty(Scheduler.PROPERTY_SCHEDULER_CONCURRENT) instanceof Boolean) {
+                concurrent = (Boolean) ref.getProperty(Scheduler.PROPERTY_SCHEDULER_CONCURRENT);
+            } else {
+                concurrent = new Boolean((String) ref.getProperty(Scheduler.PROPERTY_SCHEDULER_CONCURRENT));
+            }
+        }
         final String expression = (String) ref.getProperty(Scheduler.PROPERTY_SCHEDULER_EXPRESSION);
         try {
             if (expression != null) {
                 this.scheduler.schedule(job, this.scheduler.EXPR(expression)
                         .name(name)
-                        .canRunConcurrently((concurrent != null ? concurrent : true)));
+                        .canRunConcurrently(concurrent));
             } else {
-                final Long period = (Long) ref.getProperty(Scheduler.PROPERTY_SCHEDULER_PERIOD);
-                if (period != null) {
+                Integer times = -1;
+                {
+                    final Object v = ref.getProperty(Scheduler.PROPERTY_SCHEDULER_TIMES);
+                    if (null != v) {
+                        if (v instanceof Integer) {
+                            times = (Integer) v;
+                        } else if (v instanceof Long) {
+                            times = ((Long) v).intValue();
+                        } else if (v instanceof Number) {
+                            times = ((Number) v).intValue();
+                        } else {
+                            times = new Integer(v.toString());
+                        }
+                    }
+                }
+
+                Long period = null;
+                if (ref.getProperty(Scheduler.PROPERTY_SCHEDULER_PERIOD) != null) {
+                    if (ref.getProperty(Scheduler.PROPERTY_SCHEDULER_PERIOD) instanceof Long) {
+                        period = (Long) ref.getProperty(Scheduler.PROPERTY_SCHEDULER_PERIOD);
+                    } else {
+                        period = new Long((String) ref.getProperty(Scheduler.PROPERTY_SCHEDULER_PERIOD));
+                    }
                     if (period < 1) {
                         this.logger.debug("Ignoring service {} : scheduler period is less than 1.", ref);
+                    } else if (times < -1) {
+                        this.logger.debug("Ignoring service {} : scheduler times is defined but is less than -1.", ref);
                     } else {
                         boolean immediate = false;
                         if (ref.getProperty(Scheduler.PROPERTY_SCHEDULER_IMMEDIATE) != null) {
-                            immediate = (Boolean) ref.getProperty(Scheduler.PROPERTY_SCHEDULER_IMMEDIATE);
+                            if (ref.getProperty(Scheduler.PROPERTY_SCHEDULER_IMMEDIATE) instanceof Boolean) {
+                                immediate = (Boolean) ref.getProperty(Scheduler.PROPERTY_SCHEDULER_IMMEDIATE);
+                            } else {
+                                immediate = new Boolean((String) ref.getProperty(Scheduler.PROPERTY_SCHEDULER_IMMEDIATE));
+                            }
                         }
                         final Date date = new Date();
                         if (!immediate) {
                             date.setTime(System.currentTimeMillis() + period * 1000);
                         }
-                        this.scheduler.schedule(job, this.scheduler.AT(date, -1, period)
+                        this.scheduler.schedule(job, this.scheduler.AT(date, times, period)
                                 .name(name)
                                 .canRunConcurrently((concurrent != null ? concurrent : true)));
                     }

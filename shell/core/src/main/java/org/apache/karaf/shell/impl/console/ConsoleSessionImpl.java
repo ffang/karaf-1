@@ -154,9 +154,13 @@ public class ConsoleSessionImpl implements Session {
         brandingProps = Branding.loadBrandingProperties(terminal.getClass().getName().endsWith("SshTerminal"));
 
         // Create session
-        session = processor.createSession(jlineTerminal.input(),
-                jlineTerminal.output(),
-                jlineTerminal.output());
+        if (in == null || out == null || err == null) {
+            session = processor.createSession(((org.jline.terminal.Terminal) terminal).input(),
+                    ((org.jline.terminal.Terminal) terminal).output(),
+                    ((org.jline.terminal.Terminal) terminal).output());
+        } else {
+            session = processor.createSession(in, out, err);
+        }
 
         // Completers
         Completer builtinCompleter = createBuiltinCompleter();
@@ -462,7 +466,7 @@ public class ConsoleSessionImpl implements Session {
     private void doExecute(CharSequence command) {
         try {
             Object result = session.execute(command);
-            if (result instanceof String) {
+            if (result != null) {
                 session.getConsole().println(session.format(result, Converter.INSPECT));
             }
         } catch (InterruptedException e) {
@@ -520,8 +524,9 @@ public class ConsoleSessionImpl implements Session {
             String[] scopes = ((String) get(Session.SCOPE)).split(":");
             List<Command> commands = registry.getCommands();
             for (String scope : scopes) {
+                boolean globalScope = Session.SCOPE_GLOBAL.equals(scope);
                 for (Command command : commands) {
-                    if ((Session.SCOPE_GLOBAL.equals(scope) || command.getScope().equals(scope)) && command.getName().equals(name)) {
+                    if ((globalScope || command.getScope().equals(scope)) && command.getName().equals(name)) {
                         return command.getScope() + ":" + name;
                     }
                 }

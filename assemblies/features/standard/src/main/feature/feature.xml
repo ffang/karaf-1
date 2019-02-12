@@ -43,8 +43,7 @@
     <feature name="aries-blueprint" description="Aries Blueprint" version="${project.version}">
         <feature>aries-proxy</feature>
         <bundle dependency="true" start-level="20">mvn:org.apache.aries/org.apache.aries.util/${aries.util.version}</bundle>
-        <!-- Making the compatibility bundle a dependency allows it to only be installed on-demand -->
-        <bundle dependency="true" start-level="20">mvn:org.apache.aries.blueprint/org.apache.aries.blueprint.core.compatibility/${aries.blueprint.core.compatibility.version}</bundle>
+        <bundle start-level="20">mvn:org.apache.aries.blueprint/org.apache.aries.blueprint.core.compatibility/${aries.blueprint.core.compatibility.version}</bundle>
         <bundle start-level="20">mvn:org.apache.aries.blueprint/org.apache.aries.blueprint.api/${aries.blueprint.api.version}</bundle>
         <bundle start-level="20">mvn:org.apache.aries.blueprint/org.apache.aries.blueprint.cm/${aries.blueprint.cm.version}</bundle>
         <bundle start-level="20">mvn:org.apache.aries.blueprint/org.apache.aries.blueprint.core/${aries.blueprint.core.version}</bundle>
@@ -201,163 +200,163 @@
             logout = admin, manager, viewer
         </config>
         <config name="org.apache.karaf.command.acl.scope_bundle">
-            ################################################################################
-            #
-            #    Licensed to the Apache Software Foundation (ASF) under one or more
-            #    contributor license agreements.  See the NOTICE file distributed with
-            #    this work for additional information regarding copyright ownership.
-            #    The ASF licenses this file to You under the Apache License, Version 2.0
-            #    (the "License"); you may not use this file except in compliance with
-            #    the License.  You may obtain a copy of the License at
-            #
-            #       http://www.apache.org/licenses/LICENSE-2.0
-            #
-            #    Unless required by applicable law or agreed to in writing, software
-            #    distributed under the License is distributed on an "AS IS" BASIS,
-            #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-            #    See the License for the specific language governing permissions and
-            #    limitations under the License.
-            #
-            ################################################################################
+################################################################################
+#
+#    Licensed to the Apache Software Foundation (ASF) under one or more
+#    contributor license agreements.  See the NOTICE file distributed with
+#    this work for additional information regarding copyright ownership.
+#    The ASF licenses this file to You under the Apache License, Version 2.0
+#    (the "License"); you may not use this file except in compliance with
+#    the License.  You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+#
+################################################################################
 
-            #
-            # This configuration file defines the ACLs for scope bundles
-            #
-            features=org.apache.karaf.features.command
-            jaas=org.apache.karaf.jaas.command
-            admin=org.apache.karaf.admin.command
-            osgi=org.apache.karaf.shell.osgi
-            log=org.apache.karaf.shell.log
-            packages=org.apache.karaf.shell.packages
-            config=org.apache.karaf.shell.config
-            ssh=org.apache.karaf.shell.ssh
-            shell=org.apache.karaf.shell.commands
+#
+# This configuration file defines the ACLs for scope bundles
+#
+features=org.apache.karaf.features.command
+jaas=org.apache.karaf.jaas.command
+admin=org.apache.karaf.admin.command
+osgi=org.apache.karaf.shell.osgi
+log=org.apache.karaf.shell.log
+packages=org.apache.karaf.shell.packages
+config=org.apache.karaf.shell.config
+ssh=org.apache.karaf.shell.ssh
+shell=org.apache.karaf.shell.commands
         </config>
         <config name="org.apache.karaf.shell">
-            ################################################################################
-            #
-            #    Licensed to the Apache Software Foundation (ASF) under one or more
-            #    contributor license agreements.  See the NOTICE file distributed with
-            #    this work for additional information regarding copyright ownership.
-            #    The ASF licenses this file to You under the Apache License, Version 2.0
-            #    (the "License"); you may not use this file except in compliance with
-            #    the License.  You may obtain a copy of the License at
-            #
-            #       http://www.apache.org/licenses/LICENSE-2.0
-            #
-            #    Unless required by applicable law or agreed to in writing, software
-            #    distributed under the License is distributed on an "AS IS" BASIS,
-            #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-            #    See the License for the specific language governing permissions and
-            #    limitations under the License.
-            #
-            ################################################################################
+################################################################################
+#
+#    Licensed to the Apache Software Foundation (ASF) under one or more
+#    contributor license agreements.  See the NOTICE file distributed with
+#    this work for additional information regarding copyright ownership.
+#    The ASF licenses this file to You under the Apache License, Version 2.0
+#    (the "License"); you may not use this file except in compliance with
+#    the License.  You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+#
+################################################################################
 
-            #
-            # These properties are used to configure Karaf's ssh shell.
-            #
+#
+# These properties are used to configure Karaf's ssh shell.
+#
 
-            #
-            # Via sshPort and sshHost you define the address you can login into Karaf.
-            #
-            sshPort = 8101
-            sshHost = 0.0.0.0
+#
+# Via sshPort and sshHost you define the address you can login into Karaf.
+#
+sshPort = 8101
+sshHost = 0.0.0.0
 
-            #
-            # The sshIdleTimeout defines the inactivity timeout to logout the SSH session.
-            # The sshIdleTimeout is in milliseconds, and the default is set to 30 minutes.
-            #
-            sshIdleTimeout = 1800000
+#
+# The sshIdleTimeout defines the inactivity timeout to logout the SSH session.
+# The sshIdleTimeout is in milliseconds, and the default is set to 30 minutes.
+#
+sshIdleTimeout = 1800000
 
-            #
-            # sshRealm defines which JAAS domain to use for password authentication.
-            #
-            sshRealm = karaf
+#
+# sshRealm defines which JAAS domain to use for password authentication.
+#
+sshRealm = karaf
 
-            #
-            # sshRole defines the role required to access the console through ssh
-            #
-            sshRole = ssh
+#
+# sshRole defines the role required to access the console through ssh
+#
+sshRole = ssh
 
-            #
-            # Defines if the SFTP system is enabled or not in the SSH server
-            #
-            sftpEnabled=true
+#
+# Defines if the SFTP system is enabled or not in the SSH server
+#
+sftpEnabled=true
 
-            #
-            # The location of the hostKey file defines where the private/public key of the server
-            # is located. If no file is at the defined location it will be ignored.
-            #
-            hostKey = ${karaf.etc}/host.key
+#
+# The location of the hostKey file defines where the private/public key of the server
+# is located. If no file is at the defined location it will be ignored.
+#
+hostKey = ${karaf.etc}/host.key
 
-            #
-            # The format used for hostKey.
-            # Possible values are simple (Karaf internal), or PEM (OpenSSH format)
-            #
-            hostKeyFormat = simple
+#
+# The format used for hostKey.
+# Possible values are simple (Karaf internal), or PEM (OpenSSH format)
+#
+hostKeyFormat = simple
 
-            #
-            # Self defined key size in 1024, 2048, 3072, or 4096
-            # If not set, this defaults to 2048.
-            #
-            # keySize = 2048
+#
+# Self defined key size in 1024, 2048, 3072, or 4096
+# If not set, this defaults to 2048.
+#
+# keySize = 2048
 
-            #
-            # Specify host key algorithm, defaults to RSA
-            #
-            # algorithm = RSA
+#
+# Specify host key algorithm, defaults to RSA
+#
+# algorithm = RSA
 
-            #
-            # Specify the client log level (default is WARN)
-            # 0: ERROR
-            # 1: WARN
-            # 2: INFO
-            # 3: DEBUG
-            # 4: TRACE
-            #
-            #logLevel = 1
+#
+# Specify the client log level (default is WARN)
+# 0: ERROR
+# 1: WARN
+# 2: INFO
+# 3: DEBUG
+# 4: TRACE
+#
+#logLevel = 1
 
-            #
-            # Specify an additional welcome banner to be displayed when a user logs into the server.
-            #
-            # welcomeBanner =
+#
+# Specify an additional welcome banner to be displayed when a user logs into the server.
+#
+# welcomeBanner =
 
-            #
-            # Defines the completion mode on the Karaf shell console. The possible values are:
-            # - GLOBAL: it's the same behavior as in previous Karaf releases. The completion displays all commands and all aliases
-            #           ignoring if you are in a subshell or not.
-            # - FIRST: the completion displays all commands and all aliases only when you are not in a subshell. When you are
-            #          in a subshell, the completion displays only the commands local to the subshell.
-            # - SUBSHELL: the completion displays only the subshells on the root level. When you are in a subshell, the completion
-            #             displays only the commands local to the subshell.
-            # This property define the default value when you use the Karaf shell console.
-            # You can change the completion mode directly in the shell console, using shell:completion command.
-            #
-            completionMode = GLOBAL
+#
+# Defines the completion mode on the Karaf shell console. The possible values are:
+# - GLOBAL: it's the same behavior as in previous Karaf releases. The completion displays all commands and all aliases
+#           ignoring if you are in a subshell or not.
+# - FIRST: the completion displays all commands and all aliases only when you are not in a subshell. When you are
+#          in a subshell, the completion displays only the commands local to the subshell.
+# - SUBSHELL: the completion displays only the subshells on the root level. When you are in a subshell, the completion
+#             displays only the commands local to the subshell.
+# This property define the default value when you use the Karaf shell console.
+# You can change the completion mode directly in the shell console, using shell:completion command.
+#
+completionMode = GLOBAL
 
-            #
-            # Override allowed SSH cipher algorithms.
-            # Default: aes128-ctr,arcfour128,aes128-cbc,3des-cbc,blowfish-cbc
-            #
-            # ciphers = aes128-ctr,arcfour128,aes128-cbc,3des-cbc,blowfish-cbc
+#
+# Override allowed SSH cipher algorithms.
+# Default: aes128-ctr,arcfour128,aes128-cbc,3des-cbc,blowfish-cbc
+#
+# ciphers = aes128-ctr,arcfour128,aes128-cbc,3des-cbc,blowfish-cbc
 
-            #
-            # Override allowed SSH HMAC algorithms.
-            # Default: hmac-sha2-512,hmac-sha2-256,hmac-sha1
-            #
-            # macs = hmac-sha2-512,hmac-sha2-256,hmac-sha1
+#
+# Override allowed SSH HMAC algorithms.
+# Default: hmac-sha2-512,hmac-sha2-256,hmac-sha1
+#
+# macs = hmac-sha2-512,hmac-sha2-256,hmac-sha1
 
-            #
-            # Override allowed SSH key exchange algorithms.
-            # Default: diffie-hellman-group-exchange-sha256,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha1,diffie-hellman-group1-sha1
-            #
-            # kexAlgorithms = diffie-hellman-group-exchange-sha256,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha1,diffie-hellman-group1-sha1
+#
+# Override allowed SSH key exchange algorithms.
+# Default: diffie-hellman-group-exchange-sha256,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha1,diffie-hellman-group1-sha1
+#
+# kexAlgorithms = diffie-hellman-group-exchange-sha256,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha1,diffie-hellman-group1-sha1
 
-            #
-            # Override moduli-url.
-            # Default: moduli-url not specified to use the internal one from SSHD
-            #
-            # moduli-url = external moduli-url users wanna use
+#
+# Override moduli-url.
+# Default: moduli-url not specified to use the internal one from SSHD
+#
+# moduli-url = external moduli-url users wanna use
 
         </config>
         <config name="org.apache.karaf.command.acl.patch">
@@ -894,67 +893,67 @@
 
     <feature name="jaas" description="Provide JAAS support" version="${project.version}">
         <config name="org.apache.karaf.jaas">
-            ################################################################################
-            #
-            #    Licensed to the Apache Software Foundation (ASF) under one or more
-            #    contributor license agreements.  See the NOTICE file distributed with
-            #    this work for additional information regarding copyright ownership.
-            #    The ASF licenses this file to You under the Apache License, Version 2.0
-            #    (the "License"); you may not use this file except in compliance with
-            #    the License.  You may obtain a copy of the License at
-            #
-            #       http://www.apache.org/licenses/LICENSE-2.0
-            #
-            #    Unless required by applicable law or agreed to in writing, software
-            #    distributed under the License is distributed on an "AS IS" BASIS,
-            #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-            #    See the License for the specific language governing permissions and
-            #    limitations under the License.
-            #
-            ################################################################################
+################################################################################
+#
+#    Licensed to the Apache Software Foundation (ASF) under one or more
+#    contributor license agreements.  See the NOTICE file distributed with
+#    this work for additional information regarding copyright ownership.
+#    The ASF licenses this file to You under the Apache License, Version 2.0
+#    (the "License"); you may not use this file except in compliance with
+#    the License.  You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+#
+################################################################################
 
-            #
-            # Boolean enabling / disabling encrypted passwords
-            #
-            encryption.enabled = false
+#
+# Boolean enabling / disabling encrypted passwords
+#
+encryption.enabled = false
 
-            #
-            # Encryption Service name
-            #   the default one is 'basic'
-            #   a more powerful one named 'jasypt' is available
-            #       when installing the encryption feature
-            #
-            encryption.name =
+#
+# Encryption Service name
+#   the default one is 'basic'
+#   a more powerful one named 'jasypt' is available
+#       when installing the encryption feature
+#
+encryption.name =
 
-            #
-            # Encryption prefix
-            #
-            encryption.prefix = {CRYPT}
+#
+# Encryption prefix
+#
+encryption.prefix = {CRYPT}
 
-            #
-            # Encryption suffix
-            #
-            encryption.suffix = {CRYPT}
+#
+# Encryption suffix
+#
+encryption.suffix = {CRYPT}
 
-            #
-            # Set the encryption algorithm to use in Karaf JAAS login module
-            # Supported encryption algorithms follow:
-            #   MD2
-            #   MD5
-            #   SHA-1
-            #   SHA-256
-            #   SHA-384
-            #   SHA-512
-            #
-            encryption.algorithm = MD5
+#
+# Set the encryption algorithm to use in Karaf JAAS login module
+# Supported encryption algorithms follow:
+#   MD2
+#   MD5
+#   SHA-1
+#   SHA-256
+#   SHA-384
+#   SHA-512
+#
+encryption.algorithm = MD5
 
-            #
-            # Encoding of the encrypted password.
-            # Can be:
-            #   hexadecimal
-            #   base64
-            #
-            encryption.encoding = hexadecimal
+#
+# Encoding of the encrypted password.
+# Can be:
+#   hexadecimal
+#   base64
+#
+encryption.encoding = hexadecimal
         </config>
         <feature>jaas-boot</feature>
         <bundle start-level="30">mvn:org.apache.karaf.jaas/org.apache.karaf.jaas.config/${project.version}</bundle>
@@ -1015,48 +1014,48 @@
 
     <feature name="log" description="Provide Log support" version="${project.version}">
         <config name="org.apache.karaf.log">
-            ################################################################################
-            #
-            #    Licensed to the Apache Software Foundation (ASF) under one or more
-            #    contributor license agreements.  See the NOTICE file distributed with
-            #    this work for additional information regarding copyright ownership.
-            #    The ASF licenses this file to You under the Apache License, Version 2.0
-            #    (the "License"); you may not use this file except in compliance with
-            #    the License.  You may obtain a copy of the License at
-            #
-            #       http://www.apache.org/licenses/LICENSE-2.0
-            #
-            #    Unless required by applicable law or agreed to in writing, software
-            #    distributed under the License is distributed on an "AS IS" BASIS,
-            #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-            #    See the License for the specific language governing permissions and
-            #    limitations under the License.
-            #
-            ################################################################################
+################################################################################
+#
+#    Licensed to the Apache Software Foundation (ASF) under one or more
+#    contributor license agreements.  See the NOTICE file distributed with
+#    this work for additional information regarding copyright ownership.
+#    The ASF licenses this file to You under the Apache License, Version 2.0
+#    (the "License"); you may not use this file except in compliance with
+#    the License.  You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+#
+################################################################################
 
-            #
-            # This configuration file is used to configure the default values for the log:display
-            # and log:exception-display commands.
-            #
+#
+# This configuration file is used to configure the default values for the log:display
+# and log:exception-display commands.
+#
 
-            #
-            # The number of log statements to be displayed using log:display. It also defines the number
-            # of lines searched for exceptions using log:exception-display. You can override this value
-            # at runtime using -n in log:display.
-            #
-            size = I"500"
+#
+# The number of log statements to be displayed using log:display. It also defines the number
+# of lines searched for exceptions using log:exception-display. You can override this value
+# at runtime using -n in log:display.
+#
+size = "500"
 
-            #
-            # The pattern used to format the log statement when using log:display. This pattern is according
-            # to the log4j layout. You can override this parameter at runtime using log:display with -p.
-            #
-            color.fatal = "bright red"
-            color.error = "bright red"
-            color.warn = "bright yellow"
-            color.info = "bright green"
-            color.debug = "cyan"
-            color.trace = "cyan"
-            pattern = "\u001b[90m%d{HH:mm:ss.SSS}\u001b[0m %h{%p}{FATAL=${color.fatal}, ERROR=${color.error}, WARN=${color.warn}, INFO=${color.info}, DEBUG=${color.debug}, TRACE=${color.trace}} \u001b[90m[%t]\u001b[0m %m%n"
+#
+# The pattern used to format the log statement when using log:display. This pattern is according
+# to the log4j layout. You can override this parameter at runtime using log:display with -p.
+#
+color.fatal = "bright red"
+color.error = "bright red"
+color.warn = "bright yellow"
+color.info = "bright green"
+color.debug = "cyan"
+color.trace = "cyan"
+pattern = "\u001b[90m%d{HH:mm:ss.SSS}\u001b[0m %h{%p}{FATAL=${color.fatal}, ERROR=${color.error}, WARN=${color.warn}, INFO=${color.info}, DEBUG=${color.debug}, TRACE=${color.trace}} \u001b[90m[%t]\u001b[0m %m%n"
         </config>
         <config name="org.apache.karaf.command.acl.log">
             #
@@ -1154,6 +1153,35 @@
         <capability>http-service;provider:=felix-httplite</capability>
     </feature>
 
+    <feature name="felix-http" version="4.0.6" description="Felix HTTP Jetty Service">
+        <config name="org.apache.felix.http">
+################################################################################
+#
+#    Licensed to the Apache Software Foundation (ASF) under one or more
+#    contributor license agreements.  See the NOTICE file distributed with
+#    this work for additional information regarding copyright ownership.
+#    The ASF licenses this file to You under the Apache License, Version 2.0
+#    (the "License"); you may not use this file except in compliance with
+#    the License.  You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+#
+################################################################################
+
+org.apache.felix.http.port=8181
+        </config>
+        <bundle start-level="30" dependency="true">mvn:org.apache.felix/org.apache.felix.http.servlet-api/1.1.2</bundle>
+        <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.http.jetty/4.0.6</bundle>
+        <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.http.whiteboard/4.0.0</bundle>
+        <capability>http-service;provider:=felix</capability>
+    </feature>
+
     <feature name="pax-http-service" description="Pax-Web OSGi HTTP Service" version="${pax.web.version}">
         <feature>pax-http</feature>
         <bundle start-level="30">mvn:org.apache.karaf.http/org.apache.karaf.http.core/${project.version}</bundle>
@@ -1176,19 +1204,13 @@
     </feature>
 
     <feature name="jetty" version="${jetty.version}">
-        <bundle dependency="true" start-level="30">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activation-api-1.1/${servicemix.specs.version}</bundle>
+        <bundle dependency="true" start-level="30">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activation-api-1.1/${servicemix-spec.version}</bundle>
         <bundle dependency="true" start-level="30">mvn:javax.servlet/javax.servlet-api/${servlet.spec.version}</bundle>
         <bundle dependency="true" start-level="30">mvn:javax.mail/mail/${javax.mail.version}</bundle>
         <bundle dependency="true" start-level="30">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/${geronimo.jta-spec.version}</bundle>
         <bundle dependency="true" start-level="30">mvn:javax.annotation/javax.annotation-api/${javax.annotation.version}</bundle>
         <bundle dependency="true" start-level="30">mvn:org.apache.geronimo.specs/geronimo-jaspic_1.0_spec/${geronimo.jaspic-spec.version}</bundle>
-        <bundle dependency="true" start-level="30">mvn:org.ow2.asm/asm/${asm.version}</bundle>
-        <bundle dependency="true" start-level="30">mvn:org.ow2.asm/asm-util/${asm.version}</bundle>
-        <bundle dependency="true" start-level="30">mvn:org.ow2.asm/asm-tree/${asm.version}</bundle>
-        <bundle dependency="true" start-level="30">mvn:org.ow2.asm/asm-analysis/${asm.version}</bundle>
-        <bundle dependency="true" start-level="30">mvn:org.ow2.asm/asm-commons/${asm.version}</bundle>
         <bundle dependency="true" start-level="30">mvn:org.apache.aries.spifly/org.apache.aries.spifly.dynamic.bundle/${aries.spifly.version}</bundle>
-        <bundle dependency="true" start-level="30">mvn:org.apache.aries/org.apache.aries.util/${aries.util.version}</bundle>
         <bundle start-level="30">mvn:org.eclipse.jetty/jetty-continuation/${jetty.version}</bundle>
         <bundle start-level="30">mvn:org.eclipse.jetty/jetty-http/${jetty.version}</bundle>
         <bundle start-level="30">mvn:org.eclipse.jetty/jetty-io/${jetty.version}</bundle>
@@ -1219,7 +1241,7 @@
     </feature>
 
     <feature name="jetty" version="8.1.14.v20131031">
-        <bundle dependency="true" start-level="30">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activation-api-1.1/${servicemix.specs.version}</bundle>
+        <bundle dependency="true" start-level="30">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activation-api-1.1/${servicemix-spec.version}</bundle>
         <bundle dependency="true" start-level="30">mvn:javax.servlet/javax.servlet-api/3.1.0</bundle>
         <bundle dependency="true" start-level="30">mvn:javax.mail/mail/${javax.mail.version}</bundle>
         <bundle dependency="true" start-level="30">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/${geronimo.jta-spec.version}</bundle>
@@ -1269,26 +1291,26 @@
     <feature name="webconsole" description="Base support of the Karaf WebConsole" version="${project.version}">
         <feature>jaas-boot</feature>
         <config name="org.apache.karaf.webconsole">
-            ################################################################################
-            #
-            #    Licensed to the Apache Software Foundation (ASF) under one or more
-            #    contributor license agreements.  See the NOTICE file distributed with
-            #    this work for additional information regarding copyright ownership.
-            #    The ASF licenses this file to You under the Apache License, Version 2.0
-            #    (the "License"); you may not use this file except in compliance with
-            #    the License.  You may obtain a copy of the License at
-            #
-            #       http://www.apache.org/licenses/LICENSE-2.0
-            #
-            #    Unless required by applicable law or agreed to in writing, software
-            #    distributed under the License is distributed on an "AS IS" BASIS,
-            #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-            #    See the License for the specific language governing permissions and
-            #    limitations under the License.
-            #
-            ################################################################################
+################################################################################
+#
+#    Licensed to the Apache Software Foundation (ASF) under one or more
+#    contributor license agreements.  See the NOTICE file distributed with
+#    this work for additional information regarding copyright ownership.
+#    The ASF licenses this file to You under the Apache License, Version 2.0
+#    (the "License"); you may not use this file except in compliance with
+#    the License.  You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+#
+################################################################################
 
-            realm=karaf
+realm=karaf
         </config>
         <feature>http</feature>
         <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.metatype/${felix.metatype.version}</bundle>
@@ -2031,128 +2053,128 @@
             getCurrentWiring = admin, manager, viewer
         </config>
         <config name="org.apache.karaf.management">
-            ################################################################################
-            #
-            #    Licensed to the Apache Software Foundation (ASF) under one or more
-            #    contributor license agreements.  See the NOTICE file distributed with
-            #    this work for additional information regarding copyright ownership.
-            #    The ASF licenses this file to You under the Apache License, Version 2.0
-            #    (the "License"); you may not use this file except in compliance with
-            #    the License.  You may obtain a copy of the License at
-            #
-            #       http://www.apache.org/licenses/LICENSE-2.0
-            #
-            #    Unless required by applicable law or agreed to in writing, software
-            #    distributed under the License is distributed on an "AS IS" BASIS,
-            #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-            #    See the License for the specific language governing permissions and
-            #    limitations under the License.
-            #
-            ################################################################################
+################################################################################
+#
+#    Licensed to the Apache Software Foundation (ASF) under one or more
+#    contributor license agreements.  See the NOTICE file distributed with
+#    this work for additional information regarding copyright ownership.
+#    The ASF licenses this file to You under the Apache License, Version 2.0
+#    (the "License"); you may not use this file except in compliance with
+#    the License.  You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+#
+################################################################################
 
-            #
-            # The properties in this file define the configuration of Apache Karaf's JMX Management
-            #
+#
+# The properties in this file define the configuration of Apache Karaf's JMX Management
+#
 
-            #
-            # Port number for RMI registry connection
-            #
-            rmiRegistryPort = 1099
+#
+# Port number for RMI registry connection
+#
+rmiRegistryPort = 1099
 
-            #
-            # Host for RMI registry
-            #
-            rmiRegistryHost = 127.0.0.1
+#
+# Host for RMI registry
+#
+rmiRegistryHost = 127.0.0.1
 
-            #
-            # Port number for RMI server connection
-            #
-            rmiServerPort = 44444
+#
+# Port number for RMI server connection
+#
+rmiServerPort = 44444
 
-            #
-            # Host for RMI server
-            #
-            rmiServerHost = 127.0.0.1
+#
+# Host for RMI server
+#
+rmiServerHost = 127.0.0.1
 
-            #
-            # Name of the JAAS realm used for authentication
-            #
-            jmxRealm = karaf
+#
+# Name of the JAAS realm used for authentication
+#
+jmxRealm = karaf
 
-            #
-            # The service URL for the JMXConnectorServer
-            #
-            serviceUrl = service:jmx:rmi://${rmiServerHost}:${rmiServerPort}/jndi/rmi://${rmiRegistryHost}:${rmiRegistryPort}/karaf-${karaf.name}
+#
+# The service URL for the JMXConnectorServer
+#
+serviceUrl = service:jmx:rmi://${rmiServerHost}:${rmiServerPort}/jndi/rmi://${rmiRegistryHost}:${rmiRegistryPort}/karaf-${karaf.name}
 
-            #
-            # Whether any threads started for the JMXConnectorServer should be started as daemon threads
-            #
-            daemon = true
+#
+# Whether any threads started for the JMXConnectorServer should be started as daemon threads
+#
+daemon = true
 
-            #
-            # Whether the JMXConnectorServer should be started in a separate thread
-            #
-            threaded = true
+#
+# Whether the JMXConnectorServer should be started in a separate thread
+#
+threaded = true
 
-            #
-            # The ObjectName used to register the JMXConnectorServer
-            #
-            objectName = connector:name=rmi
+#
+# The ObjectName used to register the JMXConnectorServer
+#
+objectName = connector:name=rmi
 
-            #
-            # Timeout to lookup for the keystore in case of SSL authentication usage
-            #
-            #keyStoreAvailabilityTimeout = 5000
+#
+# Timeout to lookup for the keystore in case of SSL authentication usage
+#
+#keyStoreAvailabilityTimeout = 5000
 
-            #
-            # The type of authentication
-            #
-            #authenticatorType = password
+#
+# The type of authentication
+#
+#authenticatorType = password
 
-            #
-            # Enable or not SSL/TLS
-            #
-            #secured = false
+#
+# Enable or not SSL/TLS
+#
+#secured = false
 
-            #
-            # Secure algorithm to use
-            #
-            #secureAlgorithm = default
+#
+# Secure algorithm to use
+#
+#secureAlgorithm = default
 
-            #
-            # Secure protocol to use
-            #
-            #secureProtocol = TLS
+#
+# Secure protocol to use
+#
+#secureProtocol = TLS
 
-            #
-            # Keystore to use for secure mode
-            #
-            #keyStore = karaf.ks
+#
+# Keystore to use for secure mode
+#
+#keyStore = karaf.ks
 
-            #
-            # Alias of the key to use in the keystore
-            #
-            #keyAlias = karaf
+#
+# Alias of the key to use in the keystore
+#
+#keyAlias = karaf
 
-            #
-            # Truststore to use for secure mode
-            #
-            #trustStore = karaf.ts
+#
+# Truststore to use for secure mode
+#
+#trustStore = karaf.ts
 
-            #
-            # Create the JMX RMI registry
-            #
-            #createRmiRegistry = true
+#
+# Create the JMX RMI registry
+#
+#createRmiRegistry = true
 
-            #
-            # Locate the JMX RMI registry
-            #
-            #locateRmiRegistry = true
+#
+# Locate the JMX RMI registry
+#
+#locateRmiRegistry = true
 
-            #
-            # Locate an existing MBean server if possible (usefull when Karaf is embedded)
-            #
-            #locateExistingMBeanServerIfPossible = true
+#
+# Locate an existing MBean server if possible (usefull when Karaf is embedded)
+#
+#locateExistingMBeanServerIfPossible = true
         </config>
         <feature>jaas</feature>
         <bundle dependency="true" start-level="20">mvn:org.apache.aries/org.apache.aries.util/${aries.util.version}</bundle>
@@ -2169,69 +2191,69 @@
 
     <feature name="scheduler" description="Provide a scheduler service in Karaf to fire events" version="${project.version}">
         <config name="org.apache.karaf.scheduler.quartz">
-            ################################################################################
-            #
-            #    Licensed to the Apache Software Foundation (ASF) under one or more
-            #    contributor license agreements.  See the NOTICE file distributed with
-            #    this work for additional information regarding copyright ownership.
-            #    The ASF licenses this file to You under the Apache License, Version 2.0
-            #    (the "License"); you may not use this file except in compliance with
-            #    the License.  You may obtain a copy of the License at
-            #
-            #       http://www.apache.org/licenses/LICENSE-2.0
-            #
-            #    Unless required by applicable law or agreed to in writing, software
-            #    distributed under the License is distributed on an "AS IS" BASIS,
-            #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-            #    See the License for the specific language governing permissions and
-            #    limitations under the License.
-            #
-            ################################################################################
+################################################################################
+#
+#    Licensed to the Apache Software Foundation (ASF) under one or more
+#    contributor license agreements.  See the NOTICE file distributed with
+#    this work for additional information regarding copyright ownership.
+#    The ASF licenses this file to You under the Apache License, Version 2.0
+#    (the "License"); you may not use this file except in compliance with
+#    the License.  You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+#
+################################################################################
 
-            #============================================================================
-            # Configure Karaf Scheduler Properties
-            #============================================================================
-            org.quartz.scheduler.instanceName=Karaf
-            org.quartz.scheduler.instanceId=AUTO
+#============================================================================
+# Configure Karaf Scheduler Properties
+#============================================================================
+org.quartz.scheduler.instanceName=Karaf
+org.quartz.scheduler.instanceId=AUTO
 
-            #============================================================================
-            # Configure ThreadPool
-            #============================================================================
-            org.quartz.threadPool.class=org.quartz.simpl.SimpleThreadPool
-            org.quartz.threadPool.threadCount=30
-            org.quartz.threadPool.threadPriority=5
+#============================================================================
+# Configure ThreadPool
+#============================================================================
+org.quartz.threadPool.class=org.quartz.simpl.SimpleThreadPool
+org.quartz.threadPool.threadCount=30
+org.quartz.threadPool.threadPriority=5
 
-            #============================================================================
-            # Configure JobStore
-            #============================================================================
-            org.quartz.jobStore.class=org.quartz.simpl.RAMJobStore
+#============================================================================
+# Configure JobStore
+#============================================================================
+org.quartz.jobStore.class=org.quartz.simpl.RAMJobStore
         </config>
         <bundle start-level="30">mvn:org.apache.karaf.scheduler/org.apache.karaf.scheduler.core/${project.version}</bundle>
     </feature>
 
     <feature name="eventadmin" description="OSGi Event Admin service specification for event-based communication" version="${project.version}">
         <config name="org.apache.felix.eventadmin.impl.EventAdmin">
-            ################################################################################
-            #
-            #    Licensed to the Apache Software Foundation (ASF) under one or more
-            #    contributor license agreements.  See the NOTICE file distributed with
-            #    this work for additional information regarding copyright ownership.
-            #    The ASF licenses this file to You under the Apache License, Version 2.0
-            #    (the "License"); you may not use this file except in compliance with
-            #    the License.  You may obtain a copy of the License at
-            #
-            #       http://www.apache.org/licenses/LICENSE-2.0
-            #
-            #    Unless required by applicable law or agreed to in writing, software
-            #    distributed under the License is distributed on an "AS IS" BASIS,
-            #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-            #    See the License for the specific language governing permissions and
-            #    limitations under the License.
-            #
-            ################################################################################
+################################################################################
+#
+#    Licensed to the Apache Software Foundation (ASF) under one or more
+#    contributor license agreements.  See the NOTICE file distributed with
+#    this work for additional information regarding copyright ownership.
+#    The ASF licenses this file to You under the Apache License, Version 2.0
+#    (the "License"); you may not use this file except in compliance with
+#    the License.  You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+#
+################################################################################
 
-            org.apache.felix.eventadmin.AddTimestamp=true
-            org.apache.felix.eventadmin.AddSubject=true
+org.apache.felix.eventadmin.AddTimestamp=true
+org.apache.felix.eventadmin.AddSubject=true
         </config>
         <bundle start-level="5">mvn:org.apache.felix/org.apache.felix.metatype/${felix.metatype.version}</bundle>
         <bundle start-level="5">mvn:org.apache.karaf.services/org.apache.karaf.services.eventadmin/${project.version}</bundle>
@@ -2308,7 +2330,7 @@
         blueprint inside web-bundle containers" version="${project.version}">
         <feature>war</feature>
         <feature>aries-blueprint</feature>
-        <bundle>mvn:org.apache.aries.blueprint/org.apache.aries.blueprint.webosgi/${aries.blueprint.web.version}</bundle>
+        <bundle>mvn:org.apache.aries.blueprint/org.apache.aries.blueprint.webosgi/${aries.blueprint.webosgi.version}</bundle>
     </feature>
 
     <feature name="wrap" description="Wrap URL handler" version="${pax.url.version}">
@@ -2317,26 +2339,26 @@
 
     <feature name="profile" description="Profiles support" version="${project.version}">
         <config name="org.apache.karaf.profile">
-            ################################################################################
-            #
-            #    Licensed to the Apache Software Foundation (ASF) under one or more
-            #    contributor license agreements.  See the NOTICE file distributed with
-            #    this work for additional information regarding copyright ownership.
-            #    The ASF licenses this file to You under the Apache License, Version 2.0
-            #    (the "License"); you may not use this file except in compliance with
-            #    the License.  You may obtain a copy of the License at
-            #
-            #       http://www.apache.org/licenses/LICENSE-2.0
-            #
-            #    Unless required by applicable law or agreed to in writing, software
-            #    distributed under the License is distributed on an "AS IS" BASIS,
-            #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-            #    See the License for the specific language governing permissions and
-            #    limitations under the License.
-            #
-            ################################################################################
+################################################################################
+#
+#    Licensed to the Apache Software Foundation (ASF) under one or more
+#    contributor license agreements.  See the NOTICE file distributed with
+#    this work for additional information regarding copyright ownership.
+#    The ASF licenses this file to You under the Apache License, Version 2.0
+#    (the "License"); you may not use this file except in compliance with
+#    the License.  You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+#
+################################################################################
 
-            profilesDirectory = ${karaf.home}/profiles
+profilesDirectory = ${karaf.home}/profiles
         </config>
         <bundle>mvn:org.apache.karaf.profile/org.apache.karaf.profile.core/${project.version}</bundle>
         <bundle>mvn:org.apache.karaf.tooling/org.apache.karaf.tools.utils/${project.version}</bundle>
@@ -2346,28 +2368,28 @@
     <feature name="jolokia" description="Jolokia monitoring support" version="${jolokia.version}">
         <feature>http</feature>
         <config name="org.jolokia.osgi">
-            ################################################################################
-            #
-            #    Licensed to the Apache Software Foundation (ASF) under one or more
-            #    contributor license agreements.  See the NOTICE file distributed with
-            #    this work for additional information regarding copyright ownership.
-            #    The ASF licenses this file to You under the Apache License, Version 2.0
-            #    (the "License"); you may not use this file except in compliance with
-            #    the License.  You may obtain a copy of the License at
-            #
-            #       http://www.apache.org/licenses/LICENSE-2.0
-            #
-            #    Unless required by applicable law or agreed to in writing, software
-            #    distributed under the License is distributed on an "AS IS" BASIS,
-            #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-            #    See the License for the specific language governing permissions and
-            #    limitations under the License.
-            #
-            ################################################################################
+################################################################################
+#
+#    Licensed to the Apache Software Foundation (ASF) under one or more
+#    contributor license agreements.  See the NOTICE file distributed with
+#    this work for additional information regarding copyright ownership.
+#    The ASF licenses this file to You under the Apache License, Version 2.0
+#    (the "License"); you may not use this file except in compliance with
+#    the License.  You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+#
+################################################################################
 
-            org.jolokia.user=karaf
-            org.jolokia.realm=karaf
-            org.jolokia.authMode=jaas
+org.jolokia.user=karaf
+org.jolokia.realm=karaf
+org.jolokia.authMode=jaas
         </config>
         <bundle>mvn:org.jolokia/jolokia-osgi/${jolokia.version}</bundle>
     </feature>
@@ -2381,7 +2403,6 @@
             #
             #    Licensed to the Apache Software Foundation (ASF) under one or more
             #    contributor license agreements.  See the NOTICE file distributed with
-            #    this work for additional information regarding copyright ownership.
             #    The ASF licenses this file to You under the Apache License, Version 2.0
             #    (the "License"); you may not use this file except in compliance with
             #    the License.  You may obtain a copy of the License at
@@ -2417,69 +2438,69 @@
         <feature>eventadmin</feature>
         <bundle start-level="20">mvn:org.apache.karaf.audit/org.apache.karaf.audit.core/${project.version}</bundle>
         <config name="org.apache.karaf.audit">
-            ################################################################################
-            #
-            #    Licensed to the Apache Software Foundation (ASF) under one or more
-            #    contributor license agreements.  See the NOTICE file distributed with
-            #    this work for additional information regarding copyright ownership.
-            #    The ASF licenses this file to You under the Apache License, Version 2.0
-            #    (the "License"); you may not use this file except in compliance with
-            #    the License.  You may obtain a copy of the License at
-            #
-            #       http://www.apache.org/licenses/LICENSE-2.0
-            #
-            #    Unless required by applicable law or agreed to in writing, software
-            #    distributed under the License is distributed on an "AS IS" BASIS,
-            #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-            #    See the License for the specific language governing permissions and
-            #    limitations under the License.
-            #
-            ################################################################################
+################################################################################
+#
+#    Licensed to the Apache Software Foundation (ASF) under one or more
+#    contributor license agreements.  See the NOTICE file distributed with
+#    this work for additional information regarding copyright ownership.
+#    The ASF licenses this file to You under the Apache License, Version 2.0
+#    (the "License"); you may not use this file except in compliance with
+#    the License.  You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+#
+################################################################################
 
-            # Security audit configuration
-            # Only the above 4 loggers are supported
-            # Supported layouts include: simple, gelf, rfc3164, rfc5424
+# Security audit configuration
+# Only the above 4 loggers are supported
+# Supported layouts include: simple, gelf, rfc3164, rfc5424
 
-            # Queue type
-            queue.class = java.util.concurrent.ArrayBlockingQueue
-            # Queue size
-            queue.size = 256
-            # Idle timeout
-            runner.idle-timeout = 60000
-            # Flush timeout
-            runner.flush-timeout = 100
-            # Event filter
-            # filter = (!(type=log))
+# Queue type
+queue.class = java.util.concurrent.ArrayBlockingQueue
+# Queue size
+queue.size = 256
+# Idle timeout
+runner.idle-timeout = 60000
+# Flush timeout
+runner.flush-timeout = 100
+# Event filter
+# filter = (!(type=log))
 
-            # File logger
-            file.enabled = true
-            file.target = ${karaf.data}/log/audit.txt
-            file.encoding = UTF-8
-            file.layout.type = simple
-            # rotating policy: can be 'daily', 'size([0-9]+(kb|mb|gb)?\)'
-            file.policy = daily
-            file.files = 32
-            file.compress = false
+# File logger
+file.enabled = true
+file.target = ${karaf.log}/audit.txt
+file.encoding = UTF-8
+file.layout.type = simple
+# rotating policy: can be 'daily', 'size([0-9]+(kb|mb|gb)?\)'
+file.policy = daily
+file.files = 32
+file.compress = false
 
-            # Tcp logger
-            # tcp.enabled = true
-            # tcp.host = localhost
-            # tcp.port = 8125
-            # tcp.encoding = UTF-8
-            # tcp.layout.type = gelf
+# Tcp logger
+# tcp.enabled = true
+# tcp.host = localhost
+# tcp.port = 8125
+# tcp.encoding = UTF-8
+# tcp.layout.type = gelf
 
-            # Udp logger
-            # udp.enabled = true
-            # udp.host = localhost
-            # udp.port = 514
-            # udp.encoding = UTF-8
-            # udp.layout.type = rfc3164
+# Udp logger
+# udp.enabled = true
+# udp.host = localhost
+# udp.port = 514
+# udp.encoding = UTF-8
+# udp.layout.type = rfc3164
 
-            # JUL logger
-            jul.enabled = false
-            jul.logger = audit
-            jul.level = info
-            jul.layout.type = simple
+# JUL logger
+jul.enabled = false
+jul.logger = audit
+jul.level = info
+jul.layout.type = simple
         </config>
     </feature>
 

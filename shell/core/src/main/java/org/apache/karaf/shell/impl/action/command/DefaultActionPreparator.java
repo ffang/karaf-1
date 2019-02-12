@@ -90,8 +90,9 @@ public class DefaultActionPreparator {
 
         String commandErrorSt = COLOR_RED + "Error executing command " + command.scope() + ":" + INTENSITY_BOLD + command.name() + INTENSITY_NORMAL + COLOR_DEFAULT + ": ";
         for (Object param : params) {
-            if (HelpOption.HELP.name().equals(param)) {
+            if (HelpOption.HELP.name().equals(param.toString())) {
                 int termWidth = session.getTerminal() != null ? session.getTerminal().getWidth() : 80;
+                termWidth = termWidth == 0 ? 80 : termWidth;
                 boolean globalScope = NameScoping.isGlobalScope(session, command.scope());
                 printUsage(action, options, arguments, System.out, globalScope, termWidth);
                 return false;
@@ -372,6 +373,8 @@ public class DefaultActionPreparator {
                                 printDefaultsTo(out, argument.valueToShowInHelp());
                             }
                         }
+                    } else {
+                        printMeta(out, argument.required(), argument.multiValued());
                     }
                 }
                 out.println();
@@ -392,10 +395,14 @@ public class DefaultActionPreparator {
                             String defaultValue = getDefaultValueString(o);
                             if (defaultValue != null) {
                                 printDefaultsTo(out, defaultValue);
+                            } else {
+                              printMeta(out, option.required(), option.multiValued());
                             }
                         } else {
                             printDefaultsTo(out, option.valueToShowInHelp());
                         }
+                    } else {
+                        printMeta(out, option.required(), option.multiValued());
                     }
                 }
                 out.println();
@@ -439,6 +446,24 @@ public class DefaultActionPreparator {
 
     private void printDefaultsTo(PrintStream out, String value) {
         out.println("                (defaults to " + value + ")");
+    }
+
+    private void printMeta(PrintStream out, boolean required, boolean multivalued) {
+        if (required || multivalued) {
+            String text = "                (";
+            if (required) {
+                text += "required";
+                if (multivalued) {
+                    text += ", ";
+                }
+            }
+
+            if (multivalued) {
+                text += "multi-valued";
+            }
+            text += ")";
+            out.println(text);
+        }
     }
 
     static void printFormatted(String prefix, String str, int termWidth, PrintStream out, boolean prefixFirstLine) {

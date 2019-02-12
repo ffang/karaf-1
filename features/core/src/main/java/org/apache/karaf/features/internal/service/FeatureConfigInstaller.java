@@ -111,19 +111,26 @@ public class FeatureConfigInstaller {
             ConfigId cid = parsePid(config.getName());
             Configuration cfg = findExistingConfiguration(configAdmin, cid);
             if (cfg == null) {
-                Dictionary<String, Object> cfgProps = convertToDict(props);
-                cfg = createConfiguration(configAdmin, cid.pid, cid.factoryPid);
-                cfgProps.put(CONFIG_KEY, cid.fullPid);
-                props.put(CONFIG_KEY, cid.fullPid);
+                File cfgFile = null;
                 if (storage != null && configCfgStore) {
-                    File cfgFile = new File(storage, (cid.acl ? "auth/" : "") + cid.fullPid + ".cfg");
-                    cfgProps.put(FILEINSTALL_FILE_NAME, cfgFile.getAbsoluteFile().toURI().toString());
+                    cfgFile = new File(storage, (cid.acl ? "auth/" : "") + cid.fullPid + ".cfg");
                 }
-                cfg.update(cfgProps);
-                try {
-                    updateStorage(cid, props, false);
-                } catch (Exception e) {
-                    LOGGER.warn("Can't update cfg file", e);
+                if (!cfgFile.exists()) {
+                    Dictionary<String, Object> cfgProps = convertToDict(props);
+                    cfg = createConfiguration(configAdmin, cid.pid, cid.factoryPid);
+                    cfgProps.put(CONFIG_KEY, cid.fullPid);
+                    props.put(CONFIG_KEY, cid.fullPid);
+                    if (storage != null && configCfgStore) {
+                        cfgProps.put(FILEINSTALL_FILE_NAME, cfgFile.getAbsoluteFile().toURI().toString());
+                    }
+                    cfg.update(cfgProps);
+                    try {
+                        updateStorage(cid, props, false);
+                    } catch (Exception e) {
+                        LOGGER.warn("Can't update cfg file", e);
+                    }
+                } else {
+                    LOGGER.info("Skipping configuration {} - file already exists", cfgFile);
                 }
             } else if (config.isAppend()) {
                 boolean update = false;

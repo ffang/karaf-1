@@ -17,7 +17,7 @@
 The directory layout of a Karaf installation is as follows:
 
 * `/bin`: control scripts to start, stop, login, ...
-* `/demos`: contains some simple Karaf samples
+* `/examples`: contains several examples to start with Apache Karaf
 * `/etc`: configuration files
 * `/data`: working directory
 ** `/data/cache`: OSGi framework bundle cache
@@ -26,7 +26,7 @@ The directory layout of a Karaf installation is as follows:
 * `/deploy`: hot deploy directory
 * `/instances`: directory containing [instances|instances]
 * `/lib`: contains libraries
-** `/lib/boot`: contains the systeù libraries used at Karaf bootstrap
+** `/lib/boot`: contains the system libraries used at Karaf bootstrap
 ** `/lib/endorsed`: directory for endorsed libraries
 ** `/lib/ext`: directory for JRE extensions
 * `/system`: OSGi bundles repository, laid out as a Maven 2 repository
