@@ -255,16 +255,11 @@
         <geronimo.transaction.manager.version>3.1.3</geronimo.transaction.manager.version>
         <guava.version>25.0.0.redhat-1</guava.version>
         <narayana.version>5.9.0.Final-redhat-00001</narayana.version>
-        <hibernate.annotations.common.version>3.3.0.ga</hibernate.annotations.common.version>
-        <hibernate.annotations.version>3.4.0.GA</hibernate.annotations.version>
-        <hibernate.ejb.version>3.4.0.GA</hibernate.ejb.version>
-        <hibernate3.version>3.3.2.GA</hibernate3.version>
+        <hibernate.annotations.common.version>5.0.4.Final-redhat-00001</hibernate.annotations.common.version>
         <hibernate42.version>4.2.15.Final</hibernate42.version>
         <hibernate43.version>4.3.6.Final</hibernate43.version>
-        <hibernate.version>5.1.16.Final-redhat-00001</hibernate.version>
-        <hibernate.validator.version>5.3.5.Final-redhat-2</hibernate.validator.version>
-        <!--hibernate.version>5.2.17.Final</hibernate.version-->
-        <!--hibernate.validator.version>6.0.14.Final</hibernate.validator.version-->
+        <hibernate.version>5.3.7.Final-redhat-00001</hibernate.version>
+        <hibernate.validator.version>6.0.14.Final-redhat-00001</hibernate.validator.version>
         <httpclient.version>4.5.2.redhat-2</httpclient.version>
         <jansi.version>1.16.0.redhat-4</jansi.version>
         <javassist.version>3.23.1.GA-redhat-00001</javassist.version>
