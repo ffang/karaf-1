@@ -94,6 +94,11 @@ public class EnterpriseFeaturesTest extends KarafTestSupport {
     }
 
     @Test
+    public void installOpenJpa3Feature() throws Exception {
+        installAssertAndUninstallFeatures("openjpa3");
+    }
+
+    @Test
     public void installHibernate4215FinalFeature() throws Exception {
         installAssertAndUninstallFeature("hibernate", "4.2.15.Final");
     }
@@ -141,6 +146,11 @@ public class EnterpriseFeaturesTest extends KarafTestSupport {
     @Test
     public void installSubsystems() throws Exception {
         installAssertAndUninstallFeatures("subsystems");
+    }
+
+    @Test
+    public void installDocker() throws Exception {
+        installAssertAndUninstallFeatures("docker");
     }
 
 }

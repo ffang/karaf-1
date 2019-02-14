@@ -17,15 +17,25 @@
 #
 
 realpath() {
+  # Use in priority xpg4 awk or nawk on SunOS as standard awk is outdated
+  AWK=awk
+  if ${solaris}; then
+      if [ -x /usr/xpg4/bin/awk ]; then
+          AWK=/usr/xpg4/bin/awk
+      elif [ -x /usr/bin/nawk ]; then
+          AWK=/usr/bin/nawk
+      fi
+  fi
+
   READLINK_EXISTS=$(command -v readlink &> /dev/null)
   if [ -z "$READLINK_EXISTS" ]; then
     OURPWD=${PWD}
     cd "$(dirname "${1}")" || exit 2
-    LINK=$(ls -l "$(basename "${1}")" | awk -F"-> " '{print $2}')
+    LINK=$(ls -l "$(basename "${1}")" | ${AWK} -F"-> " '{print $2}')
     while [ "${LINK}" ]; do
         echo "link: ${LINK}" >&2
         cd "$(dirname "${LINK}")" || exit 2
-        LINK=$(ls -l "$(basename "${1}")" | awk -F"-> " '{print $2}')
+        LINK=$(ls -l "$(basename "${1}")" | ${AWK} -F"-> " '{print $2}')
     done
     REALPATH="${PWD}/$(basename "${1}")"
     cd "${OURPWD}" || exit 2
@@ -81,6 +91,16 @@ setupClassPath() {
             CLASSPATH="${CLASSPATH}:${file}"
         fi
     done
+    if [ "${VERSION}" -gt "8" ] ; then
+        for file in "${KARAF_HOME}"/lib/jdk9plus/*.jar
+        do
+            if [ -z "${CLASSPATH}" ]; then
+                CLASSPATH="${file}"
+            else
+                CLASSPATH="${CLASSPATH}:${file}"
+            fi
+        done
+    fi
 }
 
 checkRootInstance() {
@@ -124,6 +144,9 @@ init() {
 
     # Locate the Karaf etc directory
     locateEtc
+
+    # Locate the Karaf log directory
+    locateLog
 
     # Setup the native library path
     setupNativePath
@@ -264,8 +287,8 @@ run() {
 
         # Ensure the log directory exists
         # We may need to have a place to redirect stdout/stderr
-        if [ ! -d "${KARAF_DATA}/log" ]; then
-            mkdir -p "${KARAF_DATA}/log"
+        if [ ! -d "${KARAF_LOG}" ]; then
+            mkdir -p "${KARAF_LOG}"
         fi
         if [ ! -d "${KARAF_DATA}/tmp" ]; then
             mkdir -p "${KARAF_DATA}/tmp"
@@ -273,7 +296,38 @@ run() {
 
         if [ "${ROOT_INSTANCE_RUNNING}" = "false" ] || [ "${CHECK_ROOT_INSTANCE_RUNNING}" = "false" ] ; then
             if [ "${VERSION}" -gt "8" ]; then
-                die "ERROR: Java 8 is the only supported Java version.  Please point JAVA_HOME to a JDK 8 installation."
+                ${KARAF_EXEC} "${JAVA}" ${JAVA_OPTS} \
+                    --add-reads=java.xml=java.logging \
+                    --add-exports=java.base/org.apache.karaf.specs.locator=java.xml,ALL-UNNAMED \
+                    --patch-module java.base=lib/endorsed/org.apache.karaf.specs.locator-@@project.version@@.jar \
+                    --patch-module java.xml=lib/endorsed/org.apache.karaf.specs.java.xml-@@project.version@@.jar \
+                    --add-opens java.base/java.security=ALL-UNNAMED \
+                    --add-opens java.base/java.net=ALL-UNNAMED \
+                    --add-opens java.base/java.lang=ALL-UNNAMED \
+                    --add-opens java.base/java.util=ALL-UNNAMED \
+                    --add-opens java.naming/javax.naming.spi=ALL-UNNAMED \
+                    --add-opens java.rmi/sun.rmi.transport.tcp=ALL-UNNAMED \
+                    --add-exports=java.base/sun.net.www.protocol.http=ALL-UNNAMED \
+                    --add-exports=java.base/sun.net.www.protocol.https=ALL-UNNAMED \
+                    --add-exports=java.base/sun.net.www.protocol.jar=ALL-UNNAMED \
+                    --add-exports=java.xml.bind/com.sun.xml.internal.bind.v2.runtime=ALL-UNNAMED \
+                    --add-exports=jdk.xml.dom/org.w3c.dom.html=ALL-UNNAMED \
+                    --add-exports=jdk.naming.rmi/com.sun.jndi.url.rmi=ALL-UNNAMED \
+                    --add-modules java.xml.ws.annotation,java.corba,java.transaction,java.xml.bind,java.xml.ws \
+                    -Dkaraf.instances="${KARAF_HOME}/instances" \
+                    -Dkaraf.home="${KARAF_HOME}" \
+                    -Dkaraf.base="${KARAF_BASE}" \
+                    -Dkaraf.data="${KARAF_DATA}" \
+                    -Dkaraf.etc="${KARAF_ETC}" \
+                    -Dkaraf.log="${KARAF_LOG}" \
+                    -Dkaraf.restart.jvm.supported=true \
+                    -Djava.io.tmpdir="${KARAF_DATA}/tmp" \
+                    -Djava.util.logging.config.file="${KARAF_BASE}/etc/java.util.logging.properties" \
+                    ${KARAF_SYSTEM_OPTS} \
+                    ${KARAF_OPTS} \
+                    ${OPTS} \
+                    -classpath "${CLASSPATH}" \
+                    ${MAIN} "$@"
             else
                 ${KARAF_EXEC} "${JAVA}" ${JAVA_OPTS} \
                     -Djava.endorsed.dirs="${JAVA_ENDORSED_DIRS}" \
@@ -283,6 +337,7 @@ run() {
                     -Dkaraf.base="${KARAF_BASE}" \
                     -Dkaraf.data="${KARAF_DATA}" \
                     -Dkaraf.etc="${KARAF_ETC}" \
+                    -Dkaraf.log="${KARAF_LOG}" \
                     -Dkaraf.restart.jvm.supported=true \
                     -Djava.io.tmpdir="${KARAF_DATA}/tmp" \
                     -Djava.util.logging.config.file="${KARAF_BASE}/etc/java.util.logging.properties" \

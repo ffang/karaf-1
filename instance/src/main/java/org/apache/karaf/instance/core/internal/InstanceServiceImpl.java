@@ -31,12 +31,15 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFilePermission;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.felix.utils.properties.InterpolationHelper;
@@ -337,8 +340,28 @@ public class InstanceServiceImpl implements InstanceService {
                 "etc/distribution.info",
                 "etc/equinox-debug.properties",
                 "etc/java.util.logging.properties",
+                "etc/auth/jmx.acl.cfg",
+                "etc/auth/jmx.acl.java.lang.Memory.cfg",
+                "etc/auth/jmx.acl.org.apache.karaf.bundle.cfg",
+                "etc/auth/jmx.acl.org.apache.karaf.config.cfg",
+                "etc/auth/jmx.acl.org.apache.karaf.security.jmx.cfg",
+                "etc/auth/jmx.acl.osgi.compendium.cm.cfg",
                 "etc/jre.properties",
                 "etc/keys.properties",
+                "etc/org.apache.felix.eventadmin.impl.EventAdmin.cfg",
+                "etc/org.apache.felix.fileinstall-deploy.cfg",
+                "etc/auth/org.apache.karaf.command.acl.bundle.cfg",
+                "etc/auth/org.apache.karaf.command.acl.config.cfg",
+                "etc/auth/org.apache.karaf.command.acl.feature.cfg",
+                "etc/auth/org.apache.karaf.command.acl.jaas.cfg",
+                "etc/auth/org.apache.karaf.command.acl.kar.cfg",
+                "etc/auth/org.apache.karaf.command.acl.scope_bundle.cfg",
+                "etc/auth/org.apache.karaf.command.acl.shell.cfg",
+                "etc/auth/org.apache.karaf.command.acl.system.cfg",
+                "etc/org.apache.karaf.features.repos.cfg",
+                "etc/org.apache.karaf.jaas.cfg",
+                "etc/org.apache.karaf.kar.cfg",
+                "etc/org.apache.karaf.log.cfg",
                 "etc/org.ops4j.pax.logging.cfg",
                 "etc/org.ops4j.pax.url.mvn.cfg",
                 "etc/shell.init.script",
@@ -385,9 +408,9 @@ public class InstanceServiceImpl implements InstanceService {
             copyFilteredResourcesToDir(filteredResources, karafBase, textResources, props, printOutput);
 
             try {
-                chmod(new File(karafBase, "bin/karaf"), "a+x");
-                chmod(new File(karafBase, "bin/start"), "a+x");
-                chmod(new File(karafBase, "bin/stop"), "a+x");
+                makeFileExecutable(new File(karafBase, "bin/karaf"));
+                makeFileExecutable(new File(karafBase, "bin/start"));
+                makeFileExecutable(new File(karafBase, "bin/stop"));
             } catch (IOException e) {
                 LOGGER.debug("Could not set file mode on scripts.", e);
             }
@@ -518,6 +541,7 @@ public class InstanceServiceImpl implements InstanceService {
                 + " -Dkaraf.base=\"" + new File(location).getCanonicalPath() + "\""
                 + " -Dkaraf.data=\"" + new File(new File(location).getCanonicalPath(), "data") + "\""
                 + " -Dkaraf.etc=\"" + new File(new File(location).getCanonicalPath(), "etc") + "\""
+                + " -Dkaraf.log=\"" + new File(new File(new File(location).getCanonicalFile(), "data"), "log") + "\""
                 + " -Djava.io.tmpdir=\"" + new File(new File(location).getCanonicalPath(), "data" + File.separator + "tmp") + "\""
                 + " -Dkaraf.startLocalConsole=false"
                 + " -Dkaraf.startRemoteShell=true"
@@ -595,6 +619,7 @@ public class InstanceServiceImpl implements InstanceService {
                         + " -Dkaraf.base=\"" + new File(location).getCanonicalPath() + "\""
                         + " -Dkaraf.data=\"" + new File(new File(location).getCanonicalPath(), "data") + "\""
                         + " -Dkaraf.etc=\"" + new File(new File(location).getCanonicalPath(), "etc") + "\""
+                        + " -Dkaraf.log=\"" + new File(new File(new File(location).getCanonicalFile(), "data"), "log") + "\""
                         + " -Dkaraf.instances=\"" + System.getProperty("karaf.instances") + "\""
                         + " -classpath \"" + classpath.toString() + "\""
                         + " " + Execute.class.getName()
@@ -807,6 +832,7 @@ public class InstanceServiceImpl implements InstanceService {
             props.put("karaf.home", System.getProperty("karaf.home"));
             props.put("karaf.data", new File(new File(instance.loc), "data").getCanonicalPath());
             props.put("karaf.etc", new File(new File(instance.loc), "etc").getCanonicalPath());
+            props.put("karaf.log", new File(new File(new File(instance.loc), "data"), "log").getCanonicalPath());
             InterpolationHelper.performSubstitution(props, null, true, false, true);
             int port = Integer.parseInt(props.getProperty(KARAF_SHUTDOWN_PORT, "0"));
             String host = props.getProperty(KARAF_SHUTDOWN_HOST, "localhost");
@@ -1047,6 +1073,7 @@ public class InstanceServiceImpl implements InstanceService {
     private void copyResourceToDir(String resource, File target, Map<String, URL> resources, boolean printOutput) throws IOException {
         File outFile = new File(target, resource);
         if( !outFile.exists() ) {
+            outFile.getParentFile().mkdirs();
             logDebug("Creating file: %s", printOutput, outFile.getPath());
             try (
                 InputStream is = getResourceStream(resource, resources);
@@ -1180,24 +1207,22 @@ public class InstanceServiceImpl implements InstanceService {
         }
     }
 
-    private int chmod(File serviceFile, String mode) throws IOException {
-        java.lang.ProcessBuilder builder = new java.lang.ProcessBuilder();
-        builder.command("chmod", mode, serviceFile.getCanonicalPath());
-        java.lang.Process p = builder.start();
-
-        // gnodet: Fix SMX4KNL-46: cpu goes to 100% after running the 'admin create' command
-        // Not sure exactly what happens, but commenting the process io redirection seems
-        // to work around the problem.
-        //
-        //PumpStreamHandler handler = new PumpStreamHandler(io.inputStream, io.outputStream, io.errorStream);
-        //handler.attach(p);
-        //handler.start();
+    private void makeFileExecutable(File serviceFile) throws IOException {
         try {
-            return p.waitFor();
-        } catch (InterruptedException e) {
-            throw (IOException) new InterruptedIOException().initCause(e);
+            Set<PosixFilePermission> permissions = new HashSet<>();
+            permissions.add(PosixFilePermission.OWNER_EXECUTE);
+            permissions.add(PosixFilePermission.GROUP_EXECUTE);
+            permissions.add(PosixFilePermission.OTHERS_EXECUTE);
+
+            // Get the existing permissions and add the executable permissions to them
+            Set<PosixFilePermission> filePermissions = Files.getPosixFilePermissions(serviceFile.toPath());
+            filePermissions.addAll(permissions);
+            Files.setPosixFilePermissions(serviceFile.toPath(), filePermissions);
         }
-        //handler.stop();
+        catch (UnsupportedOperationException ex)
+        {
+            serviceFile.setExecutable(true, false);
+        }
     }
 
     private void copy(File source, File destination) throws IOException {

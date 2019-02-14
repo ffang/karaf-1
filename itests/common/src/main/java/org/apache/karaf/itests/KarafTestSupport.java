@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.ServerSocket;
+import java.net.URI;
 import java.net.URL;
 import java.security.Principal;
 import java.security.PrivilegedExceptionAction;
@@ -57,9 +58,11 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import org.ops4j.pax.exam.*;
+import org.ops4j.pax.exam.karaf.container.internal.JavaVersionUtil;
 import org.ops4j.pax.exam.karaf.options.KarafDistributionOption;
 import org.ops4j.pax.exam.karaf.options.LogLevelOption.LogLevel;
 import org.ops4j.pax.exam.options.MavenArtifactUrlReference;
+import org.ops4j.pax.exam.options.extra.VMOption;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -72,11 +75,13 @@ import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.debugConfiguration;
+
 public class KarafTestSupport {
 
     private static final EnumSet<FeaturesService.Option> NO_AUTO_REFRESH = EnumSet.of(FeaturesService.Option.NoAutoRefreshBundles);
     public static final String MIN_RMI_SERVER_PORT = "44444";
-    public static final String MAX_RMI_SERVER_PORT = "66666";
+    public static final String MAX_RMI_SERVER_PORT = "65534";
     public static final String MIN_HTTP_PORT = "9080";
     public static final String MAX_HTTP_PORT = "9999";
     public static final String MIN_RMI_REG_PORT = "1099";
@@ -169,7 +174,6 @@ public class KarafTestSupport {
     @Configuration
     public Option[] config() {
         MavenArtifactUrlReference karafUrl = CoreOptions.maven().groupId("org.apache.karaf").artifactId("apache-karaf").versionAsInProject().type("tar.gz");
-
         String httpPort = Integer.toString(getAvailablePort(Integer.parseInt(MIN_HTTP_PORT), Integer.parseInt(MAX_HTTP_PORT)));
         String rmiRegistryPort = Integer.toString(getAvailablePort(Integer.parseInt(MIN_RMI_REG_PORT), Integer.parseInt(MAX_RMI_REG_PORT)));
         String rmiServerPort = Integer.toString(getAvailablePort(Integer.parseInt(MIN_RMI_SERVER_PORT), Integer.parseInt(MAX_RMI_SERVER_PORT)));
@@ -179,8 +183,77 @@ public class KarafTestSupport {
             localRepository = "";
         }
 
-        return new Option[]{
+        if (JavaVersionUtil.getMajorVersion() >= 9) {
+            
+            return new Option[]{
                 //debugConfiguration("8889", true),
+                KarafDistributionOption.karafDistributionConfiguration().frameworkUrl(karafUrl).name("Apache Karaf").unpackDirectory(new File("target/exam")),
+                // enable JMX RBAC security, thanks to the KarafMBeanServerBuilder
+                KarafDistributionOption.configureSecurity().disableKarafMBeanServerBuilder(),
+                KarafDistributionOption.configureConsole().ignoreLocalConsole(),
+                KarafDistributionOption.keepRuntimeFolder(),
+                KarafDistributionOption.logLevel(LogLevel.INFO),
+                CoreOptions.mavenBundle().groupId("org.awaitility").artifactId("awaitility").versionAsInProject(),
+                CoreOptions.mavenBundle().groupId("org.apache.servicemix.bundles").artifactId("org.apache.servicemix.bundles.hamcrest").versionAsInProject(),
+                CoreOptions.mavenBundle().groupId("org.apache.karaf.itests").artifactId("common").versionAsInProject(),
+                CoreOptions.mavenBundle().groupId("javax.annotation").artifactId("javax.annotation-api").versionAsInProject(),
+                KarafDistributionOption.replaceConfigurationFile("etc/org.ops4j.pax.logging.cfg", getConfigFile("/etc/org.ops4j.pax.logging.cfg")),
+                //replaceConfigurationFile("etc/host.key", getConfigFile("/etc/host.key")),
+                KarafDistributionOption.editConfigurationFilePut("etc/org.apache.karaf.features.cfg", "updateSnapshots", "none"),
+                KarafDistributionOption.editConfigurationFilePut("etc/org.ops4j.pax.web.cfg", "org.osgi.service.http.port", httpPort),
+                KarafDistributionOption.editConfigurationFilePut("etc/org.apache.karaf.management.cfg", "rmiRegistryPort", rmiRegistryPort),
+                KarafDistributionOption.editConfigurationFilePut("etc/org.apache.karaf.management.cfg", "rmiServerPort", rmiServerPort),
+                KarafDistributionOption.editConfigurationFilePut("etc/org.apache.karaf.shell.cfg", "sshPort", sshPort),
+                KarafDistributionOption.editConfigurationFilePut("etc/org.ops4j.pax.url.mvn.cfg", "org.ops4j.pax.url.mvn.localRepository", localRepository),
+                KarafDistributionOption.editConfigurationFileExtend("etc/org.ops4j.pax.url.mvn.cfg", "org.ops4j.pax.url.mvn.repositories", "https://maven.repository.redhat.com/ga@id=redhat.ga.repo"),
+                KarafDistributionOption.editConfigurationFilePut("etc/system.properties", "spring31.version", System.getProperty("spring31.version")),
+                KarafDistributionOption.editConfigurationFilePut("etc/system.properties", "spring32.version", System.getProperty("spring32.version")),
+                KarafDistributionOption.editConfigurationFilePut("etc/system.properties", "spring40.version", System.getProperty("spring40.version")),
+                KarafDistributionOption.editConfigurationFilePut("etc/system.properties", "spring41.version", System.getProperty("spring41.version")),
+                KarafDistributionOption.editConfigurationFilePut("etc/system.properties", "spring42.version", System.getProperty("spring42.version")),
+                KarafDistributionOption.editConfigurationFilePut("etc/system.properties", "spring43.version", System.getProperty("spring43.version")),
+                KarafDistributionOption.editConfigurationFilePut("etc/system.properties", "spring50.version", System.getProperty("spring50.version")),
+                KarafDistributionOption.editConfigurationFilePut("etc/system.properties", "spring51.version", System.getProperty("spring51.version")),
+                KarafDistributionOption.editConfigurationFilePut("etc/system.properties", "spring.security31.version", System.getProperty("spring.security31.version")),
+                KarafDistributionOption.editConfigurationFilePut("etc/system.properties", "spring.security42.version", System.getProperty("spring.security42.version")),
+                KarafDistributionOption.editConfigurationFilePut("etc/system.properties", "spring.security51.version", System.getProperty("spring.security51.version")),
+                KarafDistributionOption.editConfigurationFilePut("etc/system.properties", "activemq.version", System.getProperty("activemq.version")),
+                KarafDistributionOption.editConfigurationFilePut("etc/branding.properties", "welcome", ""), // No welcome banner
+                KarafDistributionOption.editConfigurationFilePut("etc/branding-ssh.properties", "welcome", ""),
+                KarafDistributionOption.editConfigurationFilePut("etc/system.properties", "karaf.secured.command.compulsory.roles", ""),
+                KarafDistributionOption.editConfigurationFilePut("etc/config.properties", "felix.fileinstall.subdir.mode", "recurse"),
+                new VMOption("--add-reads=java.xml=java.logging"),
+                new VMOption("--add-exports=java.base/org.apache.karaf.specs.locator=java.xml,ALL-UNNAMED"),
+                new VMOption("--patch-module"),
+                new VMOption("java.base=lib/endorsed/org.apache.karaf.specs.locator-" 
+                + System.getProperty("karaf.version", "4.2.2-SNAPSHOT") + ".jar"),
+                new VMOption("--patch-module"),
+                new VMOption("java.xml=lib/endorsed/org.apache.karaf.specs.java.xml-" 
+                + System.getProperty("karaf.version", "4.2.2-SNAPSHOT") + ".jar"),
+                new VMOption("--add-opens"),
+                new VMOption("java.base/java.security=ALL-UNNAMED"),
+                new VMOption("--add-opens"),
+                new VMOption("java.base/java.net=ALL-UNNAMED"),
+                new VMOption("--add-opens"),
+                new VMOption("java.base/java.lang=ALL-UNNAMED"),
+                new VMOption("--add-opens"),
+                new VMOption("java.base/java.util=ALL-UNNAMED"),
+                new VMOption("--add-opens"),
+                new VMOption("java.naming/javax.naming.spi=ALL-UNNAMED"),
+                new VMOption("--add-opens"),
+                new VMOption("java.rmi/sun.rmi.transport.tcp=ALL-UNNAMED"),
+                new VMOption("--add-exports=java.base/sun.net.www.protocol.http=ALL-UNNAMED"),
+                new VMOption("--add-exports=java.base/sun.net.www.protocol.https=ALL-UNNAMED"),
+                new VMOption("--add-exports=java.base/sun.net.www.protocol.jar=ALL-UNNAMED"),
+                new VMOption("--add-exports=jdk.naming.rmi/com.sun.jndi.url.rmi=ALL-UNNAMED"),
+                new VMOption("-classpath"),
+                new VMOption("lib/jdk9plus/*" + File.pathSeparator + "lib/boot/*")
+                
+            };
+        } else {
+                
+            return new Option[]{
+//                debugConfiguration("8889", true),
                 KarafDistributionOption.karafDistributionConfiguration().frameworkUrl(karafUrl).name("Apache Karaf").unpackDirectory(new File("target/exam")),
                 // enable JMX RBAC security, thanks to the KarafMBeanServerBuilder
                 KarafDistributionOption.configureSecurity().disableKarafMBeanServerBuilder(),
@@ -206,12 +279,18 @@ public class KarafTestSupport {
                 KarafDistributionOption.editConfigurationFilePut("etc/system.properties", "spring42.version", System.getProperty("spring42.version")),
                 KarafDistributionOption.editConfigurationFilePut("etc/system.properties", "spring43.version", System.getProperty("spring43.version")),
                 KarafDistributionOption.editConfigurationFilePut("etc/system.properties", "spring50.version", System.getProperty("spring50.version")),
+                KarafDistributionOption.editConfigurationFilePut("etc/system.properties", "spring51.version", System.getProperty("spring51.version")),
                 KarafDistributionOption.editConfigurationFilePut("etc/system.properties", "spring.security31.version", System.getProperty("spring.security31.version")),
                 KarafDistributionOption.editConfigurationFilePut("etc/system.properties", "spring.security42.version", System.getProperty("spring.security42.version")),
+                KarafDistributionOption.editConfigurationFilePut("etc/system.properties", "spring.security51.version", System.getProperty("spring.security51.version")),
                 KarafDistributionOption.editConfigurationFilePut("etc/system.properties", "activemq.version", System.getProperty("activemq.version")),
                 KarafDistributionOption.editConfigurationFilePut("etc/branding.properties", "welcome", ""), // No welcome banner
-                KarafDistributionOption.editConfigurationFilePut("etc/branding-ssh.properties", "welcome", "")
-        };
+                KarafDistributionOption.editConfigurationFilePut("etc/branding-ssh.properties", "welcome", ""),
+                KarafDistributionOption.editConfigurationFilePut("etc/system.properties", "karaf.secured.command.compulsory.roles", ""),
+                KarafDistributionOption.editConfigurationFilePut("etc/config.properties", "felix.fileinstall.subdir.mode", "recurse")
+            };
+                                
+        }
     }
 
     public static int getAvailablePort(int min, int max) {
@@ -234,7 +313,7 @@ public class KarafTestSupport {
      * @param principals The principals (e.g. RolePrincipal objects) to run the command under
      * @return
      */
-    protected String executeCommand(final String command, Principal ... principals) {
+    public String executeCommand(final String command, Principal ... principals) {
         return executeCommand(command, COMMAND_TIMEOUT, false, principals);
     }
 
@@ -248,7 +327,7 @@ public class KarafTestSupport {
      * @param principals The principals (e.g. RolePrincipal objects) to run the command under
      * @return
      */
-    protected String executeCommand(final String command, final Long timeout, final Boolean silent, final Principal ... principals) {
+    public String executeCommand(final String command, final Long timeout, final Boolean silent, final Principal ... principals) {
         waitForCommandService(command);
 
         String response;
@@ -300,17 +379,78 @@ public class KarafTestSupport {
         return response;
     }
 
+    public void assertServiceAvailable(String type) {
+        Assert.assertNotNull(getOsgiService(type));
+    }
 
-    protected <T> T getOsgiService(Class<T> type, long timeout) {
+    public void assertServiceAvailable(Class type) {
+        Assert.assertNotNull(getOsgiService(type));
+    }
+
+    public void assertServiceAvailable(Class type, long timeout) {
+        Assert.assertNotNull(getOsgiService(type, timeout));
+    }
+
+    public void assertServiceAvailable(Class type, String filter, long timeout) {
+        Assert.assertNotNull(getOsgiService(type, filter, timeout));
+    }
+
+    public <T> T getOsgiService(Class<T> type, long timeout) {
         return getOsgiService(type, null, timeout);
     }
 
-    protected <T> T getOsgiService(Class<T> type) {
+    public <T> T getOsgiService(Class<T> type) {
+        return getOsgiService(type, null, SERVICE_TIMEOUT);
+    }
+
+    public Object getOsgiService(String type) {
         return getOsgiService(type, null, SERVICE_TIMEOUT);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    protected <T> T getOsgiService(Class<T> type, String filter, long timeout) {
+    public Object getOsgiService(String type, String filter, long timeout) {
+        ServiceTracker tracker = null;
+        try {
+            String flt;
+            if (filter != null) {
+                if (filter.startsWith("(")) {
+                    flt = "(&(" + Constants.OBJECTCLASS + "=" + type + ")" + filter + ")";
+                } else {
+                    flt = "(&(" + Constants.OBJECTCLASS + "=" + type + ")(" + filter + "))";
+                }
+            } else {
+                flt = "(" + Constants.OBJECTCLASS + "=" + type + ")";
+            }
+            Filter osgiFilter = FrameworkUtil.createFilter(flt);
+            tracker = new ServiceTracker(bundleContext, osgiFilter, null);
+            tracker.open(true);
+            // Note that the tracker is not closed to keep the reference
+            // This is buggy, as the service reference may change i think
+            Object svc = tracker.waitForService(timeout);
+            if (svc == null) {
+                Dictionary dic = bundleContext.getBundle().getHeaders();
+                System.err.println("Test bundle headers: " + explode(dic));
+
+                for (ServiceReference ref : asCollection(bundleContext.getAllServiceReferences(null, null))) {
+                    System.err.println("ServiceReference: " + ref);
+                }
+
+                for (ServiceReference ref : asCollection(bundleContext.getAllServiceReferences(null, flt))) {
+                    System.err.println("Filtered ServiceReference: " + ref);
+                }
+
+                throw new RuntimeException("Gave up waiting for service " + flt);
+            }
+            return svc;
+        } catch (InvalidSyntaxException e) {
+            throw new IllegalArgumentException("Invalid filter", e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public <T> T getOsgiService(Class<T> type, String filter, long timeout) {
         ServiceTracker tracker = null;
         try {
             String flt;
@@ -382,7 +522,7 @@ public class KarafTestSupport {
         }
     }
 
-    protected void waitForService(String filter, long timeout) throws InvalidSyntaxException, InterruptedException {
+    public void waitForService(String filter, long timeout) throws InvalidSyntaxException, InterruptedException {
         ServiceTracker<Object, Object> st = new ServiceTracker<>(bundleContext, bundleContext.createFilter(filter), null);
         try {
             st.open();
@@ -392,7 +532,7 @@ public class KarafTestSupport {
         }
     }
 
-    protected Bundle waitBundleState(String symbolicName, int state) {
+    public Bundle waitBundleState(String symbolicName, int state) {
         long endTime = System.currentTimeMillis() + BUNDLE_TIMEOUT;
         while (System.currentTimeMillis() < endTime) {
             Bundle bundle = findBundleByName(symbolicName);
@@ -463,6 +603,14 @@ public class KarafTestSupport {
         return "8101";
     }
 
+    public String getHttpPort() throws Exception {
+        org.osgi.service.cm.Configuration configuration = configurationAdmin.getConfiguration("org.ops4j.pax.web", null);
+        if (configuration != null) {
+            return configuration.getProperties().get("org.osgi.service.http.port").toString();
+        }
+        return "8181";
+    }
+
     public void assertFeatureInstalled(String featureName) throws Exception {
         String name;
         String version;
@@ -530,15 +678,22 @@ public class KarafTestSupport {
         Assert.assertFalse("Should not contain '" + expectedPart + "' but was : " + actual, actual.contains(expectedPart));
     }
 
-    protected void assertBundleInstalled(String name) {
+    public void assertBundleInstalled(String name) {
         Assert.assertNotNull("Bundle " + name + " should be installed", findBundleByName(name));
     }
 
-    protected void assertBundleNotInstalled(String name) {
+    public void assertBundleNotInstalled(String name) {
         Assert.assertNull("Bundle " + name + " should not be installed", findBundleByName(name));
     }
 
-    protected Bundle findBundleByName(String symbolicName) {
+    public void installBundle(String bundleLocation, boolean start) throws Exception {
+        Bundle bundle = bundleContext.installBundle(bundleLocation);
+        if (start) {
+            bundle.start();
+        }
+    }
+
+    public Bundle findBundleByName(String symbolicName) {
         for (Bundle bundle : bundleContext.getBundles()) {
             if (bundle.getSymbolicName().equals(symbolicName)) {
                 return bundle;
@@ -547,16 +702,20 @@ public class KarafTestSupport {
         return null;
     }
 
-    protected void installAndAssertFeature(String feature) throws Exception {
+    public void addFeaturesRepository(String featuresRepository) throws Exception {
+        featureService.addRepository(new URI(featuresRepository));
+    }
+
+    public void installAndAssertFeature(String feature) throws Exception {
         featureService.installFeature(feature, NO_AUTO_REFRESH);
         assertFeatureInstalled(feature);
     }
 
-    protected void installAssertAndUninstallFeature(String feature, String version) throws Exception {
+    public void installAssertAndUninstallFeature(String feature, String version) throws Exception {
         installAssertAndUninstallFeatures(feature + "/" + version);
     }
 
-    protected void installAssertAndUninstallFeatures(String... feature) throws Exception {
+    public void installAssertAndUninstallFeatures(String... feature) throws Exception {
         boolean success = false;
         Set<String> features = new HashSet<>(Arrays.asList(feature));
         try {
@@ -585,7 +744,7 @@ public class KarafTestSupport {
      * @param featuresBefore
      * @throws Exception
      */
-    protected void uninstallNewFeatures(Set<Feature> featuresBefore) throws Exception {
+    public void uninstallNewFeatures(Set<Feature> featuresBefore) throws Exception {
         Feature[] features = featureService.listInstalledFeatures();
         Set<String> uninstall = new HashSet<>();
         for (Feature curFeature : features) {
@@ -601,7 +760,7 @@ public class KarafTestSupport {
         }
     }
 
-    protected void close(Closeable closeAble) {
+    public void close(Closeable closeAble) {
         if (closeAble != null) {
             try {
                 closeAble.close();

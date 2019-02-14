@@ -239,7 +239,8 @@ public class Main {
         }
         String log4jConfigPath = System.getProperty("karaf.etc") + "/org.ops4j.pax.logging.cfg";
         BootstrapLogManager.setProperties(config.props, log4jConfigPath);
-        InstanceHelper.updateInstancePid(config.karafHome, config.karafBase, true);
+        /* KARAF-5798: write the PID whether or not the lock has been acquired */
+        InstanceHelper.writePid(config.pidFile);
         BootstrapLogManager.configureLogger(LOG);
 
         for (String provider : config.securityProviders) {
@@ -386,9 +387,15 @@ public class Main {
     private void doMonitor() throws Exception {
         lock = createLock();
         File dataDir = new File(System.getProperty(ConfigProperties.PROP_KARAF_DATA));
+        int livenessFailureCount = 0;
+        boolean locked = false;
         while (!exiting) {
             if (lock.lock()) {
-                lockCallback.lockAcquired();
+                livenessFailureCount = 0;
+                if (!locked) {
+                    lockCallback.lockAcquired();
+                    locked = true;
+                }
                 for (;;) {
                     if (!dataDir.isDirectory()) {
                         LOG.info("Data directory does not exist anymore, halting");
@@ -406,17 +413,31 @@ public class Main {
                     }
                 }
                 if (!exiting) {
-                    lockCallback.lockLost();
+                    livenessFailureCount++;
+                    if (livenessFailureCount > config.lockLostThreshold) {
+                        locked = false;
+                        lockCallback.lockLost();
+                    }
                 } else {
                     lockCallback.stopShutdownThread();
                 }
             } else {
-                if (config.lockSlaveBlock) {
-                    LOG.log(Level.SEVERE, "Can't lock, and lock is exclusive");
-                    System.err.println("Can't lock (another instance is running), and lock is exclusive");
-                    System.exit(5);
+                if (locked) {
+                    livenessFailureCount++;
+                    if (livenessFailureCount <= config.lockLostThreshold) {
+                        lockCallback.waitingForLock();
+                    } else {
+                        locked = false;
+                        lockCallback.lockLost();
+                    }
                 } else {
-                    lockCallback.waitingForLock();
+                    if (config.lockSlaveBlock) {
+                        LOG.log(Level.SEVERE, "Can't lock, and lock is exclusive");
+                        System.err.println("Can't lock (another instance is running), and lock is exclusive");
+                        System.exit(5);
+                    } else {
+                        lockCallback.waitingForLock();
+                    }
                 }
             }
             try {
@@ -746,6 +767,8 @@ public class Main {
         @Override
         public void lockAcquired() {
             LOG.info("Lock acquired. Setting startlevel to " + config.defaultStartLevel);
+            /* KARAF-5798: instance PID should reflect the current running master */
+            InstanceHelper.updateInstancePid(config.karafHome, config.karafBase, true);
             shutdownThread = InstanceHelper.setupShutdown(config, framework);
             setStartLevel(config.defaultStartLevel);
         }

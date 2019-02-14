@@ -83,7 +83,6 @@ hostKey = ${karaf.etc}/host.key
 
 #
 # Role name used for SSH access authorization
-# If not set, this defaults to the ${karaf.admin.role} configured in etc/system.properties
 #
 # sshRole = admin
 
@@ -125,8 +124,7 @@ The `etc/org.apache.karaf.shell.cfg` configuration file contains different prope
  address of the network interface.
 * `hostKey` is the location of the `host.key` file. By defaut, it uses `etc/host.key`. This file stores the public
  and private key pair of the SSHd server.
-* `sshRole` is the default role used for SSH access. The default value is the value of `karaf.admin.role` property
- defined in `etc/system.properties`. See the [Security section|security] of this user guide for details.
+* `sshRole` is the default role used for SSH access. See the [Security section|security] of this user guide for details.
 * `sftpEnabled` controls if the SSH server start the SFTP system or not. When enabled, Karaf SSHd supports SFTP, meaning
  that you can remotely access to the Karaf filesystem with any sftp clients.
 * `keySize` is the key size used by the SSHd server. The possible values are 1024, 2048, 3072, or 4096. The default
@@ -386,11 +384,11 @@ Password:
 lftp karaf@localhost:~> ls
 -rw-r--r--   1 jbonofre jbonofre    27754 Oct 26 10:50 LICENSE
 -rw-r--r--   1 jbonofre jbonofre     1919 Dec  3 05:34 NOTICE
--rw-r--r--   1 jbonofre jbonofre     3933 Aug 18  2012 README
--rw-r--r--   1 jbonofre jbonofre   101041 Dec  3 05:34 RELEASE-NOTES
+-rw-r--r--   1 jbonofre jbonofre     3933 Aug 18  2012 README.md
+-rw-r--r--   1 jbonofre jbonofre   101041 Dec  3 05:34 RELEASE-NOTES.md
 drwxr-xr-x   1 jbonofre jbonofre     4096 Dec  3 12:51 bin
 drwxr-xr-x   1 jbonofre jbonofre     4096 Dec  3 18:57 data
-drwxr-xr-x   1 jbonofre jbonofre     4096 Dec  3 12:51 demos
+drwxr-xr-x   1 jbonofre jbonofre     4096 Dec  3 12:51 examples
 drwxr-xr-x   1 jbonofre jbonofre     4096 Dec  3 13:02 deploy
 drwxr-xr-x   1 jbonofre jbonofre     4096 Dec  3 17:59 etc
 drwxr-xr-x   1 jbonofre jbonofre     4096 Dec  3 13:02 instances

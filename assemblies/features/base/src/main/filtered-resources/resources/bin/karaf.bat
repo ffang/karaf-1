@@ -95,6 +95,16 @@ if "%KARAF_ETC%" == "" (
     set "KARAF_ETC=%KARAF_BASE%\etc"
 )
 
+if not "%KARAF_LOG%" == "" (
+    if not exist "%KARAF_LOG%" (
+        call :warn KARAF_LOG is not valid: "%KARAF_LOG%"
+        goto END
+    )
+)
+if "%KARAF_LOG%" == "" (
+    set "KARAF_LOG=%KARAF_DATA%\log"
+)
+
 set LOCAL_CLASSPATH=%CLASSPATH%
 
 set CLASSPATH=%LOCAL_CLASSPATH%;%KARAF_BASE%\conf
@@ -291,6 +301,12 @@ set suffix=%filename:~-4%
 if %suffix% equ .jar set CLASSPATH=%CLASSPATH%;%KARAF_HOME%\lib\boot\%filename%
 goto :EOF
 
+: APPEND_TO_JDK9PLUS_CLASSPATH
+set filename=%~1
+set suffix=%filename:~-4%
+if %suffix% equ .jar set CLASSPATH=%CLASSPATH%;%KARAF_HOME%\lib\jdk9plus\%filename%
+goto :EOF
+
 :CLASSPATH_END
 
 if "%CHECK_ROOT_INSTANCE_RUNNING%" == "" (
@@ -403,8 +419,33 @@ if "%KARAF_PROFILER%" == "" goto :RUN
         rem If major version is greater than 1 (meaning Java 9 or 10), we don't use endorsed lib but module
         rem If major version is 1 (meaning Java 1.6, 1.7, 1.8), we use endorsed lib
         if %JAVA_VERSION% GTR 8 (
-            echo ERROR: Java 8 is the only supported Java version.  Please point JAVA_HOME to a JDK 8 installation.
-            goto :END
+            "%JAVA%" %JAVA_OPTS% %OPTS% ^
+                --add-reads=java.xml=java.logging ^
+                --add-exports=java.base/org.apache.karaf.specs.locator=java.xml,ALL-UNNAMED ^
+                --patch-module java.base=lib/endorsed/org.apache.karaf.specs.locator-@@project.version@@.jar ^
+                --patch-module java.xml=lib/endorsed/org.apache.karaf.specs.java.xml-@@project.version@@.jar ^
+                --add-opens java.base/java.security=ALL-UNNAMED ^
+                --add-opens java.base/java.net=ALL-UNNAMED ^
+                --add-opens java.base/java.lang=ALL-UNNAMED ^
+                --add-opens java.base/java.util=ALL-UNNAMED ^
+                --add-opens java.naming/javax.naming.spi=ALL-UNNAMED ^
+                --add-opens java.rmi/sun.rmi.transport.tcp=ALL-UNNAMED ^
+                --add-exports=java.base/sun.net.www.protocol.http=ALL-UNNAMED ^
+                --add-exports=java.base/sun.net.www.protocol.https=ALL-UNNAMED ^
+                --add-exports=java.base/sun.net.www.protocol.jar=ALL-UNNAMED ^
+                --add-exports=jdk.xml.dom/org.w3c.dom.html=ALL-UNNAMED ^
+                --add-exports=jdk.naming.rmi/com.sun.jndi.url.rmi=ALL-UNNAMED ^
+                -classpath "%CLASSPATH%" ^
+                -Dkaraf.instances="%KARAF_HOME%\instances" ^
+                -Dkaraf.home="%KARAF_HOME%" ^
+                -Dkaraf.base="%KARAF_BASE%" ^
+                -Dkaraf.etc="%KARAF_ETC%" ^
+                -Dkaraf.log="%KARAF_LOG%" ^
+                -Dkaraf.restart.jvm.supported=true ^
+                -Djava.io.tmpdir="%KARAF_DATA%\tmp" ^
+                -Dkaraf.data="%KARAF_DATA%" ^
+                -Djava.util.logging.config.file="%KARAF_BASE%\etc\java.util.logging.properties" ^
+                %KARAF_SYSTEM_OPTS% %KARAF_OPTS% %MAIN% %ARGS%
         ) else (
             "%JAVA%" %JAVA_OPTS% %OPTS% ^
                 -classpath "%CLASSPATH%" ^
@@ -414,6 +455,7 @@ if "%KARAF_PROFILER%" == "" goto :RUN
                 -Dkaraf.home="%KARAF_HOME%" ^
                 -Dkaraf.base="%KARAF_BASE%" ^
                 -Dkaraf.etc="%KARAF_ETC%" ^
+                -Dkaraf.log="%KARAF_LOG%" ^
                 -Dkaraf.restart.jvm.supported=true ^
                 -Djava.io.tmpdir="%KARAF_DATA%\tmp" ^
                 -Dkaraf.data="%KARAF_DATA%" ^

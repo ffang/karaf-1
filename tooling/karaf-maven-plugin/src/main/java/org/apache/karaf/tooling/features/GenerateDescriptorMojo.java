@@ -20,16 +20,7 @@ package org.apache.karaf.tooling.features;
 import static java.lang.String.format;
 import static org.apache.karaf.deployer.kar.KarArtifactInstaller.FEATURE_CLASSIFIER;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintStream;
-import java.io.StringWriter;
+import java.io.*;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -342,7 +333,12 @@ public class GenerateDescriptorMojo extends MojoSupport {
                         throw new MojoExecutionException("Could not create directory for features file: " + dir);
                     }
                     filter(inputFile, outputFile);
-                    projectHelper.attachArtifact(project, attachmentArtifactType, attachmentArtifactClassifier, outputFile);
+                    getLog().info("Generation not enabled");
+                    getLog().info("Attaching artifact");
+                    //projectHelper.attachArtifact(project, attachmentArtifactType, attachmentArtifactClassifier, outputFile);
+                    Artifact artifact = factory.createArtifactWithClassifier(project.getGroupId(), project.getArtifactId(), project.getVersion(), attachmentArtifactType, attachmentArtifactClassifier);
+                    artifact.setFile(outputFile);
+                    project.setArtifact(artifact);
                     return;
                 }
             }
@@ -357,6 +353,7 @@ public class GenerateDescriptorMojo extends MojoSupport {
                 try (PrintStream out = new PrintStream(new FileOutputStream(outputFile))) {
                     writeFeatures(out);
                 }
+                getLog().info("Attaching features XML");
                 // now lets attach it
                 projectHelper.attachArtifact(project, attachmentArtifactType, attachmentArtifactClassifier, outputFile);
             } else {
@@ -661,24 +658,44 @@ public class GenerateDescriptorMojo extends MojoSupport {
      * Extract the MANIFEST from the give file.
      */
 
-    private Manifest getManifest(File file) throws IOException {
-        final InputStream is;
-        try {
-            is = Files.newInputStream(file.toPath());
-        } catch (Exception e) {
-            getLog().warn("Error while opening artifact", e);
-            return null;
-        }
-
-        try (BufferedInputStream bis = new BufferedInputStream(is)) {
-            bis.mark(256 * 1024);
-
-            try (JarInputStream jar = new JarInputStream(bis)) {
-                Manifest m = jar.getManifest();
-                if (m == null) {
-                    getLog().warn("Manifest not present in the first entry of the zip - " + file.getName());
+    private Manifest getManifest(File file) {
+        // In case of a maven build below the 'package' phase, references to the 'target/classes'
+        // directories are passed in instead of jar-file references.
+        if(file.isDirectory()) {
+            File manifestFile = new File(file, "META-INF/MANIFEST.MF");
+            if(manifestFile.exists() && manifestFile.isFile()) {
+                try {
+                    InputStream manifestInputStream = new FileInputStream(manifestFile);
+                    return new Manifest(manifestInputStream);
+                } catch (IOException e) {
+                    getLog().warn("Error while reading artifact from directory", e);
+                    return null;
                 }
-                return m;
+            }
+            getLog().warn("Manifest not present in the module directory " + file.getAbsolutePath());
+            return null;
+        } else {
+            final InputStream is;
+            try {
+                is = Files.newInputStream(file.toPath());
+            } catch (Exception e) {
+                getLog().warn("Error while opening artifact", e);
+                return null;
+            }
+
+            try (BufferedInputStream bis = new BufferedInputStream(is)) {
+                bis.mark(256 * 1024);
+
+                try (JarInputStream jar = new JarInputStream(bis)) {
+                    Manifest m = jar.getManifest();
+                    if (m == null) {
+                        getLog().warn("Manifest not present in the first entry of the zip - " + file.getName());
+                    }
+                    return m;
+                }
+            } catch (IOException e) {
+                getLog().warn("Error while reading artifact", e);
+                return null;
             }
         }
     }

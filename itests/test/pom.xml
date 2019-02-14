@@ -45,6 +45,12 @@
         </dependency>
 
         <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+            <version>${javax.annotation.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam-container-karaf</artifactId>
             <scope>compile</scope>
@@ -196,14 +202,62 @@
             <artifactId>slf4j-log4j12</artifactId>
             <scope>test</scope>
         </dependency>
-   
+
+        <!-- examples -->
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
+            <groupId>org.apache.karaf.examples</groupId>
+            <artifactId>karaf-bundle-example-common</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-atinject_1.0_spec</artifactId>
+            <groupId>org.apache.karaf.examples</groupId>
+            <artifactId>karaf-bundle-example-client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.examples</groupId>
+            <artifactId>karaf-blueprint-example-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.examples</groupId>
+            <artifactId>karaf-blueprint-example-client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.examples</groupId>
+            <artifactId>karaf-command-example-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.diagnostic</groupId>
+            <artifactId>org.apache.karaf.diagnostic.boot</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.examples</groupId>
+            <artifactId>karaf-jdbc-example-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.examples</groupId>
+            <artifactId>karaf-jpa-example-provider-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.examples</groupId>
+            <artifactId>karaf-rest-example-client-http</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.examples</groupId>
+            <artifactId>karaf-websocket-example</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty.websocket</groupId>
+            <artifactId>websocket-client</artifactId>
+            <version>9.4.12.v20180830</version>
         </dependency>
     </dependencies>
 
@@ -252,8 +306,10 @@
                         <spring42.version>${spring42.version}</spring42.version>
                         <spring43.version>${spring43.version}</spring43.version>
                         <spring50.version>${spring50.version}</spring50.version>
+                        <spring51.version>${spring51.version}</spring51.version>
                         <spring.security31.version>${spring.security31.version}</spring.security31.version>
                         <spring.security42.version>${spring.security42.version}</spring.security42.version>
+                        <spring.security51.version>${spring.security51.version}</spring.security51.version>
                         <activemq.version>${activemq.version}</activemq.version>
                     </systemPropertyVariables>
                     <excludes>
@@ -304,6 +360,7 @@
                             <systemPropertyVariables>
                                 <org.ops4j.pax.url.mvn.localRepository>${maven.repo.local}</org.ops4j.pax.url.mvn.localRepository>
                                 <org.ops4j.pax.logging.DefaultServiceLog.level>INFO</org.ops4j.pax.logging.DefaultServiceLog.level>
+                                <karaf.version>${project.version}</karaf.version>
                                 <spring31.version>${spring31.version}</spring31.version>
                                 <spring32.version>${spring32.version}</spring32.version>
                                 <spring40.version>${spring40.version}</spring40.version>
@@ -311,8 +368,10 @@
                                 <spring42.version>${spring42.version}</spring42.version>
                                 <spring43.version>${spring43.version}</spring43.version>
                                 <spring50.version>${spring50.version}</spring50.version>
+                                <spring51.version>${spring51.version}</spring51.version>
                                 <spring.security31.version>${spring.security31.version}</spring.security31.version>
                                 <spring.security42.version>${spring.security42.version}</spring.security42.version>
+                                <spring.security51.version>${spring.security51.version}</spring.security51.version>
                                 <activemq.version>${activemq.version}</activemq.version>
                     		</systemPropertyVariables>
                         </configuration>

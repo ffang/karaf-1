@@ -27,6 +27,8 @@ This custom distribution could contain:
 * renamed or specific scripts in the bin folder
 * system documentation files
 
+See [example/karaf-maven-example/karaf-maven-example-assembly] for a custom distribution example.
+
 ==== Maven assembly
 
 The recommended way to create a Karaf server assembly is to use the karaf-assembly packaging with the karaf-maven-plugin.
@@ -454,7 +456,7 @@ log4j.appender.sift.default=my-custom
 log4j.appender.sift.appender=org.apache.log4j.FileAppender
 log4j.appender.sift.appender.layout=org.apache.log4j.PatternLayout
 log4j.appender.sift.appender.layout.ConversionPattern=%d{ABSOLUTE} | %-5.5p | %-16.16t | %-32.32c{1} | %-32.32C %4L | %m%n
-log4j.appender.sift.appender.file=${karaf.data}/log/$\\{bundle.name\\}.log
+log4j.appender.sift.appender.file=${karaf.log}/$\\{bundle.name\\}.log
 log4j.appender.sift.appender.append=true
 ----
 
@@ -549,7 +551,6 @@ assembly descriptor, configured in POM above to be `src/main/descriptors/bin.xml
             <directory>target/dependencies/apache-karaf-${karaf.version}</directory>
             <outputDirectory>/</outputDirectory>
             <excludes>
-                <exclude>**/demos/**</exclude>
                 <exclude>bin/**</exclude>
                 <exclude>etc/system.properties</exclude>
                 <exclude>etc/users.properties</exclude>
@@ -557,8 +558,8 @@ assembly descriptor, configured in POM above to be `src/main/descriptors/bin.xml
                 <exclude>etc/org.ops4j.pax.logging.cfg</exclude>
                 <exclude>LICENSE</exclude>
                 <exclude>NOTICE</exclude>
-                <exclude>README</exclude>
-                <exclude>RELEASE-NOTES</exclude>
+                <exclude>README.md</exclude>
+                <exclude>RELEASE-NOTES.md</exclude>
                 <exclude>karaf-manual*.html</exclude>
                 <exclude>karaf-manual*.pdf</exclude>
             </excludes>

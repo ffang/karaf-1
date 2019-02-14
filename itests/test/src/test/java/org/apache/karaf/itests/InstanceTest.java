@@ -31,6 +31,7 @@ import java.lang.management.ManagementFactory;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
+@Ignore("ENTESB-9825: instance:* commands are not supported")
 public class InstanceTest extends KarafTestSupport {
 
     @Test
@@ -55,10 +56,10 @@ public class InstanceTest extends KarafTestSupport {
 
     @Ignore
     public void createStartCommand() throws Exception {
-        System.out.println(executeCommand("instance:create itest666"));
-        assertContains("itest", executeCommand("instance:list"));
-        System.out.println(executeCommand("instance:start itest666"));
-        String output = executeCommand("instance:status itest666");
+        System.out.println(executeCommand("instance:create itest666", new RolePrincipal("admin")));
+        assertContains("itest", executeCommand("instance:list", new RolePrincipal("viewer")));
+        System.out.println(executeCommand("instance:start itest666", new RolePrincipal("admin")));
+        String output = executeCommand("instance:status itest666", new RolePrincipal("admin"));
         int i = 0;
         while (!output.contains("Started")) {
             if (i >= 10) {
@@ -66,12 +67,12 @@ public class InstanceTest extends KarafTestSupport {
             }
             i = i + 1;
             Thread.sleep(5000);
-            output = executeCommand("instance:status itest666");
+            output = executeCommand("instance:status itest666", new RolePrincipal("admin"));
         }
         System.out.println("itest instance status: " + output);
         assertContains("Started", output);
-        System.out.println(executeCommand("instance:stop itest666"));
-        output = executeCommand("instance:status itest666");
+        System.out.println(executeCommand("instance:stop itest666", new RolePrincipal("admin")));
+        output = executeCommand("instance:status itest666", new RolePrincipal("admin"));
         i = 0;
         while (!output.contains("Stopped")) {
             if (i >= 10) {
@@ -79,7 +80,7 @@ public class InstanceTest extends KarafTestSupport {
             }
             i = i + 1;
             Thread.sleep(5000);
-            output = executeCommand("instance:status itest666");
+            output = executeCommand("instance:status itest666", new RolePrincipal("admin"));
         }
         System.out.println("itest instance status: " + output);
         assertContains("Stopped", output);
