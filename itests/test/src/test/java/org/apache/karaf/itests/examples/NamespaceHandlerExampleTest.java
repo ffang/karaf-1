@@ -41,7 +41,7 @@ public class NamespaceHandlerExampleTest extends KarafTestSupport {
 
         installAndAssertFeature("karaf-url-namespace-handler-example");
 
-        String output = executeCommand("bundle:install example:mvn:commons-lang/commons-lang/2.6", ADMIN_ROLES);
+        String output = executeCommand("bundle:install example:mvn:commons-lang/commons-lang/2.6.0.redhat-7", ADMIN_ROLES);
         System.out.println(output);
         assertContains("Thanks for using the Example URL !", output);
     }

@@ -58,7 +58,7 @@
                 <configuration>
                     <finalName>${project.artifactId}</finalName>
                     <installedBundles>
-                        <installedBundle>mvn:commons-lang/commons-lang/2.6</installedBundle>
+                        <installedBundle>mvn:commons-lang/commons-lang/2.6.0.redhat-7</installedBundle>
                     </installedBundles>
                     <bootFeatures>
                         <feature>bundle</feature>

@@ -21,7 +21,7 @@
     -->
 
     <feature name="kar-example" version="1.0-SNAPSHOT">
-        <bundle>mvn:commons-lang/commons-lang/2.6</bundle>
+        <bundle>mvn:commons-lang/commons-lang/2.6.0.redhat-7</bundle>
     </feature>
 
 </features>

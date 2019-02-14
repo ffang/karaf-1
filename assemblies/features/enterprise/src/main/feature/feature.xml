@@ -20,7 +20,7 @@
 
     <!-- NB: this file is not the one really used. This file is used by the karaf-maven-plugin to define the start-level of bundles in the generated feature.xml -->
 
-    <repository>mvn:org.hibernate/hibernate-validator-osgi-karaf-features/${hibernate.validator.version}/xml/features</repository>
+    <repository>mvn:org.hibernate.validator/hibernate-validator-osgi-karaf-features/${hibernate.validator.version}/xml/features</repository>
     <repository>mvn:org.hibernate/hibernate-osgi/${hibernate.version}/xml/karaf</repository>
     <repository>mvn:org.ops4j.pax.cdi/pax-cdi-features/${pax.cdi.version}/xml/features</repository>
     <repository>mvn:org.ops4j.pax.jdbc/pax-jdbc-features/${pax.jdbc.version}/xml/features</repository>
@@ -172,7 +172,7 @@ com.atomikos.icatch.log_base_dir=${karaf.data}/atomikos
     <feature name="hibernate" description="Hibernate JPA engine support" version="${hibernate.version}">
         <feature prerequisite="true">wrap</feature>
         <feature version="${hibernate.version}">hibernate-orm</feature>
-        <bundle dependency="true">mvn:net.bytebuddy/byte-buddy/1.6.6</bundle>
+        <bundle dependency="true">mvn:net.bytebuddy/byte-buddy/1.8.17.redhat-00001</bundle>
         <capability>
             osgi.service;objectClass=javax.persistence.spi.PersistenceProvider;effective:=active;javax.persistence.provider=org.hibernate.jpa.HibernatePersistenceProvider
         </capability>
@@ -261,9 +261,9 @@ com.atomikos.icatch.log_base_dir=${karaf.data}/atomikos
 
     <feature name="docker" description="Docker service and commands" version="${project.version}">
         <details>Docker support providing service, commands, and MBean.</details>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/2.9.6</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/2.9.6</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/2.9.6</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/${jackson.version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson.version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson.version}</bundle>
         <bundle>mvn:org.apache.karaf.docker/org.apache.karaf.docker.core/${project.version}</bundle>
     </feature>
 

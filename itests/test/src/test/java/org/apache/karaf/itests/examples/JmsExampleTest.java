@@ -48,7 +48,7 @@ public class JmsExampleTest extends KarafTestSupport {
                         "mvn:org.apache.karaf.features/enterprise/" + version + "/xml/features, " +
                         "mvn:org.apache.karaf.features/spring-legacy/" + version + "/xml/features, " +
                         "mvn:org.apache.karaf.features/standard/" + version + "/xml/features, " +
-                        "mvn:org.apache.activemq/artemis-features/2.6.0/xml/features"
+                        "mvn:org.apache.activemq/artemis-features/2.6.3.redhat-00015/xml/features"
         ));
         result.add(editConfigurationFilePut("etc/org.apache.karaf.features.cfg", "featuresBoot",
                 "instance,package,log,ssh,framework,system,eventadmin,feature,shell,management,service,jaas,deployer,diagnostic,wrap,bundle,config,kar,aries-blueprint,artemis,jms,pax-jms-artemis"));
