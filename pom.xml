@@ -264,7 +264,7 @@
         <httpclient.version>4.5.2.redhat-2</httpclient.version>
         <jansi.version>1.16.0.redhat-4</jansi.version>
         <javassist.version>3.23.1.GA-redhat-00001</javassist.version>
-        <jackson.version>2.9.5.redhat-2</jackson.version>
+        <jackson.version>2.9.7</jackson.version>
         <jboss.logging.version>3.3.2.Final-redhat-00001</jboss.logging.version>
         <aesh.readline.version>1.10.0.redhat-00001</aesh.readline.version>
         <jetty.version>9.4.12.v20180830</jetty.version>
