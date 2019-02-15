@@ -21,6 +21,8 @@
 
     <!-- A list of bundle URI replacements that allows changing external feature definitions -->
     <bundleReplacements>
+        <bundle originalUri="mvn:javax.servlet/javax.servlet-api"
+                replacement="mvn:javax.servlet/javax.servlet-api/${servlet.spec.version}" mode="maven" />
         <bundle originalUri="mvn:javax.mail/mail/[1.4,1.5)"
                 replacement="mvn:com.sun.mail/javax.mail/${javax.mail.version}" mode="maven" />
     </bundleReplacements>

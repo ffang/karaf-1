@@ -394,6 +394,11 @@
                 <filtering>true</filtering>
                 <targetPath>${project.build.directory}/feature</targetPath>
             </resource>
+            <resource>
+                <directory>${project.basedir}/src/main/resources-filtered</directory>
+                <filtering>true</filtering>
+                <targetPath>${project.build.directory}/feature-processing</targetPath>
+            </resource>
         </resources>
         <plugins>
             <plugin>
@@ -431,6 +436,7 @@
                                 <feature>framework</feature>
                             </framework>
                             <ignoreMissingConditions>true</ignoreMissingConditions>
+                            <featureProcessingInstructions>target/feature-processing/org.apache.karaf.features.xml</featureProcessingInstructions>
                         </configuration>
                     </execution>
                 </executions>

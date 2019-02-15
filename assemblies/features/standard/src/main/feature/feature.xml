@@ -1192,7 +1192,8 @@ org.apache.felix.http.port=8181
     </feature>
 
     <feature name="pax-http-service" description="Pax-Web OSGi HTTP Service" version="${pax.web.version}">
-        <feature>pax-http</feature>
+        <!-- explicitly use pax-http-undertow. Conditionals don't work well with feature dependencies and blacklisted features -->
+        <feature>pax-http-undertow</feature>
         <bundle start-level="30">mvn:org.apache.karaf.http/org.apache.karaf.http.core/${project.version}</bundle>
         <capability>http-service;provider:=pax-http</capability>
         <conditional>
@@ -1214,7 +1215,7 @@ org.apache.felix.http.port=8181
 
     <feature name="jetty" version="${jetty.version}">
         <bundle dependency="true" start-level="30">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activation-api-1.1/${servicemix-spec.version}</bundle>
-        <bundle dependency="true" start-level="30">mvn:javax.servlet/javax.servlet-api/${servlet.spec.version}</bundle>
+        <bundle dependency="true" start-level="30">mvn:javax.servlet/javax.servlet-api/${servlet.spec3.version}</bundle>
         <bundle dependency="true" start-level="30">mvn:com.sun.mail/javax.mail/${javax.mail.version}</bundle>
         <bundle dependency="true" start-level="30">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/${geronimo.jta-spec.version}</bundle>
         <bundle dependency="true" start-level="30">mvn:javax.annotation/javax.annotation-api/${javax.annotation.version}</bundle>
@@ -1251,7 +1252,7 @@ org.apache.felix.http.port=8181
 
     <feature name="jetty" version="8.1.14.v20131031">
         <bundle dependency="true" start-level="30">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activation-api-1.1/${servicemix-spec.version}</bundle>
-        <bundle dependency="true" start-level="30">mvn:javax.servlet/javax.servlet-api/3.1.0</bundle>
+        <bundle dependency="true" start-level="30">mvn:javax.servlet/javax.servlet-api/${servlet.spec3.version}</bundle>
         <bundle dependency="true" start-level="30">mvn:com.sun.mail/javax.mail/${javax.mail.version}</bundle>
         <bundle dependency="true" start-level="30">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/${geronimo.jta-spec.version}</bundle>
         <bundle dependency="true" start-level="30">mvn:org.apache.geronimo.specs/geronimo-annotation_1.1_spec/1.0.1</bundle>
