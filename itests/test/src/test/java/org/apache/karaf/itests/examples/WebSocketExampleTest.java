@@ -26,6 +26,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.junit.PaxExam;
@@ -47,6 +48,7 @@ import static junit.framework.TestCase.assertTrue;
 public class WebSocketExampleTest extends KarafTestSupport {
 
     @Test(timeout = 60000)
+    @Ignore("ENTESB-9734: Jetty doesn't work with servlet API 4.0")
     public void test() throws Exception {
         featureService.installFeature("scr");
         featureService.installFeature("http");

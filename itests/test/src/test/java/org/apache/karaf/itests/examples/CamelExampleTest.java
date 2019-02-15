@@ -18,6 +18,7 @@ package org.apache.karaf.itests.examples;
 
 import org.apache.karaf.itests.KarafTestSupport;
 import org.apache.karaf.jaas.boot.principal.RolePrincipal;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.junit.PaxExam;
@@ -32,6 +33,7 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerMethod.class)
+@Ignore("ENTESB-9734: Camel, for now doesn't work with servlet API 4.0 - it should after it really uses newer Karaf for Fuse 7.3")
 public class CamelExampleTest extends KarafTestSupport {
 
     public void setup() throws Exception {

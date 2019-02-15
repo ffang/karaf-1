@@ -17,6 +17,7 @@
 package org.apache.karaf.itests.examples;
 
 import org.apache.karaf.itests.KarafTestSupport;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.junit.PaxExam;
@@ -25,6 +26,7 @@ import org.ops4j.pax.exam.spi.reactors.PerClass;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
+@Ignore("CXF-7970: Waiting for better cxf-rt-transports-http-undertow import range for Undertow")
 public class SoapExampleTest extends KarafTestSupport {
 
     @Test

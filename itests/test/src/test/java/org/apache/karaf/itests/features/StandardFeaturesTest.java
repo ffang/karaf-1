@@ -15,6 +15,7 @@ package org.apache.karaf.itests.features;
 
 import org.apache.karaf.itests.KarafTestSupport;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -57,6 +58,7 @@ public class StandardFeaturesTest extends KarafTestSupport {
     }
 
     @Test
+    @Ignore("ENTESB-9734: blueprint-web doesn't work with servlet API 4.0")
     public void installAriesBlueprintWebFeature() throws Exception {
         installAssertAndUninstallFeatures("blueprint-web");
     }
@@ -87,6 +89,7 @@ public class StandardFeaturesTest extends KarafTestSupport {
     }
 
     @Test
+    @Ignore("ENTESB-9734: Jetty doesn't work with servlet API 4.0")
     public void installJettyFeature() throws Exception {
         installAssertAndUninstallFeatures("jetty");
     }

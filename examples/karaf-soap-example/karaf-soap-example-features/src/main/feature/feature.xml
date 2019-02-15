@@ -33,11 +33,13 @@
         <feature>karaf-soap-example-common</feature>
         <feature>aries-blueprint</feature>
         <feature version="${cxf.version}">cxf</feature>
+        <feature version="${cxf.version}">cxf-http-undertow</feature>
         <bundle>mvn:org.apache.karaf.examples/karaf-soap-example-provider/${project.version}</bundle>
     </feature>
 
     <feature name="karaf-soap-example-client" version="${project.version}">
         <feature version="${cxf.version}">cxf</feature>
+        <feature version="${cxf.version}">cxf-http-undertow</feature>
         <bundle>mvn:org.apache.karaf.examples/karaf-soap-example-client/${project.version}</bundle>
     </feature>
 
