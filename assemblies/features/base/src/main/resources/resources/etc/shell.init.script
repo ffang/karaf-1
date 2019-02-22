@@ -86,21 +86,21 @@ __load_class = {
     config:propappend = { config:property-append $args } ;
 
 // admin:* aliases
-    admin:list = { instance:list $args } ;
-    admin:status = { instance:status $args } ;
-    admin:change-opts = { instance:opts-change $args } ;
-    admin:change-rmi-registry-port = { instance:rmi-registry-port-change $args } ;
-    admin:change-rmi-server-port = { instance:rmi-server-port-change $args } ;
-    admin:change-ssh-port = { instance:ssh-port-change $args } ;
-    admin:change-ssh-host = { instance:ssh-host-change $args } ;
-    admin:clone = { instance:clone $args } ;
-    admin:connect = { instance:connect $args } ;
-    admin:create = { instance:create $args } ;
-    admin:destroy = { instance:destroy $args } ;
-    admin:rename = { instance:rename $args } ;
-    admin:start = { instance:start $args } ;
-    admin:stop = { instance:stop $args } ;
-    
+//  admin:list = { instance:list $args } ;
+//  admin:status = { instance:status $args } ;
+//  admin:change-opts = { instance:opts-change $args } ;
+//  admin:change-rmi-registry-port = { instance:rmi-registry-port-change $args } ;
+//  admin:change-rmi-server-port = { instance:rmi-server-port-change $args } ;
+//  admin:change-ssh-port = { instance:ssh-port-change $args } ;
+//  admin:change-ssh-host = { instance:ssh-host-change $args } ;
+//  admin:clone = { instance:clone $args } ;
+//  admin:connect = { instance:connect $args } ;
+//  admin:create = { instance:create $args } ;
+//  admin:destroy = { instance:destroy $args } ;
+//  admin:rename = { instance:rename $args } ;
+//  admin:start = { instance:start $args } ;
+//  admin:stop = { instance:stop $args } ;
+
 // dev:* aliases
     dev:dynamic-import = { bundle:dynamic-import $args } ;
     dev:framework = { system:framework $args } ;
