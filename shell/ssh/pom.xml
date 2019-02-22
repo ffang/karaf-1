@@ -138,12 +138,16 @@
                 <configuration>
                     <instructions>
                         <Import-Package>
+                            com.sun.crypto.provider;resolution:=optional,
+                            com.sun.net.ssl;resolution:=optional,
+                            com.sun.net.ssl.internal.ssl;resolution:=optional,
                             *
                         </Import-Package>
                         <Private-Package>
                             org.apache.karaf.util,
                             org.apache.karaf.util.filesstream,
                             org.apache.karaf.util.jaas,
+                            org.apache.commons.ssl.*
                         </Private-Package>
                     </instructions>
                 </configuration>
