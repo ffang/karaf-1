@@ -35,6 +35,7 @@ public final class Branding {
         loadPropsFromResource(props, "org/apache/karaf/shell/console/", ssh);
         loadPropsFromResource(props, "org/apache/karaf/branding/", ssh);
         loadPropsFromFile(props, System.getProperty("karaf.etc") + "/", ssh);
+        updatePortValue(props);
         return props;
     }
 
@@ -71,6 +72,21 @@ public final class Branding {
     private static void loadProps(Properties props, InputStream is) throws IOException {
         if (is != null) {
             props.load(is);
+        }
+    }
+
+    //ENTESB-9765 Replace default port with actual value read from etc/org.ops4j.pax.web.cfg
+    private static void updatePortValue(Properties props) {
+        Properties config = new Properties();
+        try (FileInputStream stream = new FileInputStream(System.getProperty("karaf.etc") + "/org.ops4j.pax.web.cfg")) {
+            config.load(stream);
+            String port = config.getProperty("org.osgi.service.http.port");
+            String welcomeText = props.getProperty("welcome");
+            if (welcomeText != null && port != null) {
+                props.setProperty("welcome", welcomeText.replaceAll("localhost:8181", "localhost:" + port));
+            }
+        } catch (IOException e) {
+            LOGGER.trace("Could not load config file.", e);
         }
     }
 
