@@ -370,6 +370,28 @@
             </snapshots>
         </repository>
         <repository>
+            <!-- For Hibernate 5.1.10.Final-redhat-1 -->
+            <id>jb-eap-7.1-brew</id>
+            <url>http://download.eng.bos.redhat.com/brewroot/repos/jb-eap-7.1-rhel-7-maven-build/latest/maven</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <!-- For Hibernate 5.3.x -->
+            <id>brew-jb-eap-7.2-maven</id>
+            <url>http://download.eng.bos.redhat.com/brewroot/repos/jb-eap-7.2-maven-build/latest/maven</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
             <id>apache-snapshots-repository</id>
             <url>https://repository.apache.org/content/groups/snapshots</url>
             <releases>
@@ -380,10 +402,17 @@
                 <updatePolicy>daily</updatePolicy>
             </snapshots>
         </repository>
-        <!--
-            I've removed references to internal repos - they should be provided in settings.xml
-            Contact: ggrzybek@redhat.com
-        -->
+        <!-- For jolokia-osgi 1.5.0-redhat-1 -->
+        <repository>
+            <id>jboss-common</id>
+            <url>http://download-node-02.eng.bos.redhat.com/brewroot/repos/jb-common-build/latest/maven</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
     </repositories>
 
     <pluginRepositories>
