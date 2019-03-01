@@ -172,7 +172,7 @@ com.atomikos.icatch.log_base_dir=${karaf.data}/atomikos
     <feature name="hibernate" description="Hibernate JPA engine support" version="${hibernate.version}">
         <feature prerequisite="true">wrap</feature>
         <feature version="${hibernate.version}">hibernate-orm</feature>
-        <bundle dependency="true">mvn:net.bytebuddy/byte-buddy/1.8.17.redhat-00001</bundle>
+        <bundle dependency="true">mvn:net.bytebuddy/byte-buddy/1.9.5.redhat-00001</bundle>
         <capability>
             osgi.service;objectClass=javax.persistence.spi.PersistenceProvider;effective:=active;javax.persistence.provider=org.hibernate.jpa.HibernatePersistenceProvider
         </capability>
