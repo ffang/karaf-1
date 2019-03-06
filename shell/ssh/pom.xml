@@ -43,8 +43,6 @@
             <artifactId>org.apache.karaf.shell.core</artifactId>
         </dependency>
 
-
-
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.gogo.runtime</artifactId>
@@ -98,6 +96,18 @@
         </dependency>
 
         <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.commons-httpclient</artifactId>
+            <version>3.1_7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>${commons-codec.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <scope>test</scope>
@@ -141,15 +151,19 @@
                             com.sun.crypto.provider;resolution:=optional,
                             com.sun.net.ssl;resolution:=optional,
                             com.sun.net.ssl.internal.ssl;resolution:=optional,
-                            org.apache.commons.httpclient.params;resolution:=optional,
-                            org.apache.commons.httpclient.protocol;resolution:=optional,
                             *
                         </Import-Package>
                         <Private-Package>
                             org.apache.karaf.util,
                             org.apache.karaf.util.filesstream,
                             org.apache.karaf.util.jaas,
-                            org.apache.commons.ssl.*
+                            org.apache.commons.ssl.*,
+                            org.apache.commons.httpclient.*,
+                            org.apache.commons.httpclient.params,
+                            org.apache.commons.httpclient.protocol,
+                            org.apache.commons.codec,
+                            org.apache.commons.codec.binary,
+                            org.apache.commons.codec.net
                         </Private-Package>
                     </instructions>
                 </configuration>
