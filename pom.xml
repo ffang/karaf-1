@@ -263,7 +263,7 @@
         <hibernate.validator.version>6.0.14.Final-redhat-00001</hibernate.validator.version>
         <httpclient.version>4.5.2.redhat-2</httpclient.version>
         <jansi.version>1.16.0.redhat-4</jansi.version>
-        <javassist.version>3.23.1.GA-redhat-00001</javassist.version>
+        <javassist.version>3.24.1-GA</javassist.version>
         <jackson.version>2.9.8</jackson.version>
         <jboss.logging.version>3.3.2.Final-redhat-00001</jboss.logging.version>
         <aesh.readline.version>1.10.0.redhat-00001</aesh.readline.version>
