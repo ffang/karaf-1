@@ -260,7 +260,7 @@
         <hibernate42.version>4.2.15.Final</hibernate42.version>
         <hibernate43.version>4.3.6.Final</hibernate43.version>
         <hibernate.version>5.3.7.Final-redhat-00001</hibernate.version>
-        <hibernate.validator.version>6.0.14.Final-redhat-00001</hibernate.validator.version>
+        <hibernate.validator.version>5.3.5.Final-redhat-2</hibernate.validator.version>
         <httpclient.version>4.5.2.redhat-2</httpclient.version>
         <jansi.version>1.16.0.redhat-4</jansi.version>
         <javassist.version>3.24.1-GA</javassist.version>
@@ -1860,7 +1860,7 @@
                 <version>${narayana.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.hibernate.validator</groupId>
+                <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-validator</artifactId>
                 <version>${hibernate.validator.version}</version>
             </dependency>
