@@ -179,6 +179,10 @@ public class Activator extends BaseActivator {
         }
         register(FeaturesService.class, featuresService);
 
+        // register bpr: URI handler which is actually mvn: URI handler with single directory used as
+        // maven (pax-url-aether) default repository
+        featuresService.registerBPRHandler(bundleContext);
+
         featuresListenerTracker = createFeatureListenerTracker();
         featuresListenerTracker.open();
 

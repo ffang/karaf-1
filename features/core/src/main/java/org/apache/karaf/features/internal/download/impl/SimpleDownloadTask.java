@@ -21,9 +21,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.net.URL;
 import java.util.concurrent.ScheduledExecutorService;
 
+import org.apache.karaf.features.internal.service.BundleProcessor;
 import org.apache.karaf.util.StreamUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,17 +34,22 @@ public class SimpleDownloadTask extends AbstractRetryableDownloadTask {
 
     private static final String BLUEPRINT_PREFIX = "blueprint:";
     private static final String SPRING_PREFIX = "spring:";
+    private static final String BPR_PREFIX = "bpr:";
 
     /**
      * Logger.
      */
     private static final Logger LOG = LoggerFactory.getLogger(AbstractDownloadTask.class);
 
+    private final BundleProcessor processor;
+
     private File basePath;
 
-    public SimpleDownloadTask(ScheduledExecutorService executorService, String url, File basePath) {
+    public SimpleDownloadTask(ScheduledExecutorService executorService, String url, File basePath,
+                              BundleProcessor processor) {
         super(executorService, url);
         this.basePath = basePath;
+        this.processor = processor;
     }
 
     @Override
@@ -51,6 +58,10 @@ public class SimpleDownloadTask extends AbstractRetryableDownloadTask {
 
         if (url.startsWith(BLUEPRINT_PREFIX) || url.startsWith(SPRING_PREFIX)) {
             return downloadBlueprintOrSpring();
+        }
+
+        if (processor != null && url.startsWith(BPR_PREFIX)) {
+            return downloadProcessedBundle();
         }
 
         try {
@@ -89,6 +100,26 @@ public class SimpleDownloadTask extends AbstractRetryableDownloadTask {
             return file;
         } catch (Exception ignore) {
             throw new IOException("Could not download [" + this.url + "]", ignore);
+        }
+    }
+
+    private File downloadProcessedBundle() {
+        if (processor == null) {
+            throw new IllegalArgumentException("Can't process bundle without processor. Bundle URI: " + url);
+        }
+        // expecting file URL
+        String fileUrl = url.substring(4); // "bpr:
+        String q = URI.create(fileUrl).getQuery();
+        if (q == null || !q.startsWith("original")) {
+            return new File(fileUrl);
+        }
+
+        File originalFile = new File(URI.create(url.substring(4)).getPath());
+        try {
+            return processor.processBundle(originalFile, q.substring("original=".length()));
+        } catch (Exception e) {
+            LOG.error("Can't parser original URI to process: " + e.getMessage() + ", using original file", e);
+            return originalFile;
         }
     }
 
