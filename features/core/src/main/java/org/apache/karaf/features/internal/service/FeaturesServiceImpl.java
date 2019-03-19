@@ -22,10 +22,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.net.InetAddress;
 import java.net.URI;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,7 +47,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -67,16 +63,12 @@ import org.apache.karaf.features.FeaturesListener;
 import org.apache.karaf.features.FeaturesService;
 import org.apache.karaf.features.Repository;
 import org.apache.karaf.features.RepositoryEvent;
-import org.apache.karaf.features.internal.download.DownloadCallback;
 import org.apache.karaf.features.internal.download.DownloadManager;
 import org.apache.karaf.features.internal.download.DownloadManagers;
-import org.apache.karaf.features.internal.download.Downloader;
-import org.apache.karaf.features.internal.download.StreamProvider;
 import org.apache.karaf.features.internal.model.Features;
 import org.apache.karaf.features.internal.model.JaxbUtil;
 import org.apache.karaf.features.internal.region.DigraphHelper;
 import org.apache.karaf.features.internal.service.BundleInstallSupport.FrameworkInfo;
-import org.apache.karaf.features.internal.util.MultiException;
 import org.apache.karaf.util.ThreadUtils;
 import org.apache.karaf.util.json.JsonReader;
 import org.apache.karaf.util.json.JsonWriter;
@@ -85,19 +77,13 @@ import org.eclipse.equinox.region.RegionDigraph;
 import org.ops4j.pax.url.mvn.MavenResolver;
 import org.ops4j.pax.url.mvn.MavenResolvers;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.resource.Resource;
 import org.osgi.resource.Wire;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.resolver.Resolver;
-import org.osgi.service.url.AbstractURLStreamHandlerService;
-import org.osgi.service.url.URLConstants;
-import org.osgi.service.url.URLStreamHandlerService;
-import org.osgi.service.url.URLStreamHandlerSetter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -129,7 +115,6 @@ public class FeaturesServiceImpl implements FeaturesService, Deployer.DeployCall
     private final FeaturesServiceConfig cfg;
     private RepositoryCache repositories;
     private FeaturesProcessor featuresProcessor;
-    private BundleProcessor bundleProcessor;
 
     private final ThreadLocal<String> outputFile = new ThreadLocal<>();
 
@@ -151,9 +136,6 @@ public class FeaturesServiceImpl implements FeaturesService, Deployer.DeployCall
 
     private final ExecutorService executor;
 
-    private DownloadManager bprDownloadManager;
-    ServiceRegistration<URLStreamHandlerService> bprStreamHandlerService;
-
     //the outer map's key is feature name, the inner map's key is feature version
     private Map<String, Map<String, Feature>> featureCache;
 
@@ -172,7 +154,6 @@ public class FeaturesServiceImpl implements FeaturesService, Deployer.DeployCall
         this.installSupport = installSupport;
         this.globalRepository = globalRepository;
         this.featuresProcessor = new FeaturesProcessorImpl(cfg);
-        this.bundleProcessor = (BundleProcessor)featuresProcessor;
         this.repositories = new RepositoryCacheImpl(featuresProcessor);
         this.cfg = cfg;
         this.executor = Executors.newSingleThreadExecutor(ThreadUtils.namedThreadFactory("features"));
@@ -182,7 +163,6 @@ public class FeaturesServiceImpl implements FeaturesService, Deployer.DeployCall
 
     public void stop() {
         this.executor.shutdown();
-        unregisterBPRHandler();
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -1098,60 +1078,7 @@ public class FeaturesServiceImpl implements FeaturesService, Deployer.DeployCall
         MavenResolver resolver = MavenResolvers.createMavenResolver(props, "org.ops4j.pax.url.mvn");
         ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(cfg.downloadThreads, ThreadUtils.namedThreadFactory("downloader"));
         executor.setMaximumPoolSize(cfg.downloadThreads);
-        return DownloadManagers.createDownloadManager(resolver, executor, bundleProcessor, cfg.scheduleDelay, cfg.scheduleMaxRun);
-    }
-
-    /**
-     * Registers {@link URLStreamHandlerService} to handle {@code bpr:} URIs for processed bundles.
-     * @param bundleContext
-     * @throws IOException
-     */
-    public void registerBPRHandler(BundleContext bundleContext) throws IOException {
-        Dictionary<String, String> props = new Hashtable<>();
-
-        File repo = this.bundleProcessor.getProcessedBundlesRepository();
-        props.put("org.ops4j.pax.url.mvn.defaultRepositories", repo.toURI().toURL().toString() + "@id=bpr.repository");
-        props.put("org.ops4j.pax.url.mvn.useFallbackRepositories", "false");
-
-        MavenResolver resolver = MavenResolvers.createMavenResolver(props, "org.ops4j.pax.url.mvn");
-        ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1, ThreadUtils.namedThreadFactory("downloader-bpr"));
-        executor.setMaximumPoolSize(1);
-        bprDownloadManager = DownloadManagers.createDownloadManager(resolver, executor);
-        final Downloader downloader = bprDownloadManager.createDownloader();
-
-        URLStreamHandlerService bprHandler = new AbstractURLStreamHandlerService() {
-            @Override
-            public URLConnection openConnection(URL u) throws IOException {
-                final AtomicReference<File> result = new AtomicReference<>();
-                downloader.download(u.toString().substring(4), provider -> result.set(provider.getFile()));
-                try {
-                    downloader.await();
-                    return result.get().toURI().toURL().openConnection();
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    LOGGER.warn("Downloading of " + u + " interrupted: " + e.getMessage());
-                    return null;
-                } catch (MultiException e) {
-                    LOGGER.error("Downloading of " + u + " failed: " + e.getMessage(), e);
-                    return null;
-                }
-            }
-        };
-        props = new Hashtable<>();
-        props.put(URLConstants.URL_HANDLER_PROTOCOL, "bpr");
-        bprStreamHandlerService = bundleContext.registerService(URLStreamHandlerService.class, bprHandler, props);
-    }
-
-    /**
-     * When Features Service is stopped, it has to unregister {@code bpr:} URI handler, as it's tightly connected.
-     */
-    private void unregisterBPRHandler() {
-        if (bprStreamHandlerService != null) {
-            bprStreamHandlerService.unregister();
-        }
-        if (bprDownloadManager != null) {
-            bprDownloadManager.close();
-        }
+        return DownloadManagers.createDownloadManager(resolver, executor, cfg.scheduleDelay, cfg.scheduleMaxRun);
     }
 
     private Dictionary<String, String> getMavenConfig() throws IOException {
@@ -1165,20 +1092,7 @@ public class FeaturesServiceImpl implements FeaturesService, Deployer.DeployCall
                         String key = e.nextElement();
                         Object val = cfg.get(key);
                         if (key != null) {
-                            if ("org.ops4j.pax.url.mvn.defaultRepositories".equals(key)) {
-                                File repo = this.bundleProcessor.getProcessedBundlesRepository();
-                                String repoURI = repo.toURI().toURL().toString() + "@id=bpr.repository";
-                                String defaultRepositoriesProp = val.toString();
-                                if (defaultRepositoriesProp == null || "".equals(defaultRepositoriesProp.trim())) {
-                                    defaultRepositoriesProp = repoURI;
-                                } else {
-                                    // TODO: check if it's not already there
-                                    defaultRepositoriesProp = repoURI + "," + defaultRepositoriesProp;
-                                }
-                                props.put(key, defaultRepositoriesProp);
-                            } else {
-                                props.put(key, val.toString());
-                            }
+                            props.put(key, val.toString());
                         }
                     }
                 }
@@ -1300,7 +1214,6 @@ public class FeaturesServiceImpl implements FeaturesService, Deployer.DeployCall
         }
         this.refreshRepositories(uris);
         this.featuresProcessor = new FeaturesProcessorImpl(cfg);
-        this.bundleProcessor = (BundleProcessor)featuresProcessor;
         this.repositories = new RepositoryCacheImpl(featuresProcessor);
 
         State state = copyState();

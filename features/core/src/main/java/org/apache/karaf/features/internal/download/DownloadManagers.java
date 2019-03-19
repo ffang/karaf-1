@@ -19,7 +19,6 @@ package org.apache.karaf.features.internal.download;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.apache.karaf.features.internal.download.impl.MavenDownloadManager;
-import org.apache.karaf.features.internal.service.BundleProcessor;
 import org.ops4j.pax.url.mvn.MavenResolver;
 
 public final class DownloadManagers {
@@ -27,12 +26,11 @@ public final class DownloadManagers {
     private DownloadManagers() { }
 
     public static DownloadManager createDownloadManager(MavenResolver resolver, ScheduledExecutorService executorService) {
-        return createDownloadManager(resolver, executorService, null, 0, 0);
+        return createDownloadManager(resolver, executorService, 0, 0);
     }
 
     public static DownloadManager createDownloadManager(MavenResolver resolver, ScheduledExecutorService executorService,
-                                                        BundleProcessor processor,
                                                         long scheduleDelay, int scheduleMaxRun) {
-        return new MavenDownloadManager(resolver, executorService, processor, scheduleDelay, scheduleMaxRun);
+        return new MavenDownloadManager(resolver, executorService, scheduleDelay, scheduleMaxRun);
     }
 }

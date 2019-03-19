@@ -24,15 +24,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 
-import org.apache.karaf.features.LocationPattern;
 import org.apache.karaf.features.internal.download.DownloadCallback;
 import org.apache.karaf.features.internal.download.DownloadManager;
 import org.apache.karaf.features.internal.download.Downloader;
 import org.apache.karaf.features.internal.download.StreamProvider;
-import org.apache.karaf.features.internal.service.BundleProcessor;
-import org.apache.karaf.features.internal.service.FeaturesProcessor;
 import org.apache.karaf.features.internal.util.MultiException;
-import org.apache.karaf.util.maven.Parser;
 import org.ops4j.pax.url.mvn.MavenResolver;
 
 public class MavenDownloadManager implements DownloadManager {
@@ -55,17 +51,12 @@ public class MavenDownloadManager implements DownloadManager {
 
     private volatile int allPending = 0;
 
-    // feature processor is used to transform downloaded bundles
-    private final BundleProcessor processor;
-
     public MavenDownloadManager(MavenResolver mavenResolver, ScheduledExecutorService executorService,
-                                BundleProcessor processor,
                                 long scheduleDelay, int scheduleMaxRun) {
         this.mavenResolver = mavenResolver;
         this.executorService = executorService;
         this.scheduleDelay = scheduleDelay;
         this.scheduleMaxRun = scheduleMaxRun;
-        this.processor = processor;
 
         String karafRoot = System.getProperty("karaf.home", "karaf");
         String karafData = System.getProperty("karaf.data", karafRoot + "/data");
@@ -78,7 +69,7 @@ public class MavenDownloadManager implements DownloadManager {
 
     @Override
     public Downloader createDownloader() {
-        return new MavenDownloader(processor);
+        return new MavenDownloader();
     }
 
     @SuppressWarnings({
@@ -98,15 +89,6 @@ public class MavenDownloadManager implements DownloadManager {
 
         private volatile int pending = 0;
         private final MultiException exception = new MultiException("Error");
-
-        private BundleProcessor processor;
-
-        public MavenDownloader() {
-        }
-
-        public MavenDownloader(BundleProcessor processor) {
-            this.processor = processor;
-        }
 
         public int pending() {
             return pending;
@@ -195,7 +177,7 @@ public class MavenDownloadManager implements DownloadManager {
                     return new MavenDownloadTask(executorService, mavenResolver, mvnUrl);
                 }
             } else {
-                return createCustomDownloadTask(url, processor);
+                return createCustomDownloadTask(url);
             }
         }
 
@@ -216,11 +198,6 @@ public class MavenDownloadManager implements DownloadManager {
                             AbstractDownloadTask future = (AbstractDownloadTask) provider;
                             String file = future.getFile().toURI().toURL().toExternalForm();
                             String real = url.replace(innerUrl, file);
-                            if (url.startsWith("bpr:mvn:")) {
-                                    // when chaining, we need original mvn URI, so bundle processor
-                                // knows where to store processed file
-                                real = real + "?original=" + url;
-                            }
                             MavenDownloader.this.download(real, provider1 -> {
                                 try {
                                     setFile(provider1.getFile());
@@ -247,8 +224,8 @@ public class MavenDownloadManager implements DownloadManager {
 
     }
 
-    protected AbstractDownloadTask createCustomDownloadTask(final String url, BundleProcessor processor) {
-        return new SimpleDownloadTask(executorService, url, tmpPath, processor);
+    protected AbstractDownloadTask createCustomDownloadTask(final String url) {
+        return new SimpleDownloadTask(executorService, url, tmpPath);
     }
 
 }
