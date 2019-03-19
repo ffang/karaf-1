@@ -53,20 +53,25 @@ import static org.apache.karaf.features.internal.service.Overrides.OVERRIDE_RANG
  * A set of instructions to process {@link org.apache.karaf.features.internal.model.Features} model. The actual
  * use of these instructions is moved to {@link org.apache.karaf.features.internal.service.FeaturesProcessorImpl}
  */
-@XmlRootElement(name = "featuresProcessing", namespace = FeaturesProcessing.FEATURES_PROCESSING_NS)
+@XmlRootElement(name = "featuresProcessing", namespace = FeaturesProcessing.FEATURES_PROCESSING_NS_CURRENT)
 @XmlType(name = "featuresProcessing", propOrder = {
         "blacklistedRepositories",
         "blacklistedFeatures",
         "blacklistedBundles",
         "overrideBundleDependency",
         "bundleReplacements",
-        "featureReplacements"
+        "featureReplacements",
+        "bundleProcessing"
 })
 @XmlAccessorType(XmlAccessType.FIELD)
 public class FeaturesProcessing {
 
     public static Logger LOG = LoggerFactory.getLogger(FeaturesProcessing.class);
-    public static final String FEATURES_PROCESSING_NS = "http://karaf.apache.org/xmlns/features-processing/v1.0.0";
+
+    public static final String FEATURES_PROCESSING_NS_PREFIX = "http://karaf.apache.org/xmlns/features-processing/";
+    public static final String FEATURES_PROCESSING_NS_10 = FEATURES_PROCESSING_NS_PREFIX + "v1.0.0";
+    public static final String FEATURES_PROCESSING_NS_11 = FEATURES_PROCESSING_NS_PREFIX + "v1.1.0";
+    public static final String FEATURES_PROCESSING_NS_CURRENT = FEATURES_PROCESSING_NS_11;
 
     @XmlElementWrapper(name = "blacklistedRepositories")
     @XmlElement(name = "repository")
@@ -91,6 +96,9 @@ public class FeaturesProcessing {
     @XmlElement
     private FeatureReplacements featureReplacements;
 
+    @XmlElement
+    private BundleProcessing bundleProcessing;
+
     @XmlTransient
     private Blacklist blacklist;
 
@@ -98,6 +106,7 @@ public class FeaturesProcessing {
         overrideBundleDependency = new OverrideBundleDependency();
         bundleReplacements = new BundleReplacements();
         featureReplacements = new FeatureReplacements();
+        bundleProcessing = new BundleProcessing();
     }
 
     public List<String> getBlacklistedRepositories() {
@@ -138,6 +147,14 @@ public class FeaturesProcessing {
 
     public void setFeatureReplacements(FeatureReplacements featureReplacements) {
         this.featureReplacements = featureReplacements;
+    }
+
+    public BundleProcessing getBundleProcessing() {
+        return bundleProcessing;
+    }
+
+    public void setBundleProcessing(BundleProcessing bundleProcessing) {
+        this.bundleProcessing = bundleProcessing;
     }
 
     public Blacklist getBlacklist() {
@@ -209,6 +226,9 @@ public class FeaturesProcessing {
                 LOG.warn("Can't parse override URL location pattern: " + overrideBundle.getOriginalUri() + ". Ignoring.");
                 iterator.remove();
             }
+        }
+        for (BundleProcessing.ProcessBundle process : bundleProcessing.getProcessing()) {
+            process.compile();
         }
     }
 

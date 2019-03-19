@@ -61,6 +61,9 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.AttributesImpl;
 
+import static org.apache.karaf.features.internal.model.processing.FeaturesProcessing.FEATURES_PROCESSING_NS_CURRENT;
+import static org.apache.karaf.features.internal.model.processing.FeaturesProcessing.FEATURES_PROCESSING_NS_PREFIX;
+
 /**
  * A class to help serialize {@link org.apache.karaf.features.internal.model.processing.FeaturesProcessing} model
  * but with added template comments for main sections of <code>org.apache.karaf.features.xml</code> file.
@@ -149,6 +152,7 @@ public class FeaturesProcessingSerializer {
                     + model.getOverrideBundleDependency().getBundles().size() == 0);
             emptyElements.put("bundleReplacements", model.getBundleReplacements().getOverrideBundles().size() == 0);
             emptyElements.put("featureReplacements", model.getFeatureReplacements().getReplacements().size() == 0);
+            emptyElements.put("bundleProcessing", model.getBundleProcessing().getProcessing().size() == 0);
 
             // A mix of direct write and stream of XML events. It's not easy (without knowing StAX impl) to
             // output self closed tags for example.
@@ -237,7 +241,7 @@ public class FeaturesProcessingSerializer {
 
         @Override
         public void startPrefixMapping(String prefix, String uri) throws SAXException {
-            target.startPrefixMapping(prefix, uri);
+            target.startPrefixMapping(prefix, fixURI(uri));
         }
 
         @Override
@@ -249,14 +253,14 @@ public class FeaturesProcessingSerializer {
         public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
             AttributesImpl resolvedAttributes = new AttributesImpl(atts);
             for (int i = 0; i < atts.getLength(); i++) {
-                resolvedAttributes.setAttribute(i, atts.getURI(i), atts.getLocalName(i), atts.getQName(i),
+                resolvedAttributes.setAttribute(i, fixURI(atts.getURI(i)), atts.getLocalName(i), atts.getQName(i),
                         atts.getType(i), resolve(atts.getValue(i)));
             }
             if (inElement) {
                 flushBuffer(false);
             }
             inElement = true;
-            target.startElement(uri, localName, qName, resolvedAttributes);
+            target.startElement(fixURI(uri), localName, qName, resolvedAttributes);
         }
 
         @Override
@@ -265,7 +269,7 @@ public class FeaturesProcessingSerializer {
                 flushBuffer(true);
                 inElement = false;
             }
-            target.endElement(uri, localName, qName);
+            target.endElement(fixURI(uri), localName, qName);
         }
 
         @Override
@@ -312,6 +316,13 @@ public class FeaturesProcessingSerializer {
                 LOG.warn("Value {} has unresolved properties, please check configuration.", value);
             }
             return resolved;
+        }
+
+        private String fixURI(String uri) {
+            if (uri != null && uri.startsWith(FEATURES_PROCESSING_NS_PREFIX)) {
+                return FEATURES_PROCESSING_NS_CURRENT;
+            }
+            return uri;
         }
 
     }

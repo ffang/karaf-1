@@ -21,18 +21,16 @@ package org.apache.karaf.features.internal.service;
 import java.io.FileWriter;
 import java.net.URI;
 import java.util.Properties;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
 
 import org.apache.felix.utils.manifest.Clause;
 import org.apache.felix.utils.version.VersionRange;
 import org.apache.karaf.features.BundleInfo;
 import org.apache.karaf.features.Feature;
 import org.apache.karaf.features.internal.model.Bundle;
+import org.apache.karaf.features.internal.model.processing.BundleProcessing;
 import org.apache.karaf.features.internal.model.processing.BundleReplacements;
 import org.apache.karaf.features.internal.model.processing.FeatureReplacements;
 import org.apache.karaf.features.internal.model.processing.FeaturesProcessing;
-import org.apache.karaf.features.internal.model.processing.ObjectFactory;
 import org.apache.karaf.features.internal.model.processing.OverrideBundleDependency;
 import org.apache.karaf.util.maven.Parser;
 import org.junit.Test;
@@ -42,6 +40,7 @@ import org.slf4j.LoggerFactory;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -51,13 +50,11 @@ public class FeaturesProcessorTest {
 
     @Test
     public void jaxbModelForProcessor() throws Exception {
-        JAXBContext jaxb = JAXBContext.newInstance(ObjectFactory.class);
-        FeaturesProcessing fp = (FeaturesProcessing) jaxb.createUnmarshaller().unmarshal(getClass().getResourceAsStream("/org/apache/karaf/features/internal/service/org.apache.karaf.features.xml"));
+        FeaturesProcessingSerializer serializer = new FeaturesProcessingSerializer();
+        FeaturesProcessing fp = serializer.read(getClass().getResourceAsStream("/org/apache/karaf/features/internal/service/org.apache.karaf.features.xml"));
         assertThat(fp.getFeatureReplacements().getReplacements().get(0).getFeature().getName(), equalTo("pax-jsf-resources-support"));
 
-        Marshaller marshaller = jaxb.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-        marshaller.marshal(fp, System.out);
+        serializer.write(fp, System.out);
     }
 
     @Test
@@ -234,6 +231,24 @@ public class FeaturesProcessorTest {
         assertTrue(f11_0.getBundles().get(1).isDependency());
         assertFalse(f11_1.getBundles().get(0).isDependency());
         assertFalse(f11_1.getBundles().get(1).isDependency());
+    }
+
+    @Test
+    public void readBundleProcessing() {
+        FeaturesProcessorImpl processor = new FeaturesProcessorImpl(new FeaturesServiceConfig(
+                null, null,
+                "file:src/test/resources/org/apache/karaf/features/internal/service/fpi06.xml", null));
+
+        BundleProcessing processing = processor.getInstructions().getBundleProcessing();
+        assertNotNull(processing);
+        assertThat(processing.getProcessing().size(), equalTo(1));
+        assertThat(processing.getProcessing().get(0).getLocation(), equalTo("mvn:org.eclipse.jetty*/*"));
+        assertThat(processing.getProcessing().get(0).getAddHeaders().size(), equalTo(1));
+        assertThat(processing.getProcessing().get(0).getAddHeaders().get(0).getHeader(), equalTo("Processed-By"));
+        assertThat(processing.getProcessing().get(0).getClauses().size(), equalTo(4));
+        assertThat(processing.getProcessing().get(0).getClauses().get(2).getValue(), equalTo("javax.servlet;version=\"[3.1,5)\""));
+
+        new FeaturesProcessingSerializer().write(processor.getInstructions(), System.out);
     }
 
     @Test
