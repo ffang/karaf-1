@@ -255,11 +255,11 @@
         <openjpa.version>3.0.0</openjpa.version>
         <geronimo.transaction.manager.version>3.1.3</geronimo.transaction.manager.version>
         <guava.version>25.0.0.redhat-1</guava.version>
-        <narayana.version>5.9.0.Final-redhat-00001</narayana.version>
+        <narayana.version>5.9.1.Final-redhat-00001</narayana.version>
         <hibernate.annotations.common.version>5.0.4.Final-redhat-00001</hibernate.annotations.common.version>
         <hibernate42.version>4.2.15.Final</hibernate42.version>
         <hibernate43.version>4.3.6.Final</hibernate43.version>
-        <hibernate.version>5.3.7.Final-redhat-00001</hibernate.version>
+        <hibernate.version>5.3.10.Final-redhat-00001</hibernate.version>
         <hibernate.validator.version>5.3.5.Final-redhat-2</hibernate.validator.version>
         <httpclient.version>4.5.2.redhat-2</httpclient.version>
         <jansi.version>1.18</jansi.version>
@@ -288,6 +288,7 @@
         <pax.swissbox.version>1.8.3</pax.swissbox.version>
         <pax.url.version>2.6.1</pax.url.version>
         <pax.web.version>7.3.3</pax.web.version>
+        <pax.web.undertow.version>2.0.20.Final-redhat-00001</pax.web.undertow.version>
         <pax.tinybundle.version>3.0.0</pax.tinybundle.version>
         <pax.jdbc.version>1.3.5</pax.jdbc.version>
         <pax.jms.version>1.0.3</pax.jms.version>
