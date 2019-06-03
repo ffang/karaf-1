@@ -341,6 +341,7 @@
     <repositories>
         <repository>
             <id>redhat-ga-repository</id>
+            <name>redhat-ga-repository</name>
             <url>https://maven.repository.redhat.com/ga</url>
             <releases>
                 <enabled>true</enabled>
@@ -351,6 +352,7 @@
         </repository>
         <repository>
             <id>redhat-ea-repository</id>
+            <name>redhat-ea-repository</name>
             <url>https://maven.repository.redhat.com/earlyaccess/all</url>
             <releases>
                 <enabled>true</enabled>
@@ -361,6 +363,7 @@
         </repository>
         <repository>
             <id>jboss-ea</id>
+            <name>jboss-ea</name>
             <url>https://repository.jboss.org/nexus/content/groups/ea</url>
             <releases>
                 <enabled>true</enabled>
@@ -372,6 +375,7 @@
         <repository>
             <!-- For Hibernate 5.1.10.Final-redhat-1 -->
             <id>jb-eap-7.1-brew</id>
+            <name>jb-eap-7.1-brew</name>
             <url>http://download.eng.bos.redhat.com/brewroot/repos/jb-eap-7.1-rhel-7-maven-build/latest/maven</url>
             <releases>
                 <enabled>true</enabled>
@@ -383,6 +387,7 @@
         <repository>
             <!-- For Hibernate 5.3.x -->
             <id>brew-jb-eap-7.2-maven</id>
+            <name>brew-jb-eap-7.2-maven</name>
             <url>http://download.eng.bos.redhat.com/brewroot/repos/jb-eap-7.2-maven-build/latest/maven</url>
             <releases>
                 <enabled>true</enabled>
@@ -393,6 +398,7 @@
         </repository>
         <repository>
             <id>apache-snapshots-repository</id>
+            <name>apache-snapshots-repository</name>
             <url>https://repository.apache.org/content/groups/snapshots</url>
             <releases>
                 <enabled>false</enabled>
@@ -405,6 +411,7 @@
         <!-- For jolokia-osgi 1.5.0-redhat-1 -->
         <repository>
             <id>jboss-common</id>
+            <name>jboss-common</name>
             <url>http://download-node-02.eng.bos.redhat.com/brewroot/repos/jb-common-build/latest/maven</url>
             <releases>
                 <enabled>true</enabled>
@@ -418,6 +425,7 @@
     <pluginRepositories>
         <pluginRepository>
             <id>redhat-ga-repository</id>
+            <name>redhat-ga-repository</name>
             <url>https://maven.repository.redhat.com/ga</url>
             <releases>
                 <enabled>true</enabled>
@@ -428,6 +436,7 @@
         </pluginRepository>
         <pluginRepository>
             <id>redhat-ea-repository</id>
+            <name>redhat-ea-repository</name>
             <url>https://maven.repository.redhat.com/earlyaccess/all</url>
             <releases>
                 <enabled>true</enabled>
@@ -438,6 +447,7 @@
         </pluginRepository>
         <pluginRepository>
             <id>jboss-ea</id>
+            <name>jboss-ea</name>
             <url>https://repository.jboss.org/nexus/content/groups/ea</url>
             <releases>
                 <enabled>true</enabled>
@@ -448,6 +458,7 @@
         </pluginRepository>
         <pluginRepository>
             <id>apache-snapshots-repository</id>
+            <name>apache-snapshots-repository</name>
             <url>https://repository.apache.org/content/groups/snapshots</url>
             <releases>
                 <enabled>false</enabled>
