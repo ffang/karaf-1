@@ -145,7 +145,7 @@
     </developers>
 
     <properties>
-        <activemq.version>5.11.0.redhat-630377</activemq.version>
+        <activemq.version>5.11.0.redhat-630396</activemq.version>
         <aopalliance.bundle.version>1.0_6</aopalliance.bundle.version>
         <aspectj.bundle.version>1.7.4_1</aspectj.bundle.version>
         <ant.bundle.version>1.10.3_1</ant.bundle.version>
@@ -264,7 +264,7 @@
         <httpclient.version>4.5.2.redhat-2</httpclient.version>
         <jansi.version>1.18</jansi.version>
         <javassist.version>3.24.1-GA</javassist.version>
-        <jackson.version>2.9.8</jackson.version>
+        <jackson.version>2.9.9</jackson.version>
         <jboss.logging.version>3.3.2.Final-redhat-00001</jboss.logging.version>
         <aesh.readline.version>1.10.0.redhat-00001</aesh.readline.version>
         <jetty.version>9.4.12.v20180830</jetty.version>
