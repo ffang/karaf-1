@@ -17,14 +17,10 @@
 package org.apache.karaf.tools.utils;
 
 import java.util.Collections;
-<<<<<<< HEAD
-import java.util.Enumeration;
-=======
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
->>>>>>> karaf-4.2.6-to-merge
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -44,9 +40,6 @@ public class SortedProperties extends Properties {
 
     @Override
     public Set<Map.Entry<Object, Object>> entrySet() {
-<<<<<<< HEAD
-        return Collections.unmodifiableSet(new TreeSet<>(super.entrySet()));
-=======
         Set<Map.Entry<Object, Object>> origSet = super.entrySet();
         Set<Map.Entry<Object, Object>> sortedSet = new LinkedHashSet<Map.Entry<Object, Object>>(origSet.size());
 
@@ -62,17 +55,13 @@ public class SortedProperties extends Properties {
             sortedSet.add(iterator.next());
 
         return sortedSet;
->>>>>>> karaf-4.2.6-to-merge
     }
 
     @Override
     public synchronized Enumeration<Object> keys() {
         return Collections.enumeration(new TreeSet<>(super.keySet()));
     }
-<<<<<<< HEAD
-=======
-    
-    
-    
->>>>>>> karaf-4.2.6-to-merge
+
+
+
 }
