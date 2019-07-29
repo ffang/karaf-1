@@ -380,7 +380,7 @@
             <!-- For Hibernate 5.1.10.Final-redhat-1 -->
             <id>jb-eap-7.1-brew</id>
             <name>jb-eap-7.1-brew</name>
-            <url>https://download.eng.bos.redhat.com/brewroot/repos/jb-eap-7.1-rhel-7-maven-build/latest/maven</url>
+            <url>http://download.eng.bos.redhat.com/brewroot/repos/jb-eap-7.1-rhel-7-maven-build/latest/maven</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
@@ -392,7 +392,7 @@
             <!-- For Hibernate 5.3.x -->
             <id>brew-jb-eap-7.2-maven</id>
             <name>brew-jb-eap-7.2-maven</name>
-            <url>https://download.eng.bos.redhat.com/brewroot/repos/jb-eap-7.2-maven-build/latest/maven</url>
+            <url>http://download.eng.bos.redhat.com/brewroot/repos/jb-eap-7.2-maven-build/latest/maven</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
@@ -416,7 +416,7 @@
         <repository>
             <id>jboss-common</id>
             <name>jboss-common</name>
-            <url>https://download-node-02.eng.bos.redhat.com/brewroot/repos/jb-common-build/latest/maven</url>
+            <url>http://download-node-02.eng.bos.redhat.com/brewroot/repos/jb-common-build/latest/maven</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
