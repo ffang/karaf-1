@@ -161,31 +161,31 @@ public class FeatureTest extends KarafTestSupport {
     @Test
     public void configRegularLifecycle() throws Exception {
         System.out.println(executeCommand("feature:install http", new RolePrincipal("admin")));
-        String output = executeCommand("config:exists org.ops4j.pax.web");
+        String output = executeCommand("config:exists org.ops4j.pax.web", new RolePrincipal("viewer"));
         assertContains("true", output);
-        File jetty = new File(System.getProperty("karaf.etc"), "jetty.xml");
-        assertTrue("jetty.xml should exist", jetty.exists());
+        File jetty = new File(System.getProperty("karaf.etc"), "undertow.xml");
+        assertTrue("undertow.xml should exist", jetty.exists());
 
         System.out.println(executeCommand("feature:uninstall http", new RolePrincipal("admin")));
-        output = executeCommand("config:exists org.ops4j.pax.web");
+        output = executeCommand("config:exists org.ops4j.pax.web", new RolePrincipal("viewer"));
         assertContains("true", output);
-        jetty = new File(System.getProperty("karaf.etc"), "jetty.xml");
-        assertTrue("jetty.xml should still exist", jetty.exists());
+        jetty = new File(System.getProperty("karaf.etc"), "undertow.xml");
+        assertTrue("undertow.xml should still exist", jetty.exists());
     }
 
     @Test
     public void configDelete() throws Exception {
         System.out.println(executeCommand("feature:install http", new RolePrincipal("admin")));
-        String output = executeCommand("config:exists org.ops4j.pax.web");
+        String output = executeCommand("config:exists org.ops4j.pax.web", new RolePrincipal("viewer"));
         assertContains("true", output);
-        File jetty = new File(System.getProperty("karaf.etc"), "jetty.xml");
-        assertTrue("etc/jetty.xml should exist", jetty.exists());
+        File jetty = new File(System.getProperty("karaf.etc"), "undertow.xml");
+        assertTrue("etc/undertow.xml should exist", jetty.exists());
 
         System.out.println(executeCommand("feature:uninstall -c http", new RolePrincipal("admin")));
-        output = executeCommand("config:exists org.ops4j.pax.web");
+        output = executeCommand("config:exists org.ops4j.pax.web", new RolePrincipal("viewer"));
         assertContains("false", output);
-        jetty = new File(System.getProperty("karaf.etc"), "jetty.xml");
-        assertFalse("jetty.xml should not still exist", jetty.exists());
+        jetty = new File(System.getProperty("karaf.etc"), "undertow.xml");
+        assertFalse("undertow.xml should not still exist", jetty.exists());
     }
 
     @Test

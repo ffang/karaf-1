@@ -17,6 +17,7 @@
 package org.apache.karaf.itests;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.junit.PaxExam;
@@ -30,6 +31,7 @@ import java.net.URL;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
+@Ignore("Karaf for Fuse 7.4+ uses only servlet-api 4")
 public class FelixHttpTest extends KarafTestSupport {
 
     @Before

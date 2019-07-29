@@ -61,13 +61,13 @@ public class WebTest extends KarafTestSupport {
 
     @Test
     public void installUninstallCommands() throws Exception {
-        System.out.println(executeCommand("web:install mvn:org.apache.karaf.examples/karaf-war-example-webapp/" + System.getProperty("karaf.version") + "/war test"));
-        String listOutput = executeCommand("web:list");
+        System.out.println(executeCommand("web:install mvn:org.apache.karaf.examples/karaf-war-example-webapp/" + System.getProperty("karaf.version") + "/war test", new org.apache.karaf.jaas.boot.principal.RolePrincipal("admin")));
+        String listOutput = executeCommand("web:list", new org.apache.karaf.jaas.boot.principal.RolePrincipal("viewer"));
         System.out.println(listOutput);
         assertContains("/test", listOutput);
         while (!listOutput.contains("Deployed")) {
             Thread.sleep(500);
-            listOutput = executeCommand("web:list");
+            listOutput = executeCommand("web:list", new org.apache.karaf.jaas.boot.principal.RolePrincipal("viewer"));
         }
         URL url = new URL("http://localhost:" + getHttpPort() + "/test");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -83,12 +83,12 @@ public class WebTest extends KarafTestSupport {
         System.out.println(buffer.toString());
         assertContains("Hello World!", buffer.toString());
 
-        System.out.println(executeCommand("web:uninstall 124"));
-        listOutput = executeCommand("web:list");
+        System.out.println(executeCommand("web:uninstall 100", new org.apache.karaf.jaas.boot.principal.RolePrincipal("admin")));
+        listOutput = executeCommand("web:list", new org.apache.karaf.jaas.boot.principal.RolePrincipal("viewer"));
         System.out.println(listOutput);
         while (listOutput.contains("/test")) {
             Thread.sleep(500);
-            listOutput = executeCommand("web:list");
+            listOutput = executeCommand("web:list", new org.apache.karaf.jaas.boot.principal.RolePrincipal("viewer"));
         }
         assertContainsNot("/test", listOutput);
     }

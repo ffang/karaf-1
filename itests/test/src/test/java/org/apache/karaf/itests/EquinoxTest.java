@@ -16,6 +16,7 @@
  */
 package org.apache.karaf.itests;
 
+import org.apache.karaf.jaas.boot.principal.RolePrincipal;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
@@ -42,7 +43,7 @@ public class EquinoxTest extends KarafTestSupport {
 
     @Test
     public void simpleTest() throws Exception {
-        assertContains("org.eclipse.osgi", executeCommand("info"));
+        assertContains("org.eclipse.osgi", executeCommand("info", new RolePrincipal("viewer")));
     }
 
 }

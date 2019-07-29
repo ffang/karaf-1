@@ -17,6 +17,7 @@
 package org.apache.karaf.itests.examples;
 
 import org.apache.karaf.itests.KarafTestSupport;
+import org.apache.karaf.jaas.boot.principal.RolePrincipal;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
@@ -34,6 +35,10 @@ import java.util.List;
 @ExamReactorStrategy(PerClass.class)
 public class ScrExampleWithEquinoxTest extends KarafTestSupport {
 
+    private static final RolePrincipal[] ADMIN_ROLES = {
+            new RolePrincipal("admin")
+    };
+
     @Configuration
     public Option[] config() {
         List<Option> config = new LinkedList<>(Arrays.asList(super.config()));
@@ -47,11 +52,11 @@ public class ScrExampleWithEquinoxTest extends KarafTestSupport {
 
         installAndAssertFeature("karaf-scr-example-client");
 
-        String output = executeCommand("scr:info BookingServiceMemoryImpl");
+        String output = executeCommand("scr:info BookingServiceMemoryImpl", ADMIN_ROLES);
         System.out.println(output);
         assertContains("\"state\":32", output);
 
-        output = executeCommand("scr:info ConsoleClient");
+        output = executeCommand("scr:info ConsoleClient", ADMIN_ROLES);
         System.out.println(output);
         assertContains("\"state\":32", output);
     }

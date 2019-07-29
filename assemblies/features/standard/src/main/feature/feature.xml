@@ -191,6 +191,7 @@ update = admin, manager
 nano = admin
 exec = admin
 new = admin
+info = admin, manager, viewer
 java = admin
 date = admin, manager, viewer
 if = ssh,admin,manager,viewer
@@ -436,6 +437,8 @@ list = admin, manager, viewer
 start = admin
 stop = admin
 launch = admin
+install = admin
+uninstall = admin
         </config>
 	    <config name="org.apache.karaf.command.acl.wrapper">
 #
@@ -860,6 +863,7 @@ edit = admin, manager
 edit[/.*jmx[.]acl.*/] = admin
 edit[/.*org[.]apache[.]karaf[.]command[.]acl[.].+/] = admin
 edit[/.*org[.]apache[.]karaf[.]service[.]acl[.].+/] = admin
+exists = admin, manager, viewer
 property-append = admin, manager
 property-append[/.*jmx[.]acl.*/] = admin
 property-append[/.*org[.]apache[.]karaf[.]command[.]acl[.].+/] = admin
