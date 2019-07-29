@@ -158,7 +158,7 @@ com.atomikos.icatch.log_base_dir=${karaf.data}/atomikos
         <feature version="[2,3)">transaction</feature>
         <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-j2ee-connector_1.6_spec/1.0</bundle>
         <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-validation_1.0_spec/1.1</bundle>
-        <bundle>mvn:org.apache.geronimo.components/geronimo-connector/3.1.1</bundle>
+        <bundle>mvn:org.apache.geronimo.components/geronimo-connector/3.1.4</bundle>
     </feature>
 
     <feature name="openjpa3" description="OpenJPA engine support" version="${openjpa.version}">
@@ -170,6 +170,7 @@ com.atomikos.icatch.log_base_dir=${karaf.data}/atomikos
     </feature>
 
     <feature name="hibernate" description="Hibernate JPA engine support" version="${hibernate.version}">
+        <!-- hibernate-orm feature installs osgi.core and osgi.compendium bundle (it should not), causing huge refresh -->
         <feature prerequisite="true">wrap</feature>
         <feature version="${hibernate.version}">hibernate-orm</feature>
         <bundle dependency="true">mvn:net.bytebuddy/byte-buddy/1.9.5.redhat-00001</bundle>

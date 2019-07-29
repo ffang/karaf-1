@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache.karaf.shell</groupId>
         <artifactId>shell</artifactId>
-        <version>4.2.0.redhat-740-SNAPSHOT</version>
+        <version>4.2.6.redhat-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -53,12 +53,12 @@
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
+            <artifactId>osgi.cmpn</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
+            <artifactId>osgi.core</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -102,6 +102,10 @@
                         <Export-Package>
                         	org.apache.karaf.shell.commands.info;-noimport:=true
                         </Export-Package>
+                        <Import-Package>
+                            com.sun.management;resolution:=optional,
+                            *
+                        </Import-Package>
                         <Private-Package>
                             org.apache.karaf.util.process;-split-package:=merge-first,
                             org.apache.karaf.util;-split-package:=merge-first,

@@ -493,7 +493,7 @@ public abstract class MavenConfigurationSupport implements Action {
 
                             if (repo.getReleases() != null) {
                                 if (!repo.getReleases().isEnabled()) {
-                                    builder.append(ServiceConstants.SEPARATOR_OPTIONS + ServiceConstants.OPTION_DISALLOW_RELEASES);
+                                    builder.append(ServiceConstants.SEPARATOR_OPTIONS).append(ServiceConstants.OPTION_DISALLOW_RELEASES);
                                 }
                                 SourceAnd<String> up = updatePolicy(repo.getReleases().getUpdatePolicy());
                                 addPolicy(builder, "".equals(up.val()) ? "never" : up.val(), ServiceConstants.OPTION_RELEASES_UPDATE);
@@ -502,7 +502,7 @@ public abstract class MavenConfigurationSupport implements Action {
                             }
                             if (repo.getSnapshots() != null) {
                                 if (repo.getSnapshots().isEnabled()) {
-                                    builder.append(ServiceConstants.SEPARATOR_OPTIONS + ServiceConstants.OPTION_ALLOW_SNAPSHOTS);
+                                    builder.append(ServiceConstants.SEPARATOR_OPTIONS).append(ServiceConstants.OPTION_ALLOW_SNAPSHOTS);
                                 }
                                 SourceAnd<String> up = updatePolicy(repo.getSnapshots().getUpdatePolicy());
                                 addPolicy(builder, "".equals(up.val()) ? "never" : up.val(), ServiceConstants.OPTION_SNAPSHOTS_UPDATE);
@@ -593,7 +593,7 @@ public abstract class MavenConfigurationSupport implements Action {
             List<String> names = new ArrayList<>(Arrays.stream(files).map(File::getName)
                     .collect(TreeSet<String>::new, TreeSet::add, TreeSet::addAll));
 
-            names.add(String.format(fileNameFormat, new Date().getTime()));
+            names.add(String.format(fileNameFormat, System.currentTimeMillis()));
 
             while (names.size() > MAX_SEQUENCE_SIZE) {
                 String name = names.remove(0);

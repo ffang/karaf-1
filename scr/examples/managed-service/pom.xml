@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache.karaf.scr</groupId>
         <artifactId>org.apache.karaf.scr.examples</artifactId>
-        <version>4.2.0.redhat-740-SNAPSHOT</version>
+        <version>4.2.6.redhat-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -37,11 +37,11 @@
     <dependencies>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
+            <artifactId>osgi.core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
+            <artifactId>osgi.cmpn</artifactId>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

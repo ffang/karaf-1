@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache.karaf</groupId>
         <artifactId>karaf</artifactId>
-        <version>4.2.0.redhat-740-SNAPSHOT</version>
+        <version>4.2.6.redhat-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -41,12 +41,12 @@
     <dependencies>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
+            <artifactId>osgi.core</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
+            <artifactId>osgi.cmpn</artifactId>
             <scope>provided</scope>
         </dependency>
 		<dependency>
@@ -111,12 +111,13 @@
                             org.apache.karaf.http.core
                         </Export-Package>
                         <Private-Package>
+                            org.apache.karaf.util.tracker;-split-package:=merge-first,
                             org.apache.karaf.http.command,
                             org.apache.karaf.http.command.completers,
                             org.apache.karaf.http.core.internal,
                             org.apache.karaf.http.core.internal.osgi,
                             org.apache.felix.utils.version,
-                            org.apache.felix.utils.manifest,
+                            org.apache.felix.utils.manifest;-split-package:=merge-first,
                             org.apache.http*,
                             org.apache.commons.codec*
                         </Private-Package>

@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache.karaf.specs</groupId>
         <artifactId>specs</artifactId>
-        <version>4.2.0.redhat-740-SNAPSHOT</version>
+        <version>4.2.6.redhat-SNAPSHOT</version>
     </parent>
 
     <artifactId>org.apache.karaf.specs.activator</artifactId>
@@ -36,7 +36,7 @@
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
+            <artifactId>osgi.core</artifactId>
             <scope>provided</scope>
         </dependency>
     </dependencies>

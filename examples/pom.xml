@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache.karaf</groupId>
         <artifactId>karaf</artifactId>
-        <version>4.2.0.redhat-740-SNAPSHOT</version>
+        <version>4.2.6.redhat-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -42,6 +42,7 @@
         <module>karaf-command-example</module>
         <module>karaf-config-example</module>
         <module>karaf-deployer-example</module>
+        <module>karaf-docker-example</module>
         <module>karaf-dump-example</module>
         <!-- <module>karaf-encryption-example</module> -->
         <module>karaf-http-resource-example</module>

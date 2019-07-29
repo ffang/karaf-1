@@ -191,6 +191,7 @@ update = admin, manager
 nano = admin
 exec = admin
 new = admin
+info = admin, manager, viewer
 java = admin
 date = admin, manager, viewer
 if = ssh,admin,manager,viewer
@@ -297,16 +298,16 @@ sshRole = ssh
 sftpEnabled=true
 
 #
-# The location of the hostKey file defines where the private/public key of the server
+# The location of the hostKey file defines where the private key of the server
 # is located. If no file is at the defined location it will be ignored.
 #
 hostKey = ${karaf.etc}/host.key
 
 #
-# The format used for hostKey.
-# Possible values are simple (Karaf internal), or PEM (OpenSSH format)
+# The location of the hostKeyPub file defines where the public key of the server
+# is located. If no file is at the defined location it will be ignored.
 #
-hostKeyFormat = simple
+#hostKeyPub = ${karaf.etc}/host.key.pub
 
 #
 # Self defined key size in 1024, 2048, 3072, or 4096
@@ -349,21 +350,21 @@ completionMode = GLOBAL
 
 #
 # Override allowed SSH cipher algorithms.
-# Default: aes128-ctr,arcfour128,aes128-cbc,3des-cbc,blowfish-cbc
+# Default: aes256-ctr,aes192-ctr,aes128-ctr
 #
-# ciphers = aes128-ctr,arcfour128,aes128-cbc,3des-cbc,blowfish-cbc
+# ciphers = aes256-ctr,aes192-ctr,aes128-ctr
 
 #
 # Override allowed SSH HMAC algorithms.
-# Default: hmac-sha2-512,hmac-sha2-256,hmac-sha1
+# Default: hmac-sha2-512,hmac-sha2-256
 #
-# macs = hmac-sha2-512,hmac-sha2-256,hmac-sha1
+# macs = hmac-sha2-512,hmac-sha2-256
 
 #
 # Override allowed SSH key exchange algorithms.
-# Default: diffie-hellman-group-exchange-sha256,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha1,diffie-hellman-group1-sha1
+# Default: ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256
 #
-# kexAlgorithms = diffie-hellman-group-exchange-sha256,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha1,diffie-hellman-group1-sha1
+# kexAlgorithms = ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256
 
 #
 # Override moduli-url.
@@ -436,6 +437,8 @@ list = admin, manager, viewer
 start = admin
 stop = admin
 launch = admin
+install = admin
+uninstall = admin
         </config>
 	    <config name="org.apache.karaf.command.acl.wrapper">
 #
@@ -860,6 +863,7 @@ edit = admin, manager
 edit[/.*jmx[.]acl.*/] = admin
 edit[/.*org[.]apache[.]karaf[.]command[.]acl[.].+/] = admin
 edit[/.*org[.]apache[.]karaf[.]service[.]acl[.].+/] = admin
+exists = admin, manager, viewer
 property-append = admin, manager
 property-append[/.*jmx[.]acl.*/] = admin
 property-append[/.*org[.]apache[.]karaf[.]command[.]acl[.].+/] = admin
@@ -942,7 +946,7 @@ encryption.enabled = false
 #   a more powerful one named 'jasypt' is available
 #       when installing the encryption feature
 #
-encryption.name =
+encryption.name = basic
 
 #
 # Encryption prefix
@@ -1167,12 +1171,12 @@ framework[/.*[E][q][u][i][n][o][x].*/] = admin
         <requirement>http-service</requirement>
     </feature>
 
-    <feature name="httplite" version="${project.version}" description="Felix Httplite OSGi HTTP Service">
+    <feature name="felix-httplite" version="${felix.httplite.version}" description="Felix Httplite HTTP Service">
         <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.httplite.complete/${felix.httplite.version}</bundle>
         <capability>http-service;provider:=felix-httplite</capability>
     </feature>
 
-    <feature name="felix-http" version="4.0.6" description="Felix HTTP Jetty Service">
+    <feature name="felix-http" version="${felix.http.version}" description="Felix HTTP Service">
         <config name="org.apache.felix.http">
 ################################################################################
 #
@@ -1193,12 +1197,16 @@ framework[/.*[E][q][u][i][n][o][x].*/] = admin
 #
 ################################################################################
 
-org.apache.felix.http.port=8181
+org.osgi.service.http.port=8181
         </config>
         <bundle start-level="30" dependency="true">mvn:org.apache.felix/org.apache.felix.http.servlet-api/1.1.2</bundle>
-        <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.http.jetty/4.0.6</bundle>
+        <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.http.jetty/${felix.http.version}</bundle>
         <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.http.whiteboard/4.0.0</bundle>
-        <capability>http-service;provider:=felix</capability>
+        <capability>http-service;provider:=felix-http</capability>
+        <conditional>
+            <condition>webconsole</condition>
+            <bundle start-level="30">mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.http/${project.version}</bundle>
+        </conditional>
     </feature>
 
     <feature name="pax-http-service" description="Pax-Web OSGi HTTP Service" version="${pax.web.version}">
@@ -1250,6 +1258,7 @@ org.apache.felix.http.port=8181
         <bundle start-level="30">mvn:org.eclipse.jetty/jetty-client/${jetty.version}</bundle>
         <bundle start-level="30">mvn:org.eclipse.jetty/jetty-deploy/${jetty.version}</bundle>
         <bundle start-level="30">mvn:org.eclipse.jetty/jetty-jmx/${jetty.version}</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-proxy/${jetty.version}</bundle>
         <bundle start-level="30">mvn:org.eclipse.jetty.websocket/websocket-server/${jetty.version}</bundle>
         <bundle start-level="30">mvn:org.eclipse.jetty.websocket/websocket-client/${jetty.version}</bundle>
         <bundle start-level="30">mvn:org.eclipse.jetty.websocket/websocket-common/${jetty.version}</bundle>

@@ -149,19 +149,21 @@ public class Activator extends BaseActivator implements ManagedService {
         String sshRealm             = getString("sshRealm", "karaf");
         Class<?>[] roleClasses      = getClassesArray("sshRoleTypes", "org.apache.karaf.jaas.boot.principal.RolePrincipal");
         String sshRole              = getString("sshRole", null);
-        String hostKey              = getString("hostKey", System.getProperty("karaf.etc") + "/host.key");
+        String privateHostKey       = getString("hostKey", System.getProperty("karaf.etc") + "/host.key");
+        String publicHostKey        = getString("hostKeyPublic", System.getProperty("karaf.etc") + "/host.key.pub");
         String[] authMethods        = getStringArray("authMethods", "keyboard-interactive,password,publickey");
         int keySize                 = getInt("keySize", 2048);
         String algorithm            = getString("algorithm", "RSA");
-        String[] macs               = getStringArray("macs", "hmac-sha2-512,hmac-sha2-256,hmac-sha1");
-        String[] ciphers            = getStringArray("ciphers", "aes128-ctr,arcfour128,aes128-cbc,3des-cbc,blowfish-cbc");
-        String[] kexAlgorithms      = getStringArray("kexAlgorithms", "diffie-hellman-group-exchange-sha256,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha1,diffie-hellman-group1-sha1");
+        String[] macs               = getStringArray("macs", "hmac-sha2-512,hmac-sha2-256");
+        String[] ciphers            = getStringArray("ciphers", "aes256-ctr,aes192-ctr,aes128-ctr");
+        String[] kexAlgorithms      = getStringArray("kexAlgorithms", "ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256");
         String welcomeBanner        = getString("welcomeBanner", null);
         String moduliUrl            = getString("moduli-url", null);
         boolean sftpEnabled         = getBoolean("sftpEnabled", true);
         
-        Path serverKeyPath = Paths.get(hostKey);
-        KeyPairProvider keyPairProvider = new OpenSSHKeyPairProvider(serverKeyPath.toFile(), algorithm, keySize);
+        Path serverPrivateKeyPath = Paths.get(privateHostKey);
+        Path serverPublicKeyPath = Paths.get(publicHostKey);
+        KeyPairProvider keyPairProvider = new OpenSSHKeyPairProvider(serverPrivateKeyPath, serverPublicKeyPath, algorithm, keySize);
         KarafJaasAuthenticator authenticator = new KarafJaasAuthenticator(sshRealm, sshRole, roleClasses);
         UserAuthFactoriesFactory authFactoriesFactory = new UserAuthFactoriesFactory();
         authFactoriesFactory.setAuthMethods(authMethods);

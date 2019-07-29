@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache.karaf.tooling</groupId>
         <artifactId>tooling</artifactId>
-        <version>4.2.0.redhat-740-SNAPSHOT</version>
+        <version>4.2.6.redhat-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -131,6 +131,10 @@
                     <groupId>org.codehaus.plexus</groupId>
                     <artifactId>plexus-archiver</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.osgi</groupId>
+                    <artifactId>org.osgi.core</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -159,6 +163,12 @@
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.resolver</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.osgi</groupId>
+                    <artifactId>org.osgi.core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.url</groupId>
@@ -212,7 +222,7 @@
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
+            <artifactId>osgi.core</artifactId>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -259,6 +269,7 @@
                         <pomExclude>test-assembly/pom.xml</pomExclude>
                         <pomExclude>test-check-dependencies-failure/pom.xml</pomExclude>
                         <pomExclude>test-assembly-prop-edits/pom.xml</pomExclude>
+                        <pomExclude>test-dockerfile/pom.xml</pomExclude>
                     </pomExcludes>
                     <postBuildHookScript>verify</postBuildHookScript>
                     <localRepositoryPath>${project.build.directory}/system</localRepositoryPath>
@@ -293,6 +304,7 @@
                                 <pomExclude>test-assembly/pom.xml</pomExclude>
                                 <pomExclude>test-check-dependencies-failure/pom.xml</pomExclude>
                                 <pomExclude>test-assembly-prop-edits/pom.xml</pomExclude>
+                                <pomExclude>test-dockerfile/pom.xml</pomExclude>
                             </pomExcludes>
                         </configuration>
                     </execution>

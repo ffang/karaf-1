@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache.karaf.assemblies.features</groupId>
         <artifactId>features</artifactId>
-        <version>4.2.0.redhat-740-SNAPSHOT</version>
+        <version>4.2.6.redhat-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -248,7 +248,7 @@
         </dependency>
         <dependency>
             <groupId>biz.aQute.bnd</groupId>
-            <artifactId>bndlib</artifactId>
+            <artifactId>biz.aQute.bndlib</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>

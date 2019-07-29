@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache.karaf.assemblies.features</groupId>
         <artifactId>features</artifactId>
-        <version>4.2.0.redhat-740-SNAPSHOT</version>
+        <version>4.2.6.redhat-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -62,26 +62,6 @@
         <dependency>
             <groupId>com.sun.istack</groupId>
             <artifactId>istack-commons-runtime</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.karaf.specs</groupId>
-            <artifactId>org.apache.karaf.specs.locator</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.karaf.specs</groupId>
-            <artifactId>org.apache.karaf.specs.java.xml</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.karaf.specs</groupId>
-            <artifactId>org.apache.karaf.specs.java.xml.ws</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.karaf.specs</groupId>
-            <artifactId>org.apache.karaf.specs.activator</artifactId>
-            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.karaf.specs</groupId>
@@ -232,7 +212,7 @@
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.osgi</groupId>
-                                    <artifactId>org.osgi.core</artifactId>
+                                    <artifactId>osgi.core</artifactId>
                                     <outputDirectory>target/classes/resources/lib/boot</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
