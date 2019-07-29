@@ -1,7 +1,10 @@
 /*
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -14,14 +17,12 @@
 package org.apache.karaf.itests;
 
 import org.apache.karaf.features.FeaturesService;
-import org.apache.karaf.itests.KarafTestSupport;
 import org.apache.karaf.itests.util.RunIfRule;
 import org.apache.karaf.jaas.boot.principal.RolePrincipal;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
-import org.ops4j.pax.exam.karaf.container.internal.JavaVersionUtil;
 import org.ops4j.pax.exam.MavenUtils;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
@@ -63,12 +64,6 @@ public class XATest extends KarafTestSupport {
         result.add(replaceConfigurationFile("etc/org.ops4j.connectionfactory-artemis.cfg", getConfigFile("/org/apache/karaf/itests/features/org.ops4j.connectionfactory-artemis.cfg")));
         result.add(replaceConfigurationFile("etc/org.ops4j.datasource-derby.cfg", getConfigFile("/org/apache/karaf/itests/features/org.ops4j.datasource-derby.cfg")));
         result.add(replaceConfigurationFile("etc/xa-test-camel.xml", getConfigFile("/org/apache/karaf/itests/features/xa-test-camel.xml")));
-        if (JavaVersionUtil.getMajorVersion() >= 9) {
-            //need asm 6.x which support java9plus to run this test
-            result.add(replaceConfigurationFile("system/org/apache/karaf/features/standard/" 
-                + version + "/standard-" + version + "-features.xml", 
-                getConfigFile("/etc/feature.xml")));
-        }
         return result.toArray(new Option[result.size()]);
     }
 

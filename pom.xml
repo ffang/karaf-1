@@ -92,8 +92,13 @@
         <connection>scm:git:https://gitbox.apache.org/repos/asf/karaf.git</connection>
         <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/karaf.git</developerConnection>
         <url>https://gitbox.apache.org/repos/asf?p=karaf.git;a=summary</url>
+<<<<<<< HEAD
         <tag>karaf-4.2.0.redhat-740-SNAPSHOT</tag>
     </scm>
+=======
+      <tag>karaf-4.2.6</tag>
+  </scm>
+>>>>>>> karaf-4.2.6-to-merge
 
     <issueManagement>
         <system>jira</system>
@@ -145,24 +150,42 @@
     </developers>
 
     <properties>
+<<<<<<< HEAD
         <activemq.version>5.11.0.redhat-630396</activemq.version>
+=======
+        <activemq.version>5.15.9</activemq.version>
+>>>>>>> karaf-4.2.6-to-merge
         <aopalliance.bundle.version>1.0_6</aopalliance.bundle.version>
-        <aspectj.bundle.version>1.7.4_1</aspectj.bundle.version>
-        <ant.bundle.version>1.10.3_1</ant.bundle.version>
+        <aspectj.bundle.version>1.9.4_1</aspectj.bundle.version>
+        <ant.bundle.version>1.10.5_1</ant.bundle.version>
         <antlr.bundle.version>2.7.7_5</antlr.bundle.version>
+<<<<<<< HEAD
         <asm.version>7.1</asm.version>
         <javax.annotation.version>1.3</javax.annotation.version>
         <awaitility.version>3.1.6</awaitility.version>
         <cglib.bundle.version>3.2.4_1</cglib.bundle.version>
         <cglib2.version>2.2.0</cglib2.version>
+=======
+        <asm6.version>6.2.1</asm6.version>
+        <asm.version>7.1</asm.version>
+        <javax.annotation.version>1.3</javax.annotation.version>
+        <awaitility.version>3.1.6</awaitility.version>
+        <cglib.bundle.version>3.2.9_1</cglib.bundle.version>
+>>>>>>> karaf-4.2.6-to-merge
         
-        <jna.version>4.5.2</jna.version>
+        <jna.version>5.3.1</jna.version>
         <jaxb.version>2.3.2</jaxb.version> 
+<<<<<<< HEAD
         <commons-beanutils.version>1.9.3.redhat-1</commons-beanutils.version>
         <commons-codec.version>1.11</commons-codec.version>
+=======
+        <commons-beanutils.version>1.9.3</commons-beanutils.version>
+        <commons-codec.version>1.12</commons-codec.version>
+>>>>>>> karaf-4.2.6-to-merge
         <commons-compress.version>1.18</commons-compress.version>
         <commons-collections.version>3.2.2.redhat-2</commons-collections.version>
         <commons-dbcp.version>1.4_3</commons-dbcp.version>
+<<<<<<< HEAD
         <commons-fileupload.version>1.3.3</commons-fileupload.version>
         <commons-jexl.version>2.1.1</commons-jexl.version>
         <commons-lang.version>2.6.0.redhat-7</commons-lang.version>
@@ -179,6 +202,24 @@
         <serp.bundle.version>1.14.1_1</serp.bundle.version>
         <servlet.spec3.version>3.1.0</servlet.spec3.version>
         <servlet.spec.version>4.0.1</servlet.spec.version>
+=======
+        <commons-fileupload.version>1.4</commons-fileupload.version>
+        <commons-lang.version>2.6</commons-lang.version>
+        <commons-lang3.version>3.9</commons-lang3.version>
+        <commons-logging.version>1.2</commons-logging.version>
+        <commons-pool.version>1.6</commons-pool.version>
+        <commons-pool2.version>2.6.2</commons-pool2.version>
+        <commons-io.version>2.6</commons-io.version>
+
+        <dom4j.bundle.version>1.6.1_5</dom4j.bundle.version>
+        <eclipselink.version>2.7.4</eclipselink.version>
+        <jasypt.bundle.version>1.9.2_1</jasypt.bundle.version>
+        <jolokia.version>1.6.1</jolokia.version>
+        <serp.bundle.version>1.15.1_1</serp.bundle.version>
+        <servlet.spec.groupId>javax.servlet</servlet.spec.groupId>
+        <servlet.spec.artifactId>javax.servlet-api</servlet.spec.artifactId>
+        <servlet.spec.version>3.1.0</servlet.spec.version>
+>>>>>>> karaf-4.2.6-to-merge
 
         <geronimo.jms-spec.version>1.1.1</geronimo.jms-spec.version>
         <geronimo.jpa-spec.version>1.1</geronimo.jpa-spec.version>
@@ -189,7 +230,7 @@
         <easymock.version>4.0.2</easymock.version>
         <objenesis.version>2.6</objenesis.version>
         <equinox.version>3.12.100</equinox.version>
-        <bndlib.version>2.4.0</bndlib.version>
+        <bndlib.version>3.5.0</bndlib.version>
         <equinox.region.version>1.2.101.v20150831-1342</equinox.region.version>
         <equinox.coordinator.version>1.1.0.v20120522-1841</equinox.coordinator.version>
 
@@ -203,12 +244,13 @@
         <felix.gogo.runtime.version>1.1.2</felix.gogo.runtime.version>
         <felix.gogo.jline.version>1.1.4</felix.gogo.jline.version>
         <felix.httplite.version>0.1.6</felix.httplite.version>
+        <felix.http.version>4.0.8</felix.http.version>
         <felix.inventory.version>1.0.4</felix.inventory.version>
         <felix.plugin.version>4.1.0</felix.plugin.version>
         <felix.utils.version>1.11.2</felix.utils.version>
-        <felix.webconsole.version>4.3.8</felix.webconsole.version>
+        <felix.webconsole.version>4.3.12</felix.webconsole.version>
         <felix.webconsole.api.version>3.1.2</felix.webconsole.api.version>
-        <felix.memoryusage.webconsole.plugin.version>1.0.8</felix.memoryusage.webconsole.plugin.version>
+        <felix.memoryusage.webconsole.plugin.version>1.0.10</felix.memoryusage.webconsole.plugin.version>
         <felix.metatype.version>1.2.2</felix.metatype.version>
         <felix.eventadmin.version>1.5.0</felix.eventadmin.version>
         <felix.eventadmin.webconsole.plugin.version>1.1.8</felix.eventadmin.webconsole.plugin.version>
@@ -257,22 +299,24 @@
         <guava.version>25.0.0.redhat-1</guava.version>
         <narayana.version>5.9.1.Final-redhat-00001</narayana.version>
         <hibernate.annotations.common.version>5.0.4.Final-redhat-00001</hibernate.annotations.common.version>
+        <hibernate.annotations.version>3.4.0.GA</hibernate.annotations.version>
         <hibernate42.version>4.2.15.Final</hibernate42.version>
         <hibernate43.version>4.3.6.Final</hibernate43.version>
+        <hibernate52.version>5.2.17.Final</hibernate52.version>
         <hibernate.version>5.3.10.Final-redhat-00001</hibernate.version>
         <hibernate.validator.version>5.3.5.Final-redhat-2</hibernate.validator.version>
-        <httpclient.version>4.5.5</httpclient.version>
+        <httpclient.version>4.5.6</httpclient.version>
         <jansi.version>1.18</jansi.version>
         <javassist.version>3.24.1-GA</javassist.version>
         <jackson.version>2.9.9</jackson.version>
         <jboss.logging.version>3.3.2.Final-redhat-00001</jboss.logging.version>
         <aesh.readline.version>1.10.0.redhat-00001</aesh.readline.version>
-        <jetty.version>9.4.12.v20180830</jetty.version>
-        <jline.version>3.10.0</jline.version>
+        <jetty.version>9.4.18.v20180830</jetty.version>
+        <jline.version>3.11.0</jline.version>
         <junit.version>4.12</junit.version>
         <jsw.version>3.2.3</jsw.version>
         <log4j.version>1.2.17</log4j.version>
-        <maven.version>3.6.0</maven.version>
+        <maven.version>3.6.1</maven.version>
         <maven.wagon.version>3.2.0</maven.wagon.version>
         <maven-plugin-annotations.version>3.6.0</maven-plugin-annotations.version>
         <maven.resolver.version>1.3.1</maven.resolver.version>
@@ -283,7 +327,7 @@
 
         <pax.cdi.version>1.1.2</pax.cdi.version>
         <pax.exam.version>4.13.1</pax.exam.version>
-        <pax.logging.version>1.10.1</pax.logging.version>
+        <pax.logging.version>1.10.2</pax.logging.version>
         <pax.base.version>1.5.0</pax.base.version>
         <pax.swissbox.version>1.8.3</pax.swissbox.version>
         <pax.url.version>2.6.1</pax.url.version>
@@ -291,7 +335,7 @@
         <pax.web.undertow.version>2.0.20.Final-redhat-00001</pax.web.undertow.version>
         <pax.tinybundle.version>3.0.0</pax.tinybundle.version>
         <pax.jdbc.version>1.3.5</pax.jdbc.version>
-        <pax.jms.version>1.0.3</pax.jms.version>
+        <pax.jms.version>1.0.4</pax.jms.version>
         <pax.transx.version>0.4.3</pax.transx.version>
 
         <portlet-api.version>2.0</portlet-api.version>
@@ -304,18 +348,18 @@
         <spring40.version>4.0.9.RELEASE_1</spring40.version>
         <spring41.version>4.1.9.RELEASE_1</spring41.version>
         <spring42.version>4.2.9.RELEASE_1</spring42.version>
-        <spring43.version>4.3.20.RELEASE_1</spring43.version>
-        <spring50.version>5.0.12.RELEASE_1</spring50.version>
-        <spring51.version>5.1.4.RELEASE_1</spring51.version>
+        <spring43.version>4.3.24.RELEASE_1</spring43.version>
+        <spring50.version>5.0.14.RELEASE_1</spring50.version>
+        <spring51.version>5.1.7.RELEASE_1</spring51.version>
         <spring.security31.version>3.1.4.RELEASE</spring.security31.version>
         <spring.security42.version>4.2.4.RELEASE_1</spring.security42.version>
-        <spring.security51.version>5.1.3.RELEASE_1</spring.security51.version>
+        <spring.security51.version>5.1.5.RELEASE_1</spring.security51.version>
 
         <sshd.version>1.7.0</sshd.version>
         <derby-version>10.12.1.1</derby-version>
         <directory-version>2.0.0-M24</directory-version>
         <struts.bundle.version>1.3.10_1</struts.bundle.version>
-        <xbean.version>4.12</xbean.version>
+        <xbean.version>4.14</xbean.version>
         <xerces.bundle.version>2.12.0_1</xerces.bundle.version>
         <xalan.bundle.version>2.7.2_3</xalan.bundle.version>
         <xalan-serializer.bundle.version>2.7.2_1</xalan-serializer.bundle.version>
@@ -1057,6 +1101,11 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.http.jetty</artifactId>
+                <version>${felix.http.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.eventadmin</artifactId>
                 <version>${felix.eventadmin.version}</version>
                 <exclusions>
@@ -1129,7 +1178,7 @@
 
             <dependency>
                 <groupId>biz.aQute.bnd</groupId>
-                <artifactId>bndlib</artifactId>
+                <artifactId>biz.aQute.bndlib</artifactId>
                 <version>${bndlib.version}</version>
             </dependency>
             <dependency>
