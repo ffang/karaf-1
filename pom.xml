@@ -1357,16 +1357,34 @@
                 <groupId>org.ops4j.pax.logging</groupId>
                 <artifactId>pax-logging-api</artifactId>
                 <version>${pax.logging.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.knopflerfish.kf6</groupId>
+                        <artifactId>log-API</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.ops4j.pax.logging</groupId>
                 <artifactId>pax-logging-service</artifactId>
                 <version>${pax.logging.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.knopflerfish.kf6</groupId>
+                        <artifactId>log-API</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.ops4j.pax.logging</groupId>
                 <artifactId>pax-logging-log4j2</artifactId>
                 <version>${pax.logging.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.knopflerfish.kf6</groupId>
+                        <artifactId>log-API</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
 
             <dependency>
