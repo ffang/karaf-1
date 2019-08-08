@@ -74,6 +74,7 @@ public class LineReaderImpl implements LineReader {
     private Parser parser = new DefaultParser();
     private Expander expander = new DefaultExpander();
     private History history = new DefaultHistory();
+    private Highlighter highlighter = new DefaultHighlighter();
 
     private CompletionHandler completionHandler;
 
@@ -365,7 +366,7 @@ public class LineReaderImpl implements LineReader {
 
     @Override
     public Highlighter getHighlighter() {
-        return null;
+        return highlighter;
     }
 
     @Override
