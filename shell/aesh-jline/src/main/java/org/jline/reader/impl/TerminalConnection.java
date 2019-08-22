@@ -44,6 +44,8 @@ public class TerminalConnection implements Connection, Device {
             return "unknown";
         }
     };
+    
+    
 
     private final Terminal terminal;
     private final EditMode editMode;
@@ -159,13 +161,28 @@ public class TerminalConnection implements Connection, Device {
             for (KeyAction action : editMode.keys()) {
                 int[] cp = action.buffer().array();
                 map.bind(action, new String(cp, 0, cp.length));
+                if ("BACKSPACE".equals(action.toString())
+                    && !org.aesh.utils.Config.isOSPOSIXCompatible()) {
+                    //ensure map ascii 127 to backspace on windows
+                   
+                    int[] backspace = new int[1];
+                    backspace[0] = 127;
+                    map.bind(action, new String(backspace, 0, backspace.length));
+                }
             }
             BindingReader br = new BindingReader(terminal.reader());
             while (reading) {
                 KeyAction ka = br.readBinding(map);
                 if (ka != null) {
                     String lb = br.getLastBinding();
-                    stdinHandler.accept(lb.codePoints().toArray());
+                  
+                    if ("BACKSPACE".equals(ka.toString()) 
+                        && !org.aesh.utils.Config.isOSPOSIXCompatible()) {
+                        //ensure BACKSPACE work on windows CMD
+                        stdinHandler.accept(new int[]{8});
+                    } else {
+                        stdinHandler.accept(lb.codePoints().toArray());
+                    }
                 } else {
                     if (getCloseHandler() != null)
                         getCloseHandler().accept(null);
