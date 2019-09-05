@@ -279,7 +279,20 @@ run() {
         if [ -d "${KARAF_HOME:?}/lib.next" ] ; then
             echo "Updating libs..."
             rm -rf "${KARAF_HOME:?}/lib"
-            mv -f "${KARAF_HOME:?}/lib.next" "${KARAF_HOME}/lib"
+            if [ $? != "0" ]; then
+                echo ""
+                echo "There was a problem updating libraries."
+                echo "Please perform manual update of ${KARAF_HOME}/lib directory from ${KARAF_HOME}/lib.next."
+                echo ""
+            else
+                mv -f "${KARAF_HOME:?}/lib.next" "${KARAF_HOME}/lib"
+                if [ $? != "0" ]; then
+                    echo ""
+                    echo "There was a problem updating libraries."
+                    echo "Please perform manual update of ${KARAF_HOME}/lib directory from ${KARAF_HOME}/lib.next."
+                    echo ""
+                fi
+            fi
 
             echo "Updating classpath..."
             CLASSPATH=$LOCAL_CLASSPATH
